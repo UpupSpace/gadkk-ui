@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GADKk 流动性矿池 - Login Edition</title>
+    <title>GADKk - 故障诊断版</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js" integrity="sha512-FDcVY+g7vc55dy4kJftq9riI+YYTwzOE5x8WiFBYJwKm8cwSE3qM15rDk4PlnDlZjun9HRjKqJNO4n3Kg54Q6A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
     <style>
-        /* --- 样式保持不变 --- */
+        /* (样式保持不变，为了节省篇幅我省略了CSS，直接用之前的即可) */
         * { box-sizing: border-box; }
         body { background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%); color: #e0e0e0; font-family: 'Inter', sans-serif; display: flex; flex-direction: column; align-items: center; min-height: 100vh; margin: 0; padding: 20px; overflow-x: hidden; }
         .app-container { width: 100%; max-width: 480px; position: relative; z-index: 10; }
@@ -88,65 +88,63 @@
             <button class="btn btn-red" onclick="withdrawLP()">📤 确认赎回 (Withdraw)</button>
         </div>
     </div>
-    
-    <div style="text-align:center; color:#666; font-size:12px; margin-top:25px; font-family: 'Rajdhani', sans-serif; letter-spacing: 1px;">
-        GADKk Ecosystem | Future Finance
-    </div>
 </div>
 
 <script>
-    // 美金雨动画
     function createMoneyRain() { const container = document.getElementById('moneyRain'); for (let i = 0; i < 20; i++) generateBill(container); }
     function generateBill(container) { const bill = document.createElement('div'); bill.classList.add('bill'); const innerText = document.createElement('div'); innerText.classList.add('bill-inner-text'); innerText.innerText = '100'; bill.appendChild(innerText); const startLeft = Math.random() * 100; const duration = Math.random() * 5 + 5; const delay = Math.random() * 5; const scale = Math.random() * 0.5 + 0.5; bill.style.left = startLeft + 'vw'; bill.style.animationDuration = duration + 's'; bill.style.animationDelay = delay + 's'; bill.style.transform = `scale(${scale})`; container.appendChild(bill); bill.addEventListener('animationiteration', () => { bill.style.left = Math.random() * 100 + 'vw'; }); }
     window.onload = createMoneyRain;
 
-    // 真实合约配置
     const POOL_ADDR = "0x75bB76C3fc354CE2f078d613C8e6D3daFeE19797"; 
     const PAIR_ADDR = "0x5B06dc147F363aa0111549fb5EA992A40feda6fC"; 
+    
     const ABI_POOL = ["function pendingReward(address) view returns (uint256)","function deposit(uint256) external","function withdraw(uint256) external","function userInfo(address) view returns (uint256 amount, uint256 rewardDebt)"];
     const ABI_ERC20 = ["function balanceOf(address) view returns (uint256)","function approve(address, uint256) external returns (bool)","function allowance(address, address) view returns (uint256)"];
 
     let provider, signer, userAddr;
 
-    // ✅ 核心：连接 + 签名登录
+    // 核心连接函数 (带详细报错)
     async function connectWallet() {
-        if (!window.ethereum) return alert("请在 TP钱包 / 小狐狸 中打开！");
+        if (!window.ethereum) return alert("请在 TP钱包 / 小狐狸 中打开！(未检测到钱包)");
         
         try {
-            // 1. 建立连接
+            // 1. 初始化
             provider = new ethers.providers.Web3Provider(window.ethereum);
-            await provider.send("eth_requestAccounts", []); // 第一弹窗：请求连接
             
+            // 2. 发起连接
+            await provider.send("eth_requestAccounts", []);
+            
+            // 3. 获取信息
             signer = provider.getSigner();
             userAddr = await signer.getAddress();
 
-            // 2. 模拟签名登录 (和参考网站一样)
+            // 4. 发起签名 (这一步是真正的登录)
             const timestamp = Math.floor(Date.now() / 1000);
-            const msg = `Welcome to GADKk Farm!\n\nWallet: ${userAddr}\nTimestamp: ${timestamp}\n\nPlease sign to verify ownership.`;
-            
-            // 第二弹窗：请求签名
-            const signature = await signer.signMessage(msg); 
-            
-            // 3. 签名成功后，更新界面
-            console.log("Login Success! Signature:", signature);
-            document.getElementById("connectBtn").innerText = "✅ " + userAddr.substring(0,4) + "..." + userAddr.substring(38);
+            const msg = `Welcome to GADKk Farm!\n\nWallet: ${userAddr}\nTimestamp: ${timestamp}\n\nPlease sign to verify.`;
+            await signer.signMessage(msg); 
+
+            // 5. 成功
+            document.getElementById("connectBtn").innerText = "✅ " + userAddr.substring(0,4) + "...";
             document.getElementById("connectBtn").style.borderColor = "#00FFA3";
             document.getElementById("connectBtn").style.color = "#00FFA3";
             document.getElementById("connectBtn").style.background = "rgba(0, 255, 163, 0.1)";
             
-            refreshData(); // 加载数据
+            refreshData();
 
         } catch(e) { 
-            console.error(e); 
-            // 如果用户拒绝了签名，也算失败
-            if(e.code === 4001) {
-                alert("您取消了签名/连接，登录失败。");
-            } else {
-                alert("连接错误: " + (e.message || e)); 
-            }
+            // 🚨 这里会显示具体的错误原因，而不是模糊的“连接失败”
+            console.error(e);
+            let errMsg = e.message || JSON.stringify(e);
+            
+            // 常见错误翻译
+            if(e.code === 4001) errMsg = "您在钱包里点击了取消/拒绝";
+            if(e.code === -32002) errMsg = "连接请求已在后台排队，请查看小狐狸图标是否有红点";
+            
+            alert("连接失败详情:\n" + errMsg); 
         }
     }
 
+    // (后续逻辑保持不变)
     async function refreshData() {
         if(!userAddr) return;
         const pool = new ethers.Contract(POOL_ADDR, ABI_POOL, provider);
