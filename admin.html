@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GADKk 管理员总控台</title>
+    <script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            /* 科技感网格背景 */
+            background-color: #050505;
+            background-image: linear-gradient(rgba(0, 255, 163, 0.03) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(0, 255, 163, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            color: #fff; font-family: 'Microsoft YaHei', 'Segoe UI', sans-serif;
+            display: flex; flex-direction: column; align-items: center; padding: 20px;
+        }
+        .container { width: 100%; max-width: 500px; }
+        h1 { 
+            color: #fff; text-align: center; font-family: 'Rajdhani', 'Microsoft YaHei', sans-serif; letter-spacing: 4px; 
+            font-weight: 700; margin-bottom: 30px; text-shadow: 0 0 10px rgba(255,255,255,0.3);
+        }
+        
+        /* 毛玻璃卡片 */
+        .card { 
+            background: rgba(20, 20, 20, 0.8); border: 1px solid #333; 
+            backdrop-filter: blur(10px); border-radius: 16px; padding: 24px; margin-bottom: 25px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .card-header { display: flex; justify-content: space-between; align-items: center; color: #888; font-size: 13px; margin-bottom: 15px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
+        
+        .big-num { font-size: 36px; font-weight: bold; margin-bottom: 5px; font-family: 'Rajdhani', sans-serif; }
+        .unit { font-size: 14px; color: #666; font-weight: normal; margin-left: 5px; }
+        
+        /* 间谍监控盒子 */
+        .spy-box { 
+            background: rgba(0, 255, 163, 0.05); border: 1px solid rgba(0, 255, 163, 0.2); 
+            border-radius: 12px; padding: 20px; margin-bottom: 20px; text-align: center; 
+        }
+        .spy-label { color: #00FFA3; font-size: 14px; font-weight: bold; margin-bottom: 5px; letter-spacing: 1px; }
+        .spy-value { color: #fff; font-size: 32px; font-weight: bold; text-shadow: 0 0 15px rgba(0, 255, 163, 0.4); font-family: 'Rajdhani', sans-serif; }
+        
+        /* 按钮样式 */
+        .btn { width: 100%; padding: 16px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; transition: 0.2s; letter-spacing: 1px; font-family: 'Microsoft YaHei', sans-serif; }
+        .btn:hover { filter: brightness(1.1); transform: translateY(-1px); }
+        .btn-connect { background: #1a1a1a; color: #fff; border: 1px solid #444; margin-bottom: 20px; }
+        
+        .btn-process { 
+            background: linear-gradient(90deg, #00FFA3, #00C2FF); color: #000; 
+            box-shadow: 0 0 15px rgba(0, 255, 163, 0.2);
+        }
+        .btn-buyback { 
+            background: linear-gradient(90deg, #FF4500, #FF0055); color: #fff; 
+            box-shadow: 0 0 15px rgba(255, 69, 0, 0.2);
+        }
+        .btn-fill { width: auto; padding: 8px 15px; background: #333; color: #fff; font-size: 12px; border-radius: 6px; }
+        
+        .input-group { display: flex; gap: 10px; margin-top: 15px; align-items: center; }
+        input { 
+            flex: 1; background: #000; border: 1px solid #333; color: #fff; padding: 14px; 
+            border-radius: 8px; font-size: 16px; outline: none; font-family: 'Rajdhani', sans-serif; 
+        }
+        input:focus { border-color: #00FFA3; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>GADKk 总控台</h1>
+    <button id="connectBtn" class="btn btn-connect" onclick="connectWallet()">🔑 连接管理员钱包</button>
+
+    <div class="card">
+        <div class="card-header">
+            <span>🛡️ 自动回流基金 (LpFund)</span>
+            <span style="color: #00FFA3">● 运行中</span>
+        </div>
+        <div style="font-size:12px; color:#888;">待加池代币 (Pending ADKK):</div>
+        <div class="big-num" style="color: #00FFA3">
+            <span id="lpFundBalance">0.00</span>
+            <span class="unit">ADKK</span>
+        </div>
+        <button class="btn btn-process" onclick="processLP()">⚡ 执行回流加池 (Process LP)</button>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <span>🚀 智能回购 V5</span>
+            <span style="color: #FF4500">● 间谍模式</span>
+        </div>
+
+        <div class="spy-box">
+            <div class="spy-label">⚠️ 新增市场抛压 (智能监控)</div>
+            <div class="spy-value" id="newPressure">0.00 ADKK</div>
+            <div style="font-size:12px; color:#888; margin-top:5px;" id="usdtCostTip">≈ 需要 0.00 USDT 接盘</div>
+        </div>
+
+        <div style="display:flex; justify-content:space-between; font-size:12px; color:#888;">
+            <span>回购金库余额:</span>
+            <span style="color:#fff;" id="buybackBalance">0.00 USDT</span>
+        </div>
+
+        <div class="input-group">
+            <input type="number" id="buyAmount" placeholder="输入 USDT 金额">
+            <button class="btn btn-fill" onclick="fillRec()">自动填入</button>
+        </div>
+        
+        <button class="btn btn-buyback" onclick="triggerBuyback()">🔥 拉盘并发送 (Buy & Send)</button>
+        <div style="text-align:center; font-size:12px; color:#444; margin-top:10px;">点击后代币将发送至合约指定的接收地址</div>
+    </div>
+</div>
+
+<script>
+    // ✅ 真实地址配置
+    const GADKK_ADDR    = "0xA1aEE242C69E1c0820d165ef12438e0A5eEd0BbA";
+    const LP_FUND_ADDR  = "0xD7bB38219D069dfDD4F09Fdf568493A4B7d7E4fd";
+    const BUYBACK_ADDR  = "0x3f22B4f6d76dD740AE3E22eb25bC22a884971ADB"; // V5
+    const MARKETING_ADDR= "0x2DBE6300514C4D0Cd7456348512370D3A68d4c1E"; 
+    
+    const USDT_ADDR = "0x55d398326f99059fF775485246999027B3197955";
+    const MARKETING_TAX_RATE = 0.05;
+
+    let provider, signer, recUSDT = 0;
+    const ABI_TOKEN = ["function balanceOf(address) view returns (uint256)", "function getPrice() view returns (uint256)"];
+    const ABI_LP = ["function process() external"];
+    const ABI_BUY = ["function buyUSDT(uint256) external", "function lastMarkBalance() view returns (uint256)"];
+
+    async function connectWallet() {
+        if (!window.ethereum) return alert("请安装 MetaMask 小狐狸钱包");
+        provider = new ethers.providers.Web3Provider(window.ethereum);
+        await provider.send("eth_requestAccounts", []);
+        signer = provider.getSigner();
+        document.getElementById("connectBtn").innerText = "✅ 管理员已就绪";
+        document.getElementById("connectBtn").style.borderColor = "#00FFA3";
+        document.getElementById("connectBtn").style.color = "#00FFA3";
+        refreshData();
+    }
+
+    async function refreshData() {
+        const token = new ethers.Contract(GADKK_ADDR, ABI_TOKEN, provider);
+        const buyback = new ethers.Contract(BUYBACK_ADDR, ABI_BUY, provider);
+        const usdt = new ethers.Contract(USDT_ADDR, ABI_TOKEN, provider);
+
+        // 1. LpFund 余额
+        const lpBal = await token.balanceOf(LP_FUND_ADDR);
+        document.getElementById("lpFundBalance").innerText = parseFloat(ethers.utils.formatUnits(lpBal, 18)).toFixed(2);
+
+        // 2. 金库余额
+        const usdtBal = await usdt.balanceOf(BUYBACK_ADDR);
+        document.getElementById("buybackBalance").innerText = parseFloat(ethers.utils.formatUnits(usdtBal, 18)).toFixed(2);
+
+        // 3. 间谍逻辑 (计算抛压)
+        const currentRaw = await token.balanceOf(MARKETING_ADDR);
+        const current = parseFloat(ethers.utils.formatUnits(currentRaw, 18));
+        const lastRaw = await buyback.lastMarkBalance();
+        const last = parseFloat(ethers.utils.formatUnits(lastRaw, 18));
+        let diff = current - last;
+        if (diff < 0) diff = 0; 
+        const pressure = diff / MARKETING_TAX_RATE;
+        document.getElementById("newPressure").innerText = pressure.toFixed(2) + " ADKK";
+
+        try {
+            const priceRaw = await token.getPrice();
+            const price = parseFloat(ethers.utils.formatUnits(priceRaw, 18));
+            if(price > 0 && pressure > 0) {
+                const cost = pressure / price;
+                document.getElementById("usdtCostTip").innerText = `≈ 需要 ${cost.toFixed(2)} USDT 接盘`;
+                recUSDT = cost.toFixed(2);
+            }
+        } catch(e) {}
+    }
+
+    function fillRec() { if(recUSDT > 0) document.getElementById("buyAmount").value = recUSDT; }
+
+    async function processLP() {
+        const contract = new ethers.Contract(LP_FUND_ADDR, ABI_LP, signer);
+        try { 
+            const tx = await contract.process({ gasLimit: 2000000 }); 
+            alert("正在执行加池..."); 
+            await tx.wait(); 
+            alert("✅ 加池成功！"); 
+            refreshData(); 
+        } catch(e) { alert("错误: " + e.message); }
+    }
+
+    async function triggerBuyback() {
+        const amt = document.getElementById("buyAmount").value; if(!amt) return alert("请输入金额");
+        const contract = new ethers.Contract(BUYBACK_ADDR, ABI_BUY, signer);
+        try { 
+            const weiAmt = ethers.utils.parseUnits(amt, 18); 
+            const tx = await contract.buyUSDT(weiAmt, { gasLimit: 500000 }); 
+            alert("正在拉盘并发送..."); 
+            await tx.wait(); 
+            alert("✅ 交易成功！代币已发送至指定地址。"); 
+            refreshData(); 
+        } catch(e) { alert("错误: " + e.message); }
+    }
+</script>
+</body>
+</html>
