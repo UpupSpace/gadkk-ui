@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GADKk ADMIN v16.0 (Celebration)</title>
+    <title>GADKk ADMIN v17.0 (Stable)</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
@@ -22,32 +22,20 @@
         .lang-btn { padding: 4px 10px; border-radius: 16px; font-size: 11px; cursor: pointer; color: #888; transition: 0.3s; font-weight: 600; }
         .lang-btn.active { background: var(--primary); color: #000; box-shadow: 0 0 10px rgba(0,255,163,0.3); }
 
-        /* ✨ 卡片流光特效 */
         .card { background: var(--card); border: 1px solid var(--border); backdrop-filter: blur(20px); border-radius: 20px; padding: 20px; margin-bottom: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.4); position: relative; overflow: hidden; transition: transform 0.2s; }
-        .card:hover { border-color: rgba(255,255,255,0.2); }
-        .card::before { content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent); transform: skewX(-25deg); animation: shine 6s infinite; pointer-events: none; }
-        @keyframes shine { 0% { left: -100%; } 20% { left: 200%; } 100% { left: 200%; } }
-
-        .card-header { display: flex; justify-content: space-between; align-items: center; font-size: 12px; font-weight: 700; color: #888; text-transform: uppercase; margin-bottom: 15px; }
         
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
-        .stat-item { background: rgba(0,0,0,0.3); border: 1px solid var(--border); padding: 12px; border-radius: 12px; text-align: center; transition: 0.2s; }
+        .stat-item { background: rgba(0,0,0,0.3); border: 1px solid var(--border); padding: 12px; border-radius: 12px; text-align: center; }
         .stat-label { font-size: 11px; color: #666; margin-bottom: 4px; }
         .stat-val { font-family: 'Rajdhani', sans-serif; font-size: 18px; font-weight: 700; color: #eee; }
         .highlight { color: var(--danger); text-shadow: 0 0 10px rgba(255, 69, 0, 0.3); }
 
-        /* 🌊 按钮涟漪与加载 */
         .btn { width: 100%; padding: 16px; border-radius: 12px; border: none; font-size: 15px; font-weight: 700; cursor: pointer; transition: 0.2s; margin-top: 5px; font-family: 'Inter', sans-serif; position: relative; overflow: hidden; }
         .btn:active { transform: scale(0.98); }
-        .btn:disabled { opacity: 0.7; cursor: wait; pointer-events: none; }
+        .btn:disabled { opacity: 0.8; cursor: not-allowed; filter: brightness(0.8); }
         
-        /* 按钮点击波纹 */
-        .btn::after { content: ""; position: absolute; top: 50%; left: 50%; width: 5px; height: 5px; background: rgba(255, 255, 255, 0.5); opacity: 0; border-radius: 100%; transform: scale(1, 1) translate(-50%); transform-origin: 50% 50%; }
-        .btn:focus:not(:active)::after { animation: ripple 1s ease-out; }
-        @keyframes ripple { 0% { transform: scale(0, 0); opacity: 0.5; } 100% { transform: scale(40, 40); opacity: 0; } }
-
-        /* 加载圈 */
-        .loader { display: inline-block; width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3); border-radius: 50%; border-top-color: #fff; animation: spin 1s ease-in-out infinite; margin-right: 8px; vertical-align: middle; }
+        /* 优化后的 Loading */
+        .loader { display: inline-block; width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.3); border-radius: 50%; border-top-color: #fff; animation: spin 0.8s linear infinite; margin-right: 8px; vertical-align: middle; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
         .btn-connect { background: rgba(255,255,255,0.05); color: #ccc; border: 1px solid var(--border); margin-bottom: 20px; }
@@ -75,7 +63,7 @@
         .hidden { display: none; }
 
         .toast-box { position: fixed; top: 20px; right: 20px; z-index: 100; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
-        .toast { pointer-events: auto; background: rgba(20, 20, 20, 0.95); border-left: 4px solid; padding: 15px 20px; border-radius: 4px; color: #fff; min-width: 280px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); transform: translateX(120%); transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); font-size: 13px; display: flex; align-items: center; backdrop-filter: blur(10px); }
+        .toast { pointer-events: auto; background: rgba(20, 20, 20, 0.95); border-left: 4px solid; padding: 15px 20px; border-radius: 4px; color: #fff; min-width: 280px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); transform: translateX(120%); transition: 0.3s; font-size: 13px; display: flex; align-items: center; backdrop-filter: blur(10px); }
         .toast.show { transform: translateX(0); }
         .t-icon { margin-right: 10px; font-size: 16px; }
     </style>
@@ -87,7 +75,7 @@
 <div class="container">
     <div class="header-row">
         <div class="logo-area">
-            <h1>GADKk <span class="badge">PRO v16</span></h1>
+            <h1>GADKk <span class="badge">PRO v17</span></h1>
             <div class="subtitle">FINANCIAL COMMAND CENTER</div>
         </div>
         <div class="lang-switch">
@@ -188,7 +176,6 @@
 </div>
 
 <script>
-    // --- 🌍 国际化字典 (Dictionary) ---
     const i18n = {
         cn: {
             verify_admin: "🔑 验证管理员身份",
@@ -281,24 +268,33 @@
         setTimeout(()=>{div.classList.remove('show');setTimeout(()=>div.remove(),300)},3000);
     }
 
-    // 🎉 庆祝特效：拉盘用红色/金色
-    function celebrateBuyback() {
-        var duration = 3 * 1000;
-        var animationEnd = Date.now() + duration;
-        var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
-        var random = function(min, max) { return Math.random() * (max - min) + min; };
-        var interval = setInterval(function() {
-            var timeLeft = animationEnd - Date.now();
-            if (timeLeft <= 0) return clearInterval(interval);
-            var particleCount = 50 * (timeLeft / duration);
-            confetti(Object.assign({}, defaults, { particleCount, origin: { x: random(0.1, 0.3), y: Math.random() - 0.2 }, colors: ['#FF4500', '#FFD700'] }));
-            confetti(Object.assign({}, defaults, { particleCount, origin: { x: random(0.7, 0.9), y: Math.random() - 0.2 }, colors: ['#FF4500', '#FFD700'] }));
-        }, 250);
-    }
+    // 📱 手机端性能优化：智能烟花
+    function smartCelebrate() {
+        const isMobile = window.innerWidth < 768;
+        const count = isMobile ? 60 : 150; // 手机减量，电脑加量
+        const duration = 2000;
+        const end = Date.now() + duration;
 
-    // 🎉 庆祝特效：加池用绿色/青色
-    function celebrateLP() {
-        confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, colors: ['#00FFA3', '#00C2FF'] });
+        (function frame() {
+            confetti({
+                particleCount: isMobile ? 3 : 7,
+                angle: 60,
+                spread: 55,
+                origin: { x: 0 },
+                colors: ['#FF4500', '#FFD700']
+            });
+            confetti({
+                particleCount: isMobile ? 3 : 7,
+                angle: 120,
+                spread: 55,
+                origin: { x: 1 },
+                colors: ['#FF4500', '#FFD700']
+            });
+
+            if (Date.now() < end) {
+                requestAnimationFrame(frame);
+            }
+        }());
     }
 
     function switchMode(mode) {
@@ -377,17 +373,16 @@
     function fillVolume() { document.getElementById("inputADKK").value = volume.toFixed(2); calcFromADKK(); }
     function fillBacklog() { document.getElementById("inputADKK").value = (backlog / MARKETING_TAX_RATE).toFixed(2); calcFromADKK(); } 
 
-    // --- 交易逻辑 ---
+    // 🔥 修复按钮卡死的关键函数
     function setBtnLoading(id, isLoading) {
         const btn = document.getElementById(id);
-        const originalText = btn.innerText;
+        if(!btn) return;
         if(isLoading) {
-            btn.dataset.text = originalText; // 暂存文字
             btn.disabled = true;
             btn.innerHTML = `<span class="loader"></span> Processing...`;
         } else {
             btn.disabled = false;
-            // 恢复文字，重新渲染一下语言以防万一
+            // 强制重新渲染文字，防止卡在 Processing
             setLang(currentLang);
         }
     }
@@ -411,15 +406,17 @@
             showToast(i18n[currentLang].toast_sent, "info");
             await tx.wait();
             
-            // 成功后放烟花
-            celebrateBuyback();
+            smartCelebrate(); // 智能烟花
             showToast(i18n[currentLang].toast_success, "success");
             
             document.getElementById("inputUSDT").value = "";
             document.getElementById("inputADKK").value = "";
             refreshData();
         } catch(e) { showToast(i18n[currentLang].toast_error + (e.reason || e.message), "error"); }
-        finally { setBtnLoading(btnId, false); }
+        finally { 
+            // 🛑 核心修复：无论成功失败，必须重置按钮
+            setBtnLoading(btnId, false); 
+        }
     }
 
     function buyByUSDT() {
@@ -442,24 +439,17 @@
 
     async function processLP() {
         if(!signer) return showToast("Connect Wallet", "error");
-        const btn = document.getElementById('btn-process');
-        const originalText = btn.innerText;
-        btn.disabled = true;
-        btn.innerHTML = `<span class="loader"></span> Processing...`;
+        setBtnLoading('btn-process', true);
         
         const ct = new ethers.Contract(LP_FUND_ADDR, ABI_LP, signer);
         try {
             showToast("Processing...", "info");
             const tx = await ct.process({ gasLimit: 3000000 });
             await tx.wait();
-            celebrateLP(); // 加池成功放烟花
             showToast(i18n[currentLang].toast_success, "success");
             refreshData();
         } catch(e) { showToast(e.message, "error"); }
-        finally { 
-            btn.disabled = false; 
-            setLang(currentLang);
-        }
+        finally { setBtnLoading('btn-process', false); }
     }
 </script>
 </body>
