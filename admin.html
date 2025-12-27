@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>GADKk ADMIN v19.0</title>
+    <title>GADKk ADMIN v20.0</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
@@ -24,13 +24,10 @@
 
         .card { background: var(--card); border: 1px solid var(--border); backdrop-filter: blur(20px); border-radius: 20px; padding: 24px; margin-bottom: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.4); position: relative; overflow: hidden; transition: transform 0.2s; }
         
-        /* 🔥 优化：增加间距和分割线 */
         .card-header { 
             display: flex; justify-content: space-between; align-items: center; 
             font-size: 12px; font-weight: 700; color: #888; text-transform: uppercase; 
-            margin-bottom: 25px; /* 增加间距 */
-            padding-bottom: 15px; /* 增加内边距 */
-            border-bottom: 1px dashed rgba(255,255,255,0.1); /* 增加分割线 */
+            margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px dashed rgba(255,255,255,0.1); 
         }
         
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 25px; }
@@ -83,7 +80,7 @@
 <div class="container">
     <div class="header-row">
         <div class="logo-area">
-            <h1>GADKk <span class="badge">PRO v19</span></h1>
+            <h1>GADKk <span class="badge">PRO v20</span></h1>
             <div class="subtitle">FINANCIAL COMMAND CENTER</div>
         </div>
         <div class="lang-switch">
@@ -184,33 +181,43 @@
 </div>
 
 <script>
-    // --- 🎵 原生合成音效 (Audio Context) ---
-    function playDing() {
+    // --- 🎵 真实金币音效 (Cha-Ching!) ---
+    function playCoinSound() {
         try {
             const AudioContext = window.AudioContext || window.webkitAudioContext;
             if (!AudioContext) return;
             const ctx = new AudioContext();
-            
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
-            
-            osc.connect(gain);
-            gain.connect(ctx.destination);
-            
-            // 声音设计：清脆的“叮”声
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(800, ctx.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(1400, ctx.currentTime + 0.1);
-            
-            gain.gain.setValueAtTime(0.3, ctx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.6);
-            
-            osc.start();
-            osc.stop(ctx.currentTime + 0.6);
-        } catch(e) { console.log('Audio blocked'); }
+
+            // 播放单个金属撞击声
+            const playPing = (time) => {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+
+                // 高频正弦波模拟金属
+                osc.type = 'sine';
+                const freq = 1500 + Math.random() * 1000; // 1500-2500Hz 随机高频
+                osc.frequency.setValueAtTime(freq, time);
+                
+                // 指数衰减模拟余音
+                gain.gain.setValueAtTime(0, time);
+                gain.gain.linearRampToValueAtTime(0.2, time + 0.01);
+                gain.gain.exponentialRampToValueAtTime(0.001, time + 0.5);
+
+                osc.start(time);
+                osc.stop(time + 0.5);
+            };
+
+            // 连放3声，模拟硬币碰撞 "叮-铃-铃"
+            const now = ctx.currentTime;
+            playPing(now);
+            playPing(now + 0.06);
+            playPing(now + 0.12);
+
+        } catch(e) { console.log('Audio blocked', e); }
     }
 
-    // --- 🌍 字典 ---
     const i18n = {
         cn: {
             verify_admin: "🔑 验证管理员身份",
@@ -304,12 +311,10 @@
     }
 
     function smartCelebrate() {
+        playCoinSound(); // 🔥 播放金币音效
         const isMobile = window.innerWidth < 768;
-        const count = isMobile ? 60 : 150; 
         const duration = 2000;
         const end = Date.now() + duration;
-        playDing(); // 🔥 触发音效
-
         (function frame() {
             confetti({ particleCount: isMobile ? 3 : 7, angle: 60, spread: 55, origin: { x: 0 }, colors: ['#FF4500', '#FFD700'] });
             confetti({ particleCount: isMobile ? 3 : 7, angle: 120, spread: 55, origin: { x: 1 }, colors: ['#FF4500', '#FFD700'] });
@@ -318,8 +323,8 @@
     }
 
     function celebrateLP() {
+        playCoinSound(); // 🔥 播放金币音效
         confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, colors: ['#00FFA3', '#00C2FF'] });
-        playDing(); // 🔥 触发音效
     }
 
     function switchMode(mode) {
@@ -345,7 +350,7 @@
             document.getElementById("connectBtn").style.borderColor = "var(--primary)";
             document.getElementById("connectBtn").style.color = "var(--primary)";
             showToast(i18n[currentLang].toast_connect, "success");
-            playDing();
+            playCoinSound();
             refreshData();
             setInterval(refreshData, 8000);
         } catch(e) { showToast("Canceled", "info"); }
@@ -434,7 +439,6 @@
             
             document.getElementById("inputUSDT").value = "";
             document.getElementById("inputADKK").value = "";
-            
             setBtnLoading(btnId, false);
             refreshData();
         } catch(e) { 
