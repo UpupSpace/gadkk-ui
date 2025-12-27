@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GADKk 管理员总控台</title>
-    <script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js"></script>
+    <title>GADKk 总控台</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js" integrity="sha512-FDcVY+g7vc55dy4kJftq9riI+YYTwzOE5x8WiFBYJwKm8cwSE3qM15rDk4PlnDlZjun9HRjKqJNO4n3Kg54Q6A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
     <style>
         * { box-sizing: border-box; }
         body {
-            /* 科技感网格背景 */
             background-color: #050505;
             background-image: linear-gradient(rgba(0, 255, 163, 0.03) 1px, transparent 1px),
             linear-gradient(90deg, rgba(0, 255, 163, 0.03) 1px, transparent 1px);
@@ -23,7 +22,6 @@
             font-weight: 700; margin-bottom: 30px; text-shadow: 0 0 10px rgba(255,255,255,0.3);
         }
         
-        /* 毛玻璃卡片 */
         .card { 
             background: rgba(20, 20, 20, 0.8); border: 1px solid #333; 
             backdrop-filter: blur(10px); border-radius: 16px; padding: 24px; margin-bottom: 25px; 
@@ -34,7 +32,6 @@
         .big-num { font-size: 36px; font-weight: bold; margin-bottom: 5px; font-family: 'Rajdhani', sans-serif; }
         .unit { font-size: 14px; color: #666; font-weight: normal; margin-left: 5px; }
         
-        /* 间谍监控盒子 */
         .spy-box { 
             background: rgba(0, 255, 163, 0.05); border: 1px solid rgba(0, 255, 163, 0.2); 
             border-radius: 12px; padding: 20px; margin-bottom: 20px; text-align: center; 
@@ -42,19 +39,12 @@
         .spy-label { color: #00FFA3; font-size: 14px; font-weight: bold; margin-bottom: 5px; letter-spacing: 1px; }
         .spy-value { color: #fff; font-size: 32px; font-weight: bold; text-shadow: 0 0 15px rgba(0, 255, 163, 0.4); font-family: 'Rajdhani', sans-serif; }
         
-        /* 按钮样式 */
         .btn { width: 100%; padding: 16px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; transition: 0.2s; letter-spacing: 1px; font-family: 'Microsoft YaHei', sans-serif; }
         .btn:hover { filter: brightness(1.1); transform: translateY(-1px); }
         .btn-connect { background: #1a1a1a; color: #fff; border: 1px solid #444; margin-bottom: 20px; }
         
-        .btn-process { 
-            background: linear-gradient(90deg, #00FFA3, #00C2FF); color: #000; 
-            box-shadow: 0 0 15px rgba(0, 255, 163, 0.2);
-        }
-        .btn-buyback { 
-            background: linear-gradient(90deg, #FF4500, #FF0055); color: #fff; 
-            box-shadow: 0 0 15px rgba(255, 69, 0, 0.2);
-        }
+        .btn-process { background: linear-gradient(90deg, #00FFA3, #00C2FF); color: #000; box-shadow: 0 0 15px rgba(0, 255, 163, 0.2); }
+        .btn-buyback { background: linear-gradient(90deg, #FF4500, #FF0055); color: #fff; box-shadow: 0 0 15px rgba(255, 69, 0, 0.2); }
         .btn-fill { width: auto; padding: 8px 15px; background: #333; color: #fff; font-size: 12px; border-radius: 6px; }
         
         .input-group { display: flex; gap: 10px; margin-top: 15px; align-items: center; }
@@ -112,7 +102,6 @@
 </div>
 
 <script>
-    // ✅ 真实地址配置
     const GADKK_ADDR    = "0xA1aEE242C69E1c0820d165ef12438e0A5eEd0BbA";
     const LP_FUND_ADDR  = "0xD7bB38219D069dfDD4F09Fdf568493A4B7d7E4fd";
     const BUYBACK_ADDR  = "0x3f22B4f6d76dD740AE3E22eb25bC22a884971ADB"; // V5
@@ -128,29 +117,25 @@
 
     async function connectWallet() {
         if (!window.ethereum) return alert("请安装 MetaMask 小狐狸钱包");
-        provider = new ethers.providers.Web3Provider(window.ethereum);
-        await provider.send("eth_requestAccounts", []);
-        signer = provider.getSigner();
-        document.getElementById("connectBtn").innerText = "✅ 管理员已就绪";
-        document.getElementById("connectBtn").style.borderColor = "#00FFA3";
-        document.getElementById("connectBtn").style.color = "#00FFA3";
-        refreshData();
+        try {
+            provider = new ethers.providers.Web3Provider(window.ethereum);
+            await provider.send("eth_requestAccounts", []);
+            signer = provider.getSigner();
+            document.getElementById("connectBtn").innerText = "✅ 管理员已就绪";
+            document.getElementById("connectBtn").style.borderColor = "#00FFA3";
+            document.getElementById("connectBtn").style.color = "#00FFA3";
+            refreshData();
+        } catch(e) { console.error(e); }
     }
 
     async function refreshData() {
         const token = new ethers.Contract(GADKK_ADDR, ABI_TOKEN, provider);
         const buyback = new ethers.Contract(BUYBACK_ADDR, ABI_BUY, provider);
         const usdt = new ethers.Contract(USDT_ADDR, ABI_TOKEN, provider);
-
-        // 1. LpFund 余额
         const lpBal = await token.balanceOf(LP_FUND_ADDR);
         document.getElementById("lpFundBalance").innerText = parseFloat(ethers.utils.formatUnits(lpBal, 18)).toFixed(2);
-
-        // 2. 金库余额
         const usdtBal = await usdt.balanceOf(BUYBACK_ADDR);
         document.getElementById("buybackBalance").innerText = parseFloat(ethers.utils.formatUnits(usdtBal, 18)).toFixed(2);
-
-        // 3. 间谍逻辑 (计算抛压)
         const currentRaw = await token.balanceOf(MARKETING_ADDR);
         const current = parseFloat(ethers.utils.formatUnits(currentRaw, 18));
         const lastRaw = await buyback.lastMarkBalance();
@@ -159,7 +144,6 @@
         if (diff < 0) diff = 0; 
         const pressure = diff / MARKETING_TAX_RATE;
         document.getElementById("newPressure").innerText = pressure.toFixed(2) + " ADKK";
-
         try {
             const priceRaw = await token.getPrice();
             const price = parseFloat(ethers.utils.formatUnits(priceRaw, 18));
@@ -175,26 +159,13 @@
 
     async function processLP() {
         const contract = new ethers.Contract(LP_FUND_ADDR, ABI_LP, signer);
-        try { 
-            const tx = await contract.process({ gasLimit: 2000000 }); 
-            alert("正在执行加池..."); 
-            await tx.wait(); 
-            alert("✅ 加池成功！"); 
-            refreshData(); 
-        } catch(e) { alert("错误: " + e.message); }
+        try { const tx = await contract.process({ gasLimit: 2000000 }); alert("正在执行加池..."); await tx.wait(); alert("✅ 加池成功！"); refreshData(); } catch(e) { alert("错误: " + e.message); }
     }
 
     async function triggerBuyback() {
         const amt = document.getElementById("buyAmount").value; if(!amt) return alert("请输入金额");
         const contract = new ethers.Contract(BUYBACK_ADDR, ABI_BUY, signer);
-        try { 
-            const weiAmt = ethers.utils.parseUnits(amt, 18); 
-            const tx = await contract.buyUSDT(weiAmt, { gasLimit: 500000 }); 
-            alert("正在拉盘并发送..."); 
-            await tx.wait(); 
-            alert("✅ 交易成功！代币已发送至指定地址。"); 
-            refreshData(); 
-        } catch(e) { alert("错误: " + e.message); }
+        try { const weiAmt = ethers.utils.parseUnits(amt, 18); const tx = await contract.buyUSDT(weiAmt, { gasLimit: 500000 }); alert("正在拉盘并发送..."); await tx.wait(); alert("✅ 交易成功！代币已发送至指定地址。"); refreshData(); } catch(e) { alert("错误: " + e.message); }
     }
 </script>
 </body>
