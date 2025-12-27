@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GADKk ADMIN v12.0 (Ultimate)</title>
+    <title>GADKk ADMIN v12.1</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <style>
@@ -13,26 +13,22 @@
         .container { width: 100%; max-width: 480px; position: relative; z-index: 10; animation: fadeUp 0.6s ease; }
         @keyframes fadeUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* --- 头部设计 --- */
         .header { text-align: center; margin-bottom: 30px; }
         h1 { margin: 0; font-family: 'Rajdhani', sans-serif; font-size: 28px; letter-spacing: 2px; color: #fff; text-shadow: 0 0 20px rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; gap: 10px; }
         
-        /* 修复：标签改为高亮设计 */
+        /* 标签样式 */
         .badge { background: rgba(0, 255, 163, 0.1); border: 1px solid var(--primary); color: var(--primary); padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 800; letter-spacing: 1px; box-shadow: 0 0 10px rgba(0, 255, 163, 0.2); }
 
-        /* --- 卡片 --- */
         .card { background: var(--card); border: 1px solid var(--border); backdrop-filter: blur(20px); border-radius: 20px; padding: 20px; margin-bottom: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
         .card-header { display: flex; justify-content: space-between; align-items: center; font-size: 12px; font-weight: 700; color: #888; text-transform: uppercase; margin-bottom: 15px; }
         .dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; margin-right: 6px; box-shadow: 0 0 8px currentColor; }
 
-        /* --- 仪表盘 --- */
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
         .stat-item { background: rgba(0,0,0,0.3); border: 1px solid var(--border); padding: 12px; border-radius: 12px; text-align: center; }
         .stat-label { font-size: 11px; color: #666; margin-bottom: 4px; }
         .stat-val { font-family: 'Rajdhani', sans-serif; font-size: 18px; font-weight: 700; color: #eee; }
         .highlight { color: var(--danger); text-shadow: 0 0 10px rgba(255, 69, 0, 0.3); }
 
-        /* --- 按钮与输入 --- */
         .btn { width: 100%; padding: 16px; border-radius: 12px; border: none; font-size: 15px; font-weight: 700; cursor: pointer; transition: 0.2s; position: relative; overflow: hidden; margin-top: 5px; }
         .btn:active { transform: scale(0.98); }
         .btn-connect { background: rgba(255,255,255,0.05); color: #ccc; border: 1px solid var(--border); margin-bottom: 20px; }
@@ -44,14 +40,12 @@
         .input-wrap input { width: 100%; background: none; border: none; color: #fff; font-size: 18px; padding: 16px 0; font-family: 'Rajdhani', sans-serif; outline: none; }
         .suffix { font-size: 12px; color: #666; font-weight: bold; }
 
-        /* --- Tab 切换 --- */
         .tabs { display: flex; background: rgba(0,0,0,0.3); padding: 4px; border-radius: 10px; margin-bottom: 20px; border: 1px solid var(--border); }
         .tab { flex: 1; padding: 10px; text-align: center; font-size: 13px; color: #666; cursor: pointer; border-radius: 8px; transition: 0.3s; font-weight: 600; }
         .tab.active { background: rgba(255,255,255,0.1); color: #fff; }
         .tab.active.buy { color: var(--secondary); }
         .tab.active.burn { color: var(--danger); }
 
-        /* --- 🔥 快捷操作胶囊按钮 (Capsules) --- */
         .capsule-row { display: flex; gap: 8px; justify-content: flex-end; margin-bottom: 8px; flex-wrap: wrap; }
         .capsule { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; cursor: pointer; border: 1px solid transparent; transition: 0.2s; display: flex; align-items: center; gap: 4px; }
         .cap-gold { background: rgba(255, 215, 0, 0.1); color: #FFD700; border-color: rgba(255, 215, 0, 0.2); }
@@ -63,7 +57,6 @@
         .helper-text { text-align: right; font-size: 12px; height: 20px; color: #555; font-family: 'Rajdhani', sans-serif; }
         .hidden { display: none; }
 
-        /* Toast */
         .toast-box { position: fixed; top: 20px; right: 20px; z-index: 100; display: flex; flex-direction: column; gap: 10px; }
         .toast { background: rgba(20, 20, 20, 0.95); border-left: 4px solid; padding: 15px 20px; border-radius: 4px; color: #fff; min-width: 280px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); transform: translateX(120%); transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); font-size: 13px; display: flex; align-items: center; backdrop-filter: blur(10px); }
         .toast.show { transform: translateX(0); }
@@ -76,7 +69,7 @@
 
 <div class="container">
     <div class="header">
-        <h1>GADKk ADMIN <span class="badge">PRO v12</span></h1>
+        <h1>GADKk ADMIN <span class="badge">PRO v12.1</span></h1>
         <div style="font-size:12px; color:#555; margin-top:5px;">FINANCIAL CONTROL CENTER</div>
     </div>
 
@@ -118,7 +111,6 @@
             <div class="capsule-row">
                 <div class="capsule cap-blue" onclick="fillMaxUSDT()">💰 填入最大余额</div>
             </div>
-            
             <div class="input-wrap">
                 <input type="number" id="inputUSDT" placeholder="输入 USDT 金额" oninput="calcFromUSDT()">
                 <span class="suffix">USDT</span>
@@ -132,7 +124,6 @@
                 <div class="capsule cap-gold" onclick="fillBacklog()">📉 填入积压</div>
                 <div class="capsule cap-red" onclick="fillVolume()">⚠️ 填入抛压</div>
             </div>
-
             <div class="input-wrap">
                 <input type="number" id="inputADKK" placeholder="输入 ADKK 数量" oninput="calcFromADKK()">
                 <span class="suffix">ADKK</span>
@@ -285,7 +276,7 @@
         if(!signer) return showToast("请先登录", "error");
         const ct = new ethers.Contract(LP_FUND_ADDR, ABI_LP, signer);
         try {
-            showToast("执行加池...", "info");
+            showToast("执行回流加池...", "info");
             const tx = await ct.process({ gasLimit: 3000000 });
             await tx.wait();
             showToast("✅ 加池成功", "success");
