@@ -117,4 +117,212 @@
             <span>当前币价: <span id="tokenPrice" style="color:#00C2FF">Calculating...</span></span>
         </div>
 
-        <div class="input
+        <div class="input-wrapper">
+            <input type="number" id="targetAdkk" placeholder="输入要买入的 ADKK 数量" oninput="calculateCost()">
+            <span class="input-suffix">ADKK</span>
+        </div>
+        
+        <div style="text-align:right; font-size:12px; color:#FF4500; margin-bottom:15px; height: 16px;">
+            <span id="costPreview"></span>
+        </div>
+
+        <button class="btn btn-red" onclick="triggerBuyback()">🔥 强力拉盘 (BUY)</button>
+    </div>
+</div>
+
+<script>
+    const GADKK_ADDR    = "0xA1aEE242C69E1c0820d165ef12438e0A5eEd0BbA"; 
+    const LP_FUND_ADDR  = "0xD7bB38219D069dfDD4F09Fdf568493A4B7d7E4fd"; 
+    const BUYBACK_ADDR  = "0x3f22B4f6d76dD740AE3E22eb25bC22a884971ADB"; 
+    const MARKETING_ADDR= "0x2DBE6300514C4D0Cd7456348512370D3A68d4c1E"; 
+    const USDT_ADDR     = "0x55d398326f99059fF775485246999027B3197955"; 
+    const PAIR_ADDR     = "0x5B06dc147F363aa0111549fb5EA992A40feda6fC"; 
+    const MARKETING_TAX_RATE = 0.05; 
+
+    const ABI_COMMON = ["function balanceOf(address) view returns (uint256)"];
+    const ABI_LP     = ["function process() external"]; 
+    const ABI_BUY    = ["function buyUSDT(uint256) external", "function lastMarkBalance() view returns (uint256)"]; 
+
+    let provider, signer;
+    let currentPrice = 0;
+    let usdtCost = 0; 
+    
+    // --- 核心变量：本地账本 ---
+    let displayBacklog = 0; // 我们用来显示的积压
+
+    // --- Toast 弹窗逻辑 ---
+    function showToast(message, type = 'info') {
+        const container = document.getElementById('toastContainer');
+        const toast = document.createElement('div');
+        toast.className = `toast toast-${type}`;
+        let icon = type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️';
+        toast.innerHTML = `<span class="toast-icon">${icon}</span><span>${message}</span>`;
+        container.appendChild(toast);
+        // 动画入场
+        setTimeout(() => toast.classList.add('show'), 10);
+        // 3秒后消失
+        setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 300); }, 3000);
+    }
+
+    async function connectWallet() {
+        if (!window.ethereum) return showToast("请安装 MetaMask", 'error');
+        try {
+            provider = new ethers.providers.Web3Provider(window.ethereum);
+            await provider.send("eth_requestAccounts", []);
+            signer = provider.getSigner();
+            const adminAddr = await signer.getAddress();
+            await signer.signMessage(`Admin Verify: ${adminAddr}`);
+            
+            document.getElementById("connectBtn").innerText = "✅ 管理员已登录";
+            document.getElementById("connectBtn").style.border = "1px solid #00FFA3";
+            document.getElementById("connectBtn").style.color = "#00FFA3";
+            
+            showToast("系统初始化完成", "success");
+            refreshDashboard();
+            setInterval(refreshDashboard, 5000); // 5秒刷新一次，反应更灵敏
+        } catch(e) { showToast("登录取消", "error"); }
+    }
+
+    // --- 核心：智能账本更新 ---
+    function updateLedger(realtimeBacklog) {
+        // 读取本地存储：已经买了多少？
+        let bought = parseFloat(localStorage.getItem('GADKK_BOUGHT') || 0);
+        
+        // 读取本地存储：上次记录的“高峰”是多少？
+        let virtual = parseFloat(localStorage.getItem('GADKK_VIRTUAL') || 0);
+
+        // 情况1：合约读到了新的积压 (说明有新税进来了)
+        if (realtimeBacklog > 0) {
+            // 如果这个新积压比我们记录的虚拟高峰还大，说明是一波新的行情
+            if (realtimeBacklog > virtual) {
+                virtual = realtimeBacklog;
+                localStorage.setItem('GADKK_VIRTUAL', virtual);
+                // 新周期开始，重置已买入量，重新开始扣减
+                bought = 0;
+                localStorage.setItem('GADKK_BOUGHT', 0);
+            }
+            // 如果合约没归零，我们就以合约的为准（加上可能的误差修正）
+            // 这里为了平滑体验，我们还是用：高峰 - 已买
+        } 
+        
+        // 计算显示值：记录的高峰 - 我已经买的
+        displayBacklog = virtual - bought;
+        if(displayBacklog < 0) displayBacklog = 0;
+
+        // 更新界面
+        document.getElementById("ledgerBacklog").innerText = displayBacklog.toFixed(2);
+        
+        // 反推抛压
+        const volume = displayBacklog / MARKETING_TAX_RATE;
+        document.getElementById("marketVolume").innerText = volume.toFixed(2);
+    }
+
+    // 手动重置 (给管理员的后悔药)
+    function resetLedger() {
+        localStorage.setItem('GADKK_VIRTUAL', 0);
+        localStorage.setItem('GADKK_BOUGHT', 0);
+        refreshDashboard();
+        showToast("计数器已重置", "info");
+    }
+
+    async function refreshDashboard() {
+        if(!provider) return;
+        const tokenCt = new ethers.Contract(GADKK_ADDR, ABI_COMMON, provider);
+        const usdtCt = new ethers.Contract(USDT_ADDR, ABI_COMMON, provider);
+        const buybackCt = new ethers.Contract(BUYBACK_ADDR, ABI_BUY, provider);
+
+        try {
+            // 基础数据
+            const lpBal = await tokenCt.balanceOf(LP_FUND_ADDR);
+            document.getElementById("lpFundBalance").innerText = parseFloat(ethers.utils.formatUnits(lpBal, 18)).toFixed(2);
+            
+            const usdtBal = await usdtCt.balanceOf(BUYBACK_ADDR);
+            document.getElementById("usdtBalance").innerText = parseFloat(ethers.utils.formatUnits(usdtBal, 18)).toFixed(2);
+
+            // 价格
+            const poolAdkk = parseFloat(ethers.utils.formatUnits(await tokenCt.balanceOf(PAIR_ADDR), 18));
+            const poolUsdt = parseFloat(ethers.utils.formatUnits(await usdtCt.balanceOf(PAIR_ADDR), 18));
+            if(poolAdkk > 0) {
+                currentPrice = poolUsdt / poolAdkk;
+                document.getElementById("tokenPrice").innerText = currentPrice.toFixed(6) + " U";
+            }
+
+            // 真实积压数据
+            const currentMark = parseFloat(ethers.utils.formatUnits(await tokenCt.balanceOf(MARKETING_ADDR), 18));
+            const lastMark = parseFloat(ethers.utils.formatUnits(await buybackCt.lastMarkBalance(), 18));
+            document.getElementById("marketingBal").innerText = currentMark.toFixed(2);
+            
+            let rawContractBacklog = currentMark - lastMark;
+            if(rawContractBacklog < 0) rawContractBacklog = 0;
+
+            // 调用账本逻辑
+            updateLedger(rawContractBacklog);
+
+        } catch(e) { console.error(e); }
+    }
+
+    function calculateCost() {
+        const inputAdkk = parseFloat(document.getElementById("targetAdkk").value);
+        if(!inputAdkk || currentPrice === 0) {
+            document.getElementById("costPreview").innerText = "";
+            usdtCost = 0;
+            return;
+        }
+        usdtCost = inputAdkk * currentPrice;
+        document.getElementById("costPreview").innerText = `≈ 预计消耗: ${usdtCost.toFixed(4)} USDT`;
+    }
+
+    function fillBacklog() {
+        if(displayBacklog > 0) {
+            document.getElementById("targetAdkk").value = displayBacklog.toFixed(2);
+            calculateCost();
+        }
+    }
+
+    async function triggerBuyback() {
+        if(!signer) return showToast("请先登录", "error");
+        const inputVal = parseFloat(document.getElementById("targetAdkk").value);
+        if(!inputVal || inputVal <= 0) return showToast("请输入数量", "error");
+
+        const contract = new ethers.Contract(BUYBACK_ADDR, ABI_BUY, signer);
+        try {
+            showToast("正在上链...", "info");
+            // 计算 USDT
+            const weiAmt = ethers.utils.parseUnits(usdtCost.toFixed(18), 18);
+            const tx = await contract.buyUSDT(weiAmt, { gasLimit: 1000000 });
+            
+            // 🚀 关键：交易发出后，立刻更新本地账本
+            // 这样用户还没刷新，就能看到积压减少了，体验极其丝滑
+            let oldBought = parseFloat(localStorage.getItem('GADKK_BOUGHT') || 0);
+            localStorage.setItem('GADKK_BOUGHT', oldBought + inputVal);
+            
+            // 立即触发一次 UI 更新
+            updateLedger(0); // 传0是为了让它读缓存进行扣减
+
+            await tx.wait();
+            showToast("🚀 拉盘成功！K线已起飞！", "success");
+            
+            document.getElementById("targetAdkk").value = "";
+            document.getElementById("costPreview").innerText = "";
+            
+        } catch(e) {
+            showToast("操作失败: " + (e.reason || e.message), "error");
+        }
+    }
+
+    async function processLP() {
+        if(!signer) return showToast("请先登录", "error");
+        const contract = new ethers.Contract(LP_FUND_ADDR, ABI_LP, signer);
+        try {
+            showToast("正在加池...", "info");
+            const tx = await contract.process({ gasLimit: 3000000 });
+            await tx.wait();
+            showToast("✅ 加池成功！底池已增厚。", "success");
+            refreshDashboard();
+        } catch(e) {
+            showToast("加池失败: " + (e.reason || e.message), "error");
+        }
+    }
+</script>
+</body>
+</html>
