@@ -3,73 +3,155 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GADKk ADMIN v8.0 (Auto Pilot)</title>
+    <title>GADKk ADMIN v11.0 (Flagship)</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <style>
-        /* --- 样式区域 (黑客风格) --- */
-        * { box-sizing: border-box; } body { background-color: #050505; background-image: radial-gradient(circle at 50% 0%, #1a1a1a 0%, #050505 70%); color: #fff; font-family: 'Microsoft YaHei', sans-serif; display: flex; flex-direction: column; align-items: center; padding: 20px; min-height: 100vh; } .container { width: 100%; max-width: 500px; position: relative; z-index: 10; } .header { text-align: center; margin-bottom: 30px; border-bottom: 1px solid #222; padding-bottom: 20px; } h1 { margin: 0; font-family: 'Rajdhani', sans-serif; letter-spacing: 4px; color: #fff; text-shadow: 0 0 20px rgba(255,255,255,0.2); } .version-tag { background: linear-gradient(90deg, #FF9900, #FF4500); color: #fff; padding: 2px 8px; border-radius: 4px; font-size: 12px; vertical-align: middle; margin-left: 10px; font-weight: bold; } .card { background: rgba(20, 20, 20, 0.6); border: 1px solid #333; backdrop-filter: blur(20px); border-radius: 16px; padding: 24px; margin-bottom: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.6); } .card-header { display: flex; justify-content: space-between; align-items: center; color: #888; font-size: 13px; margin-bottom: 15px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid #333; padding-bottom: 10px; } .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 6px; } .big-num { font-size: 32px; font-weight: bold; font-family: 'Rajdhani', sans-serif; color: #00FFA3; text-shadow: 0 0 10px rgba(0, 255, 163, 0.3); } .unit { font-size: 14px; color: #666; margin-left: 4px; } .spy-dashboard { background: #0f0f0f; border: 1px solid #333; border-radius: 12px; padding: 15px; margin-bottom: 20px; } .data-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px dashed #222; } .data-row:last-child { border: none; margin: 0; padding: 0; } .data-label { color: #888; font-size: 13px; display: flex; align-items: center; gap: 5px; } .data-val { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 18px; color: #eee; } .highlight-val { color: #FF4500; font-size: 22px; text-shadow: 0 0 10px rgba(255, 69, 0, 0.3); } .input-wrapper { position: relative; background: #111; border: 1px solid #444; border-radius: 8px; display: flex; align-items: center; padding: 0 15px; transition: 0.3s; margin-bottom: 15px; } .input-wrapper:focus-within { border-color: #FF4500; box-shadow: 0 0 10px rgba(255, 69, 0, 0.2); } .input-wrapper input { width: 100%; background: none; border: none; color: #fff; font-size: 18px; padding: 16px 0; font-family: 'Rajdhani', sans-serif; outline: none; } .input-suffix { color: #666; font-size: 12px; white-space: nowrap; } .auto-fill-btn { color: #00FFA3; font-size: 12px; cursor: pointer; text-decoration: underline; margin-left: 10px; } .btn { width: 100%; padding: 16px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; font-family: 'Rajdhani', sans-serif; letter-spacing: 1px; transition: all 0.2s; position: relative; overflow: hidden; } .btn:active { transform: scale(0.98); } .btn-connect { background: #222; color: #ccc; border: 1px solid #444; margin-bottom: 20px; } .btn-green { background: linear-gradient(135deg, #00FFA3, #008cff); color: #000; box-shadow: 0 4px 15px rgba(0, 255, 163, 0.3); } .btn-red { background: linear-gradient(135deg, #FF4500, #ff0055); color: #fff; box-shadow: 0 4px 15px rgba(255, 69, 0, 0.3); } .toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; pointer-events: none; } .toast { pointer-events: auto; background: rgba(20, 20, 20, 0.95); border-left: 4px solid; padding: 15px 20px; border-radius: 4px; color: #fff; min-width: 300px; box-shadow: 0 5px 20px rgba(0,0,0,0.5); backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: space-between; transform: translateX(120%); transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55); font-size: 14px; } .toast.show { transform: translateX(0); } .toast-success { border-color: #00FFA3; } .toast-error { border-color: #FF4500; } .toast-info { border-color: #00C2FF; } .toast-icon { margin-right: 10px; font-size: 18px; }
+        /* --- 核心变量与重置 --- */
+        :root { --primary: #00FFA3; --secondary: #00C2FF; --danger: #FF4500; --dark: #050505; --card-bg: rgba(20, 20, 25, 0.7); --glass: blur(20px); }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { background-color: var(--dark); background-image: radial-gradient(circle at 50% -20%, #1a1a2e 0%, #000000 100%); color: #fff; font-family: 'Inter', sans-serif; display: flex; flex-direction: column; align-items: center; padding: 20px; min-height: 100vh; margin: 0; }
+        .container { width: 100%; max-width: 480px; position: relative; z-index: 10; animation: fadeIn 0.8s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- 头部 --- */
+        .header { text-align: center; margin-bottom: 30px; }
+        h1 { margin: 0; font-family: 'Rajdhani', sans-serif; letter-spacing: 2px; font-size: 28px; background: linear-gradient(to right, #fff, #aaa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .badge { background: linear-gradient(90deg, var(--secondary), var(--primary)); color: #000; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 800; vertical-align: middle; margin-left: 8px; }
+
+        /* --- 卡片通用 --- */
+        .card { background: var(--card-bg); border: 1px solid rgba(255, 255, 255, 0.08); backdrop-filter: var(--glass); border-radius: 20px; padding: 24px; margin-bottom: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); transition: transform 0.3s; }
+        .card-header { display: flex; justify-content: space-between; align-items: center; font-size: 12px; font-weight: 700; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; }
+        .status-dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; margin-right: 6px; box-shadow: 0 0 8px currentColor; }
+
+        /* --- 仪表盘数据 --- */
+        .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
+        .stat-box { background: rgba(0,0,0,0.3); padding: 12px; border-radius: 12px; text-align: center; border: 1px solid rgba(255,255,255,0.05); }
+        .stat-label { font-size: 11px; color: #666; margin-bottom: 4px; }
+        .stat-val { font-family: 'Rajdhani', sans-serif; font-size: 18px; font-weight: 700; color: #eee; }
+        .stat-val.highlight { color: var(--danger); text-shadow: 0 0 15px rgba(255, 69, 0, 0.3); }
+
+        /* --- 输入与按钮 --- */
+        .mode-tabs { display: flex; background: rgba(0,0,0,0.4); padding: 4px; border-radius: 10px; margin-bottom: 20px; }
+        .tab-btn { flex: 1; padding: 10px; text-align: center; font-size: 13px; color: #666; cursor: pointer; border-radius: 8px; transition: 0.3s; font-weight: 600; }
+        .tab-btn.active { background: rgba(255,255,255,0.1); color: #fff; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
+        .tab-btn.active.mode-buy { color: var(--secondary); }
+        .tab-btn.active.mode-burn { color: var(--danger); }
+
+        .input-group { position: relative; margin-bottom: 15px; }
+        .input-box { width: 100%; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); padding: 16px; border-radius: 12px; color: #fff; font-size: 18px; font-family: 'Rajdhani', sans-serif; outline: none; transition: 0.3s; }
+        .input-box:focus { border-color: var(--primary); background: rgba(0,0,0,0.5); }
+        .suffix { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); color: #666; font-size: 12px; font-weight: bold; }
         
-        /* 设置区域 */
-        .settings-bar { font-size: 12px; color: #666; margin-top: 10px; padding-top: 10px; border-top: 1px dashed #333; display: flex; justify-content: space-between; align-items: center; }
-        .addr-display { font-family: monospace; color: #888; }
-        .edit-link { color: #00FFA3; cursor: pointer; text-decoration: none; }
+        .helper-text { display: flex; justify-content: space-between; font-size: 12px; margin-top: 8px; color: #555; }
+        .action-link { cursor: pointer; text-decoration: underline; transition: 0.2s; }
+        .action-link:hover { color: #fff; }
+
+        .btn { width: 100%; padding: 16px; border: none; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.2s; position: relative; overflow: hidden; margin-top: 10px; }
+        .btn:active { transform: scale(0.98); }
+        .btn-connect { background: rgba(255,255,255,0.05); color: #aaa; border: 1px solid rgba(255,255,255,0.1); }
+        .btn-green { background: linear-gradient(135deg, #00FFA3, #00C2FF); color: #000; box-shadow: 0 5px 20px rgba(0, 255, 163, 0.3); }
+        .btn-red { background: linear-gradient(135deg, #FF4500, #C21500); color: #fff; box-shadow: 0 5px 20px rgba(255, 69, 0, 0.3); }
+
+        /* --- Toast 通知 --- */
+        .toast-container { position: fixed; top: 20px; right: 20px; z-index: 100; display: flex; flex-direction: column; gap: 10px; }
+        .toast { background: rgba(15, 15, 20, 0.95); backdrop-filter: blur(10px); border-left: 4px solid; padding: 16px 20px; border-radius: 4px; color: #fff; min-width: 280px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); display: flex; align-items: center; transform: translateX(120%); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); font-size: 13px; }
+        .toast.show { transform: translateX(0); }
+        .toast-icon { font-size: 18px; margin-right: 12px; }
+        .toast-success { border-color: var(--primary); } .toast-error { border-color: var(--danger); } .toast-info { border-color: var(--secondary); }
+
+        .hidden { display: none; }
     </style>
 </head>
 <body>
+
 <div class="toast-container" id="toastContainer"></div>
+
 <div class="container">
     <div class="header">
-        <h1>GADKk ADMIN <span class="version-tag">v8.0</span></h1>
-        <div style="font-size:12px; color:#555; margin-top:5px;">AUTO PILOT SYSTEM</div>
+        <h1>GADKk ADMIN <span class="badge">PRO v11</span></h1>
+        <div style="font-size:12px; color:#555; margin-top:5px;">FINANCIAL COMMAND CENTER</div>
     </div>
-    <button id="connectBtn" class="btn btn-connect" onclick="connectWallet()">🔑 验证管理员身份 (Verify)</button>
+
+    <button id="connectBtn" class="btn btn-connect" onclick="connectWallet()">🔑 点击验证管理员身份</button>
 
     <div class="card">
         <div class="card-header">
-            <span>🛡️ LP FUND (自动回流)</span>
-            <span style="color:#00FFA3"><span class="dot" style="background:#00FFA3"></span>Running</span>
+            <span>🛡️ 自动回流 (LP Fund)</span>
+            <span style="color:var(--primary)"><span class="status-dot" style="color:var(--primary)"></span>Active</span>
         </div>
-        <div class="big-num"><span id="lpFundBalance">--</span><span class="unit">ADKK</span></div>
+        <div class="dashboard-grid" style="grid-template-columns: 1fr; margin-bottom: 10px;">
+            <div class="stat-box">
+                <div class="stat-label">待加池代币 (Accumulated)</div>
+                <div class="stat-val" style="color:var(--primary)" id="lpFundBalance">--</div>
+            </div>
+        </div>
         <button class="btn btn-green" onclick="processLP()">⚡ 执行加池 (PROCESS)</button>
     </div>
 
-    <div class="card" style="border-color: rgba(255, 69, 0, 0.3);">
+    <div class="card" style="border-color: rgba(255, 69, 0, 0.2);">
         <div class="card-header">
-            <span>🚀 BUYBACK (一键自动版)</span>
-            <span style="color:#FF4500"><span class="dot" style="background:#FF4500"></span>Ready</span>
+            <span>🚀 智能回购 (Auto Buyback)</span>
+            <span style="color:var(--danger)"><span class="status-dot" style="color:var(--danger)"></span>Ready</span>
         </div>
-        <div class="spy-dashboard">
-            <div class="data-row"><div class="data-label">🏦 营销钱包真实余额</div><div class="data-val" id="marketingBal">0.00</div></div>
-            <div class="data-row"><div class="data-label">✅ 链上已回购总数</div><div class="data-val" id="processedBal" style="color:#888">0.00</div></div>
-            <div class="data-row"><div class="data-label">📉 待处理积压 (Backlog)</div><div class="data-val" style="color: #FFD700" id="ledgerBacklog">0.00</div></div>
-            <div class="data-row"><div class="data-label">⚠️ 剩余市场抛压 (Volume)</div><div class="data-val highlight-val" id="marketVolume">0.00</div></div>
-            <div style="text-align: right; font-size: 12px; margin-top: 5px;"><span class="auto-fill-btn" onclick="fillBacklog()">[填入全部积压]</span></div>
-        </div>
-        <div style="display:flex; justify-content:space-between; font-size:12px; color:#888; margin-bottom:5px;">
-            <span>USDT 金库: <span id="usdtBalance" style="color:#fff">--</span></span>
-            <span>当前币价: <span id="tokenPrice" style="color:#00C2FF">Calculating...</span></span>
-        </div>
-        <div class="input-wrapper">
-            <input type="number" id="targetAdkk" placeholder="输入要买入的 ADKK 数量" oninput="calculateCost()">
-            <span class="input-suffix">ADKK</span>
-        </div>
-        <div style="text-align:right; font-size:12px; color:#FF4500; margin-bottom:15px; height: 16px;"><span id="costPreview"></span></div>
 
-        <button class="btn btn-red" onclick="triggerBuyback()">🔥 一键拉盘 (AUTO BUY)</button>
-
-        <div class="settings-bar">
-            <span>当前接收方: <span id="currentReceiver" class="addr-display">读取中...</span></span>
-            <span class="edit-link" onclick="changeReceiver()">[修改]</span>
+        <div class="dashboard-grid">
+            <div class="stat-box">
+                <div class="stat-label">🏦 营销钱包余额</div>
+                <div class="stat-val" id="marketingBal">0.00</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">⚠️ 市场抛压估算</div>
+                <div class="stat-val highlight" id="marketVolume">0.00</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">📉 待处理积压</div>
+                <div class="stat-val" style="color:#FFD700" id="ledgerBacklog">0.00</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">💰 USDT 金库</div>
+                <div class="stat-val" id="usdtBalance">--</div>
+            </div>
         </div>
+
+        <div class="mode-tabs">
+            <div class="tab-btn active mode-buy" id="tab-usdt" onclick="switchMode('usdt')">按金额买 (USDT)</div>
+            <div class="tab-btn" id="tab-adkk" onclick="switchMode('adkk')">按数量买 (ADKK)</div>
+        </div>
+
+        <div id="mode-usdt" class="mode-section">
+            <div class="input-group">
+                <input type="number" class="input-box" id="inputUSDT" placeholder="0.00" oninput="calcFromUSDT()">
+                <span class="suffix">USDT</span>
+            </div>
+            <div class="helper-text">
+                <span class="action-link" style="color:var(--secondary)" onclick="fillMaxUSDT()">[最大余额]</span>
+                <span id="previewFromUSDT" style="color:var(--secondary)">≈ 0.00 ADKK</span>
+            </div>
+            <button class="btn" style="background: var(--secondary); color:#000" onclick="buyByUSDT()">🔵 确认买入 (BUY)</button>
+        </div>
+
+        <div id="mode-adkk" class="mode-section hidden">
+            <div class="input-group">
+                <input type="number" class="input-box" id="inputADKK" placeholder="0.00" oninput="calcFromADKK()">
+                <span class="suffix">ADKK</span>
+            </div>
+            <div class="helper-text">
+                <div style="display:flex; gap:10px;">
+                    <span class="action-link" style="color:#FFD700" onclick="fillBacklog()">[积压]</span>
+                    <span class="action-link" style="color:var(--danger)" onclick="fillVolume()">[抛压]</span>
+                </div>
+                <span id="previewFromADKK" style="color:var(--danger)">≈ 0.00 USDT</span>
+            </div>
+            <button class="btn btn-red" onclick="buyByADKK()">🔥 强力拉盘 (PULL)</button>
+        </div>
+
     </div>
 </div>
 
 <script>
-    // --- ✅ 你的新合约地址 (已配置好) ---
+    // --- 🚨 配置区 ---
     const BUYBACK_ADDR  = "0xa09e77ed31810b6Ec99b39f0E137c83450Fc8127"; 
-
-    // 其他配置
     const GADKK_ADDR    = "0xA1aEE242C69E1c0820d165ef12438e0A5eEd0BbA"; 
     const LP_FUND_ADDR  = "0xD7bB38219D069dfDD4F09Fdf568493A4B7d7E4fd"; 
     const MARKETING_ADDR= "0x2DBE6300514C4D0Cd7456348512370D3A68d4c1E"; 
@@ -77,152 +159,155 @@
     const PAIR_ADDR     = "0x5B06dc147F363aa0111549fb5EA992A40feda6fC"; 
     const MARKETING_TAX_RATE = 0.05; 
 
-    // ABI 配置
+    // ABI
     const ABI_COMMON = ["function balanceOf(address) view returns (uint256)"];
-    const ABI_LP     = ["function process() external"]; 
-    const ABI_BUY    = [
-        "function buyAndAutoSend(uint256 usdtAmount, uint256 backlogReduced) external", 
-        "function totalProcessedBacklog() view returns (uint256)",
-        "function receiver() view returns (address)",
-        "function setReceiver(address) external"
-    ]; 
+    const ABI_LP = ["function process() external"];
+    const ABI_BUY = ["function buyAndAutoSend(uint256 usdtAmount, uint256 backlogReduced) external", "function totalProcessedBacklog() view returns (uint256)"];
 
-    let provider, signer;
-    let currentPrice = 0, backlog = 0, usdtCost = 0; 
+    let provider, signer, currentPrice = 0, backlog = 0, volume = 0, vaultBalance = 0;
 
-    function showToast(message, type = 'info') {
-        const container = document.getElementById('toastContainer');
-        const toast = document.createElement('div');
-        toast.className = `toast toast-${type}`;
-        let icon = type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️';
-        toast.innerHTML = `<span class="toast-icon">${icon}</span><span>${message}</span>`;
-        container.appendChild(toast);
-        setTimeout(() => toast.classList.add('show'), 10);
-        setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 300); }, 4000);
+    // --- UI 交互 ---
+    function showToast(msg, type='info') {
+        const icons = { success: '✅', error: '❌', info: 'ℹ️' };
+        const div = document.createElement('div');
+        div.className = `toast toast-${type}`;
+        div.innerHTML = `<span class="toast-icon">${icons[type]}</span><span>${msg}</span>`;
+        document.getElementById('toastContainer').appendChild(div);
+        setTimeout(() => div.classList.add('show'), 10);
+        setTimeout(() => { div.classList.remove('show'); setTimeout(() => div.remove(), 400); }, 3000);
     }
 
+    function switchMode(mode) {
+        document.getElementById('mode-usdt').classList.add('hidden');
+        document.getElementById('mode-adkk').classList.add('hidden');
+        document.getElementById('tab-usdt').classList.remove('active', 'mode-buy');
+        document.getElementById('tab-adkk').classList.remove('active', 'mode-burn');
+        
+        document.getElementById(`mode-${mode}`).classList.remove('hidden');
+        const btn = document.getElementById(`tab-${mode}`);
+        btn.classList.add('active');
+        if(mode === 'usdt') btn.classList.add('mode-buy');
+        if(mode === 'adkk') btn.classList.add('mode-burn');
+    }
+
+    // --- 核心逻辑 ---
     async function connectWallet() {
-        if (!window.ethereum) return showToast("请安装 MetaMask", 'error');
+        if(!window.ethereum) return showToast("请安装 MetaMask", "error");
         try {
             provider = new ethers.providers.Web3Provider(window.ethereum);
             await provider.send("eth_requestAccounts", []);
             signer = provider.getSigner();
-            const adminAddr = await signer.getAddress();
-            await signer.signMessage(`Admin Verify: ${adminAddr}`);
-            document.getElementById("connectBtn").innerText = "✅ 管理员已登录";
-            document.getElementById("connectBtn").style.border = "1px solid #00FFA3";
+            const addr = await signer.getAddress();
+            // 签名可以增加仪式感，也可以去掉
+            document.getElementById("connectBtn").innerText = `✅ 已连接: ${addr.substring(0,6)}...`;
+            document.getElementById("connectBtn").style.borderColor = "#00FFA3";
             document.getElementById("connectBtn").style.color = "#00FFA3";
-            showToast("系统就绪", "success");
-            refreshDashboard();
-            setInterval(refreshDashboard, 8000); 
-        } catch(e) { showToast("登录取消", "error"); }
+            showToast("系统连接成功", "success");
+            refreshData();
+            setInterval(refreshData, 10000);
+        } catch(e) { showToast("连接取消", "info"); }
     }
 
-    async function refreshDashboard() {
+    async function refreshData() {
         if(!provider) return;
-        const tokenCt = new ethers.Contract(GADKK_ADDR, ABI_COMMON, provider);
+        const tkCt = new ethers.Contract(GADKK_ADDR, ABI_COMMON, provider);
         const usdtCt = new ethers.Contract(USDT_ADDR, ABI_COMMON, provider);
-        const buybackCt = new ethers.Contract(BUYBACK_ADDR, ABI_BUY, provider);
+        const buyCt = new ethers.Contract(BUYBACK_ADDR, ABI_BUY, provider);
 
         try {
-            const lpBal = await tokenCt.balanceOf(LP_FUND_ADDR);
-            document.getElementById("lpFundBalance").innerText = parseFloat(ethers.utils.formatUnits(lpBal, 18)).toFixed(2);
+            // 基础数据
+            const lpVal = await tkCt.balanceOf(LP_FUND_ADDR);
+            document.getElementById("lpFundBalance").innerText = parseFloat(ethers.utils.formatUnits(lpVal, 18)).toFixed(2);
             
-            const usdtBal = await usdtCt.balanceOf(BUYBACK_ADDR);
-            document.getElementById("usdtBalance").innerText = parseFloat(ethers.utils.formatUnits(usdtBal, 18)).toFixed(2);
+            const usdtVal = await usdtCt.balanceOf(BUYBACK_ADDR);
+            vaultBalance = parseFloat(ethers.utils.formatUnits(usdtVal, 18));
+            document.getElementById("usdtBalance").innerText = vaultBalance.toFixed(2);
 
-            const poolAdkk = parseFloat(ethers.utils.formatUnits(await tokenCt.balanceOf(PAIR_ADDR), 18));
-            const poolUsdt = parseFloat(ethers.utils.formatUnits(await usdtCt.balanceOf(PAIR_ADDR), 18));
-            if(poolAdkk > 0) {
-                currentPrice = poolUsdt / poolAdkk;
-                document.getElementById("tokenPrice").innerText = currentPrice.toFixed(6) + " U";
-            }
+            // 价格
+            const pAdkk = parseFloat(ethers.utils.formatUnits(await tkCt.balanceOf(PAIR_ADDR), 18));
+            const pUsdt = parseFloat(ethers.utils.formatUnits(await usdtCt.balanceOf(PAIR_ADDR), 18));
+            if(pAdkk > 0) currentPrice = pUsdt / pAdkk;
 
-            const realMark = parseFloat(ethers.utils.formatUnits(await tokenCt.balanceOf(MARKETING_ADDR), 18));
+            // 账本计算
+            const realMark = parseFloat(ethers.utils.formatUnits(await tkCt.balanceOf(MARKETING_ADDR), 18));
             document.getElementById("marketingBal").innerText = realMark.toFixed(2);
-
-            const processed = parseFloat(ethers.utils.formatUnits(await buybackCt.totalProcessedBacklog(), 18));
-            document.getElementById("processedBal").innerText = processed.toFixed(2);
-
-            backlog = realMark - processed;
-            if(backlog < 0) backlog = 0;
+            
+            const processed = parseFloat(ethers.utils.formatUnits(await buyCt.totalProcessedBacklog(), 18));
+            backlog = Math.max(0, realMark - processed);
             document.getElementById("ledgerBacklog").innerText = backlog.toFixed(2);
-            document.getElementById("marketVolume").innerText = (backlog / MARKETING_TAX_RATE).toFixed(2);
+            
+            volume = backlog / MARKETING_TAX_RATE;
+            document.getElementById("marketVolume").innerText = volume.toFixed(2);
 
-            const receiver = await buybackCt.receiver();
-            const shortAddr = receiver.substring(0,6) + "..." + receiver.substring(38);
-            document.getElementById("currentReceiver").innerText = shortAddr;
-            if(receiver.toLowerCase().includes("dead")) {
-                document.getElementById("currentReceiver").innerText = "🔥 黑洞 (自动销毁)";
-                document.getElementById("currentReceiver").style.color = "#FF4500";
-            }
         } catch(e) { console.error(e); }
     }
 
-    function calculateCost() {
-        const inputAdkk = parseFloat(document.getElementById("targetAdkk").value);
-        if(!inputAdkk || currentPrice === 0) {
-            document.getElementById("costPreview").innerText = "";
-            usdtCost = 0;
-            return;
-        }
-        usdtCost = inputAdkk * currentPrice;
-        document.getElementById("costPreview").innerText = `≈ 预计消耗: ${usdtCost.toFixed(4)} USDT`;
+    // --- 计算与填充 ---
+    function calcFromUSDT() {
+        const val = parseFloat(document.getElementById("inputUSDT").value || 0);
+        if(currentPrice > 0) document.getElementById("previewFromUSDT").innerText = `≈ ${(val/currentPrice).toFixed(2)} ADKK`;
     }
-
-    function fillBacklog() {
-        if(backlog > 0) {
-            document.getElementById("targetAdkk").value = backlog.toFixed(2);
-            calculateCost();
-        }
+    function calcFromADKK() {
+        const val = parseFloat(document.getElementById("inputADKK").value || 0);
+        const cost = val * currentPrice;
+        const el = document.getElementById("previewFromADKK");
+        el.innerText = `≈ ${cost.toFixed(4)} USDT`;
+        el.style.color = cost > vaultBalance ? '#FF4500' : 'var(--secondary)';
+        if(cost > vaultBalance) el.innerText += " (余额不足)";
     }
+    
+    function fillMaxUSDT() { document.getElementById("inputUSDT").value = vaultBalance; calcFromUSDT(); }
+    function fillBacklog() { document.getElementById("inputADKK").value = backlog.toFixed(2); calcFromADKK(); }
+    function fillVolume() { document.getElementById("inputADKK").value = volume.toFixed(2); calcFromADKK(); }
 
-    async function triggerBuyback() {
-        if(!signer) return showToast("请先登录", "error");
-        const inputVal = parseFloat(document.getElementById("targetAdkk").value);
-        if(!inputVal || inputVal <= 0) return showToast("请输入数量", "error");
-
-        const contract = new ethers.Contract(BUYBACK_ADDR, ABI_BUY, signer);
+    // --- 交易执行 ---
+    async function executeBuy(usdtAmt, adkkAmt) {
+        if(!signer) return showToast("请先连接钱包", "error");
+        const ct = new ethers.Contract(BUYBACK_ADDR, ABI_BUY, signer);
         try {
-            showToast("正在执行自动拉盘...", "info");
-            const usdtWei = ethers.utils.parseUnits(usdtCost.toFixed(18), 18);
-            const backlogWei = ethers.utils.parseUnits(inputVal.toFixed(18), 18);
-            const tx = await contract.buyAndAutoSend(usdtWei, backlogWei, { gasLimit: 1000000 });
-            showToast(`交易已发送!`, "info");
+            showToast("正在发送交易...", "info");
+            // 记账逻辑：不能超过实际积压
+            const recordAmt = adkkAmt > backlog ? backlog : adkkAmt;
+            
+            const tx = await ct.buyAndAutoSend(
+                ethers.utils.parseUnits(usdtAmt.toFixed(18), 18),
+                ethers.utils.parseUnits(recordAmt.toFixed(18), 18),
+                { gasLimit: 1000000 }
+            );
+            showToast("交易已发送", "info");
             await tx.wait();
-            showToast("🚀 拉盘成功！资金已自动发送。", "success");
-            document.getElementById("targetAdkk").value = "";
-            document.getElementById("costPreview").innerText = "";
-            refreshDashboard();
-        } catch(e) { showToast("失败: " + (e.reason || e.message), "error"); }
+            showToast("🚀 拉盘成功！", "success");
+            document.getElementById("inputUSDT").value = "";
+            document.getElementById("inputADKK").value = "";
+            refreshData();
+        } catch(e) { showToast(e.reason || e.message, "error"); }
     }
 
-    async function changeReceiver() {
-        if(!signer) return showToast("请先登录", "error");
-        const newAddr = prompt("请输入新的接收地址 (留空则取消):");
-        if(!newAddr) return;
-        if(!ethers.utils.isAddress(newAddr)) return showToast("地址无效", "error");
-        
-        const contract = new ethers.Contract(BUYBACK_ADDR, ABI_BUY, signer);
-        try {
-            showToast("正在更新接收地址...", "info");
-            const tx = await contract.setReceiver(newAddr);
-            await tx.wait();
-            showToast("✅ 地址已更新！", "success");
-            refreshDashboard();
-        } catch(e) { showToast("更新失败: " + e.message, "error"); }
+    function buyByUSDT() {
+        const val = parseFloat(document.getElementById("inputUSDT").value);
+        if(!val || val <= 0) return showToast("输入无效", "error");
+        if(val > vaultBalance) return showToast("余额不足", "error");
+        executeBuy(val, val / currentPrice);
+    }
+
+    function buyByADKK() {
+        const val = parseFloat(document.getElementById("inputADKK").value);
+        if(!val || val <= 0) return showToast("输入无效", "error");
+        const cost = val * currentPrice;
+        if(cost > vaultBalance) return showToast("金库余额不足", "error");
+        executeBuy(cost, val);
     }
 
     async function processLP() {
         if(!signer) return showToast("请先登录", "error");
-        const contract = new ethers.Contract(LP_FUND_ADDR, ABI_LP, signer);
+        const ct = new ethers.Contract(LP_FUND_ADDR, ABI_LP, signer);
         try {
-            showToast("执行中...", "info");
-            const tx = await contract.process({ gasLimit: 3000000 });
+            showToast("正在加池...", "info");
+            const tx = await ct.process({ gasLimit: 3000000 });
             await tx.wait();
-            showToast("✅ 加池成功！", "success");
-            refreshDashboard();
-        } catch(e) { showToast("失败: " + e.message, "error"); }
+            showToast("✅ 加池成功", "success");
+            refreshData();
+        } catch(e) { showToast(e.message, "error"); }
     }
 </script>
 </body>
