@@ -4,13 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GADKk 流动性矿池 - USD Edition</title>
-    <script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js" integrity="sha512-FDcVY+g7vc55dy4kJftq9riI+YYTwzOE5x8WiFBYJwKm8cwSE3qM15rDk4PlnDlZjun9HRjKqJNO4n3Kg54Q6A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
     <style>
         /* --- 全局设置 --- */
         * { box-sizing: border-box; }
         body {
-            /* 保持赛博朋克深色背景 */
             background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
             color: #e0e0e0;
             font-family: 'Inter', 'Microsoft YaHei', sans-serif;
@@ -24,65 +23,43 @@
         }
         .app-container { width: 100%; max-width: 480px; position: relative; z-index: 10; }
         
-        /* --- 💸 美金雨特效 CSS (核心修改) --- */
+        /* --- 💸 写实美金雨特效 --- */
         .money-rain-container {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            z-index: 0;
-            pointer-events: none;
-            perspective: 600px; /* 增加3D透视感，让纸币翻转更真实 */
+            top: 0; left: 0; width: 100%; height: 100%;
+            overflow: hidden; z-index: 0; pointer-events: none;
+            perspective: 800px;
         }
-        
-        /* 💵 美钞样式 */
         .bill {
-            position: absolute;
-            top: -100px;
-            width: 60px;  /* 长方形宽度 */
-            height: 30px; /* 长方形高度 */
-            background: linear-gradient(135deg, #85bb65, #4caf50); /* 美金绿 */
-            border: 1px solid #2e7d32;
-            border-radius: 4px; /* 只有一点点圆角 */
-            box-shadow: 0 0 5px rgba(0,0,0,0.3);
-            animation: fall linear infinite;
-            opacity: 0.8;
-            /* 让它看起来像纸 */
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            position: absolute; top: -150px;
+            width: 100px; height: 42px;
+            background-color: #f0f5f0;
+            background-image: radial-gradient(ellipse at center, transparent 60%, rgba(46, 125, 50, 0.1) 100%), repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(0,0,0,0.05) 3px);
+            border: 4px solid #2e7d32; border-radius: 2px;
+            box-shadow: 0 0 5px rgba(0,0,0,0.2);
+            animation: fall linear infinite; opacity: 0.9;
+            display: flex; justify-content: center; align-items: center;
         }
-
-        /* 美钞中间的 $ 符号 */
         .bill::before {
-            content: '$';
-            font-family: 'Rajdhani', sans-serif;
-            font-weight: bold;
-            font-size: 16px;
-            color: #0f3d0f; /* 深绿色字体 */
-            border: 1px solid #0f3d0f;
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: rgba(255,255,255,0.2);
+            content: ''; position: absolute; width: 30px; height: 36px;
+            background: #dcdcdc; border: 1px solid #2e7d32; border-radius: 50%; opacity: 0.8;
         }
-
-        /* 纸币飘落动画：增加了3D翻转 */
+        .bill::after {
+            content: '100'; position: absolute; width: 100%; height: 100%;
+            display: flex; justify-content: space-between; align-items: flex-start;
+            padding: 2px 4px; font-family: 'Times New Roman', serif; font-weight: bold; font-size: 10px; color: #1b5e20; line-height: 1;
+        }
+        .bill-inner-text {
+            position: absolute; bottom: 2px; right: 4px;
+            font-family: 'Times New Roman', serif; font-weight: bold; font-size: 10px; color: #1b5e20;
+        }
         @keyframes fall {
-            0% {
-                transform: translateY(0) rotateX(0deg) rotateZ(0deg);
-            }
-            100% {
-                transform: translateY(110vh) rotateX(360deg) rotateZ(180deg);
-            }
+            0% { transform: translateY(-100px) rotateX(0deg) rotateY(0deg) rotateZ(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            100% { transform: translateY(110vh) rotateX(360deg) rotateY(180deg) rotateZ(45deg); opacity: 0.9; }
         }
 
-        /* --- UI组件样式 (保持赛博风格) --- */
+        /* --- UI组件 --- */
         .navbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
         .logo { 
             font-size: 26px; font-weight: 800; font-family: 'Rajdhani', sans-serif;
@@ -91,39 +68,31 @@
             letter-spacing: 2px; text-shadow: 0 0 15px rgba(0, 255, 163, 0.5);
         }
         .wallet-badge { 
-            background: rgba(0, 255, 163, 0.1); 
-            padding: 8px 16px; border-radius: 30px; font-size: 13px; font-weight: 600;
-            color: #00FFA3; border: 1px solid rgba(0, 255, 163, 0.3); 
-            cursor: pointer; transition: 0.3s;
+            background: rgba(0, 255, 163, 0.1); padding: 8px 16px; border-radius: 30px; 
+            font-size: 13px; font-weight: 600; color: #00FFA3; 
+            border: 1px solid rgba(0, 255, 163, 0.3); cursor: pointer; transition: 0.3s;
             backdrop-filter: blur(5px);
         }
         .wallet-badge:hover { background: rgba(0, 255, 163, 0.2); box-shadow: 0 0 15px rgba(0, 255, 163, 0.3); }
 
         .card { 
-            background: rgba(20, 20, 30, 0.6);
-            backdrop-filter: blur(20px) saturate(180%);
+            background: rgba(20, 20, 30, 0.6); backdrop-filter: blur(20px) saturate(180%);
             -webkit-backdrop-filter: blur(20px) saturate(180%);
-            border: 1px solid rgba(255, 255, 255, 0.08); 
-            border-radius: 24px; 
-            padding: 25px; margin-bottom: 25px; 
-            box-shadow: 0 15px 35px rgba(0,0,0,0.5); 
-            transition: transform 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 24px; 
+            padding: 25px; margin-bottom: 25px; box-shadow: 0 15px 35px rgba(0,0,0,0.5); transition: transform 0.3s;
         }
         .card:hover { transform: translateY(-3px); }
         .card-title { color: #aaa; font-size: 12px; text-transform: uppercase; margin-bottom: 15px; font-weight: 700; letter-spacing: 1.5px; font-family: 'Rajdhani', sans-serif; }
         
-        /* 收益卡片 */
         .reward-card { 
             background: linear-gradient(160deg, rgba(255, 215, 0, 0.1) 0%, rgba(20, 20, 30, 0.6) 60%);
-            border: 1px solid rgba(255, 215, 0, 0.3); 
-            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.15), inset 0 0 20px rgba(255, 215, 0, 0.05);
+            border: 1px solid rgba(255, 215, 0, 0.3); box-shadow: 0 10px 30px rgba(255, 215, 0, 0.15);
         }
         .reward-val { 
             font-size: 42px; font-weight: 800; font-family: 'Rajdhani', sans-serif;
             background: linear-gradient(to bottom, #FFD700, #FFA500);
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            text-shadow: 0 0 25px rgba(255, 215, 0, 0.4);
-            margin-bottom: 5px;
+            text-shadow: 0 0 25px rgba(255, 215, 0, 0.4); margin-bottom: 5px;
         }
         .reward-unit { font-size: 14px; color: #FFD700; opacity: 0.8; font-family: 'Rajdhani', sans-serif; }
 
@@ -131,15 +100,9 @@
         .balance-text { font-size: 13px; color: #888; }
         
         .input-box { 
-            width: 100%; 
-            background: rgba(0,0,0,0.3); 
-            border: 1px solid rgba(255,255,255,0.1); 
-            color: #fff; 
-            padding: 15px; 
-            border-radius: 12px; 
-            font-size: 18px; font-family: 'Rajdhani', sans-serif; font-weight: bold;
-            margin: 10px 0 20px 0; 
-            outline: none; transition: 0.3s; 
+            width: 100%; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); 
+            color: #fff; padding: 15px; border-radius: 12px; font-size: 18px; 
+            font-family: 'Rajdhani', sans-serif; font-weight: bold; margin: 10px 0 20px 0; outline: none; transition: 0.3s; 
         }
         .input-box:focus { border-color: #00FFA3; box-shadow: 0 0 15px rgba(0, 255, 163, 0.2); background: rgba(0,0,0,0.5); }
 
@@ -149,23 +112,15 @@
         .btn:active::after { width: 300px; height: 300px; }
         
         .btn-gold { background: linear-gradient(135deg, #FFD700, #FF8C00); color: #000; box-shadow: 0 5px 20px rgba(255, 215, 0, 0.4); }
-        .btn-gold:hover { box-shadow: 0 8px 25px rgba(255, 215, 0, 0.6); }
-
         .btn-green { background: linear-gradient(135deg, #00FFA3, #00C2FF); color: #000; box-shadow: 0 5px 20px rgba(0, 255, 163, 0.4); }
-        .btn-green:hover { box-shadow: 0 8px 25px rgba(0, 255, 163, 0.6); }
-
         .btn-red { background: linear-gradient(135deg, #FF4500, #C21500); color: #fff; box-shadow: 0 5px 20px rgba(255, 69, 0, 0.4); }
-        .btn-red:hover { box-shadow: 0 8px 25px rgba(255, 69, 0, 0.6); }
-
         .btn-approve { background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.2); }
-        .btn-approve:hover { background: rgba(255,255,255,0.15); border-color: #fff; }
         
         .tabs { display: flex; gap: 15px; margin-bottom: 20px; background: rgba(0,0,0,0.3); padding: 5px; border-radius: 14px; }
         .tab-btn { flex: 1; padding: 12px; background: transparent; color: #888; border-radius: 10px; cursor: pointer; text-align: center; font-size: 14px; font-weight: 600; transition: 0.3s; }
         .tab-btn.active { background: rgba(40, 40, 50, 0.8); color: #fff; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
         #tab-stake.active { color: #00FFA3; text-shadow: 0 0 10px rgba(0, 255, 163, 0.3); }
         #tab-unstake.active { color: #FF4500; text-shadow: 0 0 10px rgba(255, 69, 0, 0.3); }
-
         .hidden { display: none; }
     </style>
 </head>
@@ -197,9 +152,7 @@
                 <span style="color:#00FFA3; font-weight:bold; text-shadow: 0 0 10px rgba(0,255,163,0.3);">存入 LP</span>
                 <span class="balance-text">钱包余额: <span id="walletLpBal" style="color:#fff; font-weight:bold;">0.00</span></span>
             </div>
-            
             <input type="number" id="stakeInput" class="input-box" placeholder="请输入质押数量...">
-            
             <div id="allowanceSection">
                 <button class="btn btn-approve" id="approveBtn" onclick="approveLP()">🔓 第一步：授权 LP (Approve)</button>
             </div>
@@ -211,9 +164,7 @@
                 <span style="color:#FF4500; font-weight:bold; text-shadow: 0 0 10px rgba(255,69,0,0.3);">取出 LP</span>
                 <span class="balance-text">已质押: <span id="stakedLpBal" style="color:#fff; font-weight:bold;">0.00</span></span>
             </div>
-            
             <input type="number" id="unstakeInput" class="input-box" placeholder="请输入赎回数量...">
-            
             <button class="btn btn-red" onclick="withdrawLP()">📤 确认赎回 (Withdraw)</button>
         </div>
     </div>
@@ -224,99 +175,68 @@
 </div>
 
 <script>
-    // ==========================================
-    // 💵 美金雨生成脚本
-    // ==========================================
     function createMoneyRain() {
         const container = document.getElementById('moneyRain');
-        const count = 25; // 美钞数量
-
-        for (let i = 0; i < count; i++) {
-            generateBill(container);
-        }
+        for (let i = 0; i < 20; i++) generateBill(container);
     }
-
     function generateBill(container) {
         const bill = document.createElement('div');
         bill.classList.add('bill');
-        
-        // 随机参数：让纸币看起来更自然
-        const startLeft = Math.random() * 100; // 水平位置
-        const duration = Math.random() * 3 + 5; // 下落速度 5-8秒
-        const delay = Math.random() * 5; // 延迟
-        const scale = Math.random() * 0.4 + 0.6; // 大小
-
+        const innerText = document.createElement('div');
+        innerText.classList.add('bill-inner-text'); innerText.innerText = '100'; bill.appendChild(innerText);
+        const startLeft = Math.random() * 100;
+        const duration = Math.random() * 5 + 5;
+        const delay = Math.random() * 5;
+        const scale = Math.random() * 0.5 + 0.5;
         bill.style.left = startLeft + 'vw';
         bill.style.animationDuration = duration + 's';
         bill.style.animationDelay = delay + 's';
         bill.style.transform = `scale(${scale})`;
-
         container.appendChild(bill);
-
-        // 循环下落
-        bill.addEventListener('animationiteration', () => {
-            bill.style.left = Math.random() * 100 + 'vw';
-        });
+        bill.addEventListener('animationiteration', () => { bill.style.left = Math.random() * 100 + 'vw'; });
     }
-
     window.onload = createMoneyRain;
 
-
-    // ==========================================
-    // 🔗 区块链交互逻辑 (地址已配置)
-    // ==========================================
     const POOL_ADDR = "0x75bB76C3fc354CE2f078d613C8e6D3daFeE19797"; 
     const PAIR_ADDR = "0x5B06dc147F363aa0111549fb5EA992A40feda6fC"; 
     
-    const ABI_POOL = [
-        "function pendingReward(address) view returns (uint256)",
-        "function deposit(uint256) external",
-        "function withdraw(uint256) external",
-        "function userInfo(address) view returns (uint256 amount, uint256 rewardDebt)"
-    ];
-    const ABI_ERC20 = [
-        "function balanceOf(address) view returns (uint256)",
-        "function approve(address, uint256) external returns (bool)",
-        "function allowance(address, address) view returns (uint256)"
-    ];
+    const ABI_POOL = ["function pendingReward(address) view returns (uint256)","function deposit(uint256) external","function withdraw(uint256) external","function userInfo(address) view returns (uint256 amount, uint256 rewardDebt)"];
+    const ABI_ERC20 = ["function balanceOf(address) view returns (uint256)","function approve(address, uint256) external returns (bool)","function allowance(address, address) view returns (uint256)"];
 
     let provider, signer, userAddr;
 
     async function connectWallet() {
+        // 尝试连接钱包
         if (!window.ethereum) return alert("请在 TP钱包 / 小狐狸 中打开！");
         try {
             provider = new ethers.providers.Web3Provider(window.ethereum);
             await provider.send("eth_requestAccounts", []);
             signer = provider.getSigner();
             userAddr = await signer.getAddress();
-            
             document.getElementById("connectBtn").innerText = "✅ " + userAddr.substring(0,4) + "...";
             document.getElementById("connectBtn").style.borderColor = "#00FFA3";
             document.getElementById("connectBtn").style.color = "#00FFA3";
             document.getElementById("connectBtn").style.background = "rgba(0, 255, 163, 0.1)";
-            
             refreshData();
-        } catch(e) { alert("连接取消"); }
+        } catch(e) { 
+            console.error(e);
+            alert("连接失败: 请检查网络或是否拒绝了连接"); 
+        }
     }
 
     async function refreshData() {
         if(!userAddr) return;
         const pool = new ethers.Contract(POOL_ADDR, ABI_POOL, provider);
         const pair = new ethers.Contract(PAIR_ADDR, ABI_ERC20, provider);
-
         try {
             const rew = await pool.pendingReward(userAddr);
             document.getElementById("pendingReward").innerText = parseFloat(ethers.utils.formatUnits(rew, 18)).toFixed(4);
-
             const walletLp = await pair.balanceOf(userAddr);
             document.getElementById("walletLpBal").innerText = parseFloat(ethers.utils.formatUnits(walletLp, 18)).toFixed(4);
-
             const info = await pool.userInfo(userAddr); 
             document.getElementById("stakedLpBal").innerText = parseFloat(ethers.utils.formatUnits(info[0], 18)).toFixed(4);
-
             const allow = await pair.allowance(userAddr, POOL_ADDR);
             const allowNum = parseFloat(ethers.utils.formatUnits(allow, 18));
-            
             if (allowNum > 10000) { 
                 document.getElementById("approveBtn").style.display = "none";
                 document.getElementById("stakeBtn").style.display = "block";
@@ -325,73 +245,34 @@
                 document.getElementById("approveBtn").style.display = "block";
                 document.getElementById("stakeBtn").style.display = "none";
             }
-        } catch(e) { console.error("刷新数据失败", e); }
+        } catch(e) { console.error(e); }
     }
 
     async function approveLP() {
         const pair = new ethers.Contract(PAIR_ADDR, ABI_ERC20, signer);
-        try {
-            const max = ethers.constants.MaxUint256;
-            const tx = await pair.approve(POOL_ADDR, max);
-            alert("正在授权...请等待");
-            await tx.wait();
-            alert("✅ 授权成功！");
-            refreshData();
-        } catch(e) { alert("授权失败: " + e.message); }
+        try { const max = ethers.constants.MaxUint256; const tx = await pair.approve(POOL_ADDR, max); alert("正在授权...请等待"); await tx.wait(); alert("✅ 授权成功！"); refreshData(); } catch(e) { alert("授权失败: " + e.message); }
     }
-
     async function depositLP() {
-        const amt = document.getElementById("stakeInput").value;
-        if(!amt || amt <= 0) return alert("请输入数量");
-        
+        const amt = document.getElementById("stakeInput").value; if(!amt || amt <= 0) return alert("请输入数量");
         const pool = new ethers.Contract(POOL_ADDR, ABI_POOL, signer);
-        try {
-            const wei = ethers.utils.parseUnits(amt, 18);
-            const tx = await pool.deposit(wei);
-            alert("正在质押...");
-            await tx.wait();
-            alert("✅ 质押成功！");
-            refreshData();
-        } catch(e) { alert("质押失败: " + e.message); }
+        try { const wei = ethers.utils.parseUnits(amt, 18); const tx = await pool.deposit(wei); alert("正在质押..."); await tx.wait(); alert("✅ 质押成功！"); refreshData(); } catch(e) { alert("质押失败: " + e.message); }
     }
-
     async function withdrawLP() {
-        const amt = document.getElementById("unstakeInput").value;
-        if(!amt || amt <= 0) return alert("请输入数量");
-
+        const amt = document.getElementById("unstakeInput").value; if(!amt || amt <= 0) return alert("请输入数量");
         const pool = new ethers.Contract(POOL_ADDR, ABI_POOL, signer);
-        try {
-            const wei = ethers.utils.parseUnits(amt, 18);
-            const tx = await pool.withdraw(wei);
-            alert("正在赎回...");
-            await tx.wait();
-            alert("✅ 赎回成功！");
-            refreshData();
-        } catch(e) { alert("赎回失败: " + e.message); }
+        try { const wei = ethers.utils.parseUnits(amt, 18); const tx = await pool.withdraw(wei); alert("正在赎回..."); await tx.wait(); alert("✅ 赎回成功！"); refreshData(); } catch(e) { alert("赎回失败: " + e.message); }
     }
-
     async function claim() {
         const pool = new ethers.Contract(POOL_ADDR, ABI_POOL, signer);
-        try {
-            const tx = await pool.deposit(0); 
-            alert("正在领取收益...");
-            await tx.wait();
-            alert("✅ 领取成功！");
-            refreshData();
-        } catch(e) { alert("领取失败: " + e.message); }
+        try { const tx = await pool.deposit(0); alert("正在领取收益..."); await tx.wait(); alert("✅ 领取成功！"); refreshData(); } catch(e) { alert("领取失败: " + e.message); }
     }
-
     function switchTab(type) {
         if(type === 'stake') {
-            document.getElementById('stake-panel').classList.remove('hidden');
-            document.getElementById('unstake-panel').classList.add('hidden');
-            document.getElementById('tab-stake').classList.add('active');
-            document.getElementById('tab-unstake').classList.remove('active');
+            document.getElementById('stake-panel').classList.remove('hidden'); document.getElementById('unstake-panel').classList.add('hidden');
+            document.getElementById('tab-stake').classList.add('active'); document.getElementById('tab-unstake').classList.remove('active');
         } else {
-            document.getElementById('stake-panel').classList.add('hidden');
-            document.getElementById('unstake-panel').classList.remove('hidden');
-            document.getElementById('tab-stake').classList.remove('active');
-            document.getElementById('tab-unstake').classList.add('active');
+            document.getElementById('stake-panel').classList.add('hidden'); document.getElementById('unstake-panel').classList.remove('hidden');
+            document.getElementById('tab-stake').classList.remove('active'); document.getElementById('tab-unstake').classList.add('active');
         }
     }
 </script>
