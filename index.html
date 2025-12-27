@@ -7,57 +7,64 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #00FFA3; --accent: #00C2FF; --bg: #050505; --card: rgba(20, 20, 28, 0.8); }
+        :root { --primary: #00FFA3; --accent: #00C2FF; --bg: #050505; --card: rgba(20, 20, 28, 0.8); --border: rgba(255,255,255,0.08); }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { background: radial-gradient(circle at top, #1a2a3a 0%, var(--bg) 100%); color: #fff; font-family: 'Inter', sans-serif; display: flex; flex-direction: column; align-items: center; min-height: 100vh; margin: 0; padding: 20px; overflow-x: hidden; }
         
-        /* --- 优化后的金钱雨 --- */
+        /* 金钱雨优化 */
         .rain-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; overflow: hidden; }
-        .bill { position: absolute; top: -100px; width: 60px; height: 30px; background: #e0e0e0; border: 1px solid #2e7d32; border-radius: 2px; opacity: 0.7; animation: fall linear infinite; will-change: transform; display: flex; justify-content: center; align-items: center; font-family: serif; color: #1b5e20; font-weight: bold; font-size: 10px; }
+        .bill { position: absolute; top: -100px; width: 60px; height: 30px; background: #e0e0e0; border: 1px solid #2e7d32; border-radius: 2px; opacity: 0.6; animation: fall linear infinite; will-change: transform; display: flex; justify-content: center; align-items: center; font-family: serif; color: #1b5e20; font-weight: bold; font-size: 10px; }
         .bill::after { content: '$100'; }
         @keyframes fall { to { transform: translateY(110vh) rotate(360deg); } }
 
-        .app-container { width: 100%; max-width: 480px; position: relative; z-index: 10; animation: slideUp 0.6s ease; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .app-container { width: 100%; max-width: 480px; position: relative; z-index: 10; }
 
         .navbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
         .logo { font-family: 'Rajdhani', sans-serif; font-size: 24px; font-weight: 800; letter-spacing: 2px; background: linear-gradient(to right, var(--primary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .wallet-btn { background: rgba(0, 255, 163, 0.1); border: 1px solid rgba(0, 255, 163, 0.3); color: var(--primary); padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; cursor: pointer; transition: 0.3s; }
         
-        .card { background: var(--card); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.08); border-radius: 24px; padding: 24px; margin-bottom: 20px; box-shadow: 0 15px 40px rgba(0,0,0,0.4); }
+        .card { background: var(--card); backdrop-filter: blur(20px); border: 1px solid var(--border); border-radius: 24px; padding: 24px; margin-bottom: 20px; box-shadow: 0 15px 40px rgba(0,0,0,0.4); }
         
-        /* 奖励卡片 */
+        /* 奖励 */
         .reward-card { background: linear-gradient(160deg, rgba(255, 215, 0, 0.05) 0%, var(--card) 60%); border-color: rgba(255, 215, 0, 0.2); text-align: center; }
-        .reward-title { font-size: 12px; color: #FFD700; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 10px; opacity: 0.8; }
         .reward-val { font-family: 'Rajdhani', sans-serif; font-size: 42px; font-weight: 700; color: #fff; text-shadow: 0 0 20px rgba(255, 215, 0, 0.4); }
         
-        /* 资金池数据可视化 */
+        /* 数据统计 */
         .pool-stats { display: flex; gap: 15px; margin-bottom: 20px; }
-        .stat-item { flex: 1; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 12px; text-align: center; border: 1px solid rgba(255,255,255,0.05); }
+        .stat-item { flex: 1; background: rgba(0,0,0,0.3); padding: 12px; border-radius: 16px; text-align: center; border: 1px solid var(--border); }
         .stat-label { font-size: 11px; color: #888; margin-bottom: 4px; }
-        .stat-num { font-family: 'Rajdhani', sans-serif; font-size: 16px; font-weight: 600; color: var(--accent); }
+        .stat-num { font-family: 'Rajdhani', sans-serif; font-size: 18px; font-weight: 700; color: var(--accent); }
 
-        /* 操作区 */
+        /* 标签 */
         .tabs { display: flex; background: rgba(0,0,0,0.3); padding: 4px; border-radius: 12px; margin-bottom: 20px; }
         .tab-btn { flex: 1; padding: 12px; text-align: center; color: #666; cursor: pointer; border-radius: 10px; font-size: 14px; font-weight: 600; transition: 0.3s; }
         .tab-btn.active { background: rgba(255,255,255,0.1); color: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
         .tab-btn.active#t-stake { color: var(--primary); }
         .tab-btn.active#t-unstake { color: #FF4500; }
 
-        .input-box { width: 100%; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 16px; border-radius: 12px; font-size: 18px; font-family: 'Rajdhani', sans-serif; outline: none; margin: 10px 0 20px; transition: 0.3s; }
-        .input-box:focus { border-color: var(--primary); box-shadow: 0 0 15px rgba(0, 255, 163, 0.2); }
+        /* 输入框带 MAX 按钮 */
+        .input-wrap { position: relative; margin: 10px 0 20px; background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 12px; padding: 0 15px; display: flex; align-items: center; transition: 0.3s; }
+        .input-wrap:focus-within { border-color: var(--primary); box-shadow: 0 0 15px rgba(0, 255, 163, 0.2); }
+        .input-box { width: 100%; background: none; border: none; color: #fff; padding: 16px 0; font-size: 18px; font-family: 'Rajdhani', sans-serif; outline: none; }
+        .max-btn { background: rgba(255,255,255,0.1); color: var(--primary); font-size: 12px; padding: 4px 8px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        .max-btn:active { transform: scale(0.9); background: rgba(0,255,163,0.2); }
 
-        .btn { width: 100%; padding: 18px; border-radius: 14px; border: none; font-size: 16px; font-weight: 700; cursor: pointer; font-family: 'Inter', sans-serif; transition: 0.2s; }
+        /* 按钮 */
+        .btn { width: 100%; padding: 18px; border-radius: 14px; border: none; font-size: 16px; font-weight: 700; cursor: pointer; font-family: 'Inter', sans-serif; transition: 0.2s; margin-top: 5px; }
         .btn:active { transform: scale(0.98); }
         .btn-gold { background: linear-gradient(135deg, #FFD700, #FFA500); color: #000; box-shadow: 0 5px 20px rgba(255, 215, 0, 0.3); }
         .btn-green { background: linear-gradient(135deg, var(--primary), var(--accent)); color: #000; box-shadow: 0 5px 20px rgba(0, 255, 163, 0.3); }
         .btn-approve { background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.2); }
-        
-        .toast-container { position: fixed; top: 20px; right: 20px; z-index: 100; display: flex; flex-direction: column; gap: 10px; }
-        .toast { background: rgba(20, 20, 30, 0.95); border-left: 4px solid; padding: 15px 20px; border-radius: 4px; color: #fff; min-width: 280px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); backdrop-filter: blur(10px); transform: translateX(120%); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); font-size: 13px; display: flex; align-items: center; }
+        .btn-red { background: linear-gradient(135deg, #FF4500, #C21500); color: #fff; box-shadow: 0 5px 20px rgba(255, 69, 0, 0.3); }
+
+        /* 取消授权小按钮 */
+        .revoke-link { text-align: center; margin-top: 15px; font-size: 12px; color: #666; cursor: pointer; text-decoration: underline; }
+        .revoke-link:hover { color: #FF4500; }
+
+        .toast-box { position: fixed; top: 20px; right: 20px; z-index: 100; display: flex; flex-direction: column; gap: 10px; }
+        .toast { background: rgba(20, 20, 30, 0.95); border-left: 4px solid; padding: 15px 20px; border-radius: 4px; color: #fff; min-width: 280px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); backdrop-filter: blur(10px); transform: translateX(120%); transition: 0.4s; font-size: 13px; display: flex; align-items: center; }
         .toast.show { transform: translateX(0); }
-        .toast-icon { margin-right: 10px; font-size: 16px; }
-        .toast-success { border-color: var(--primary); } .toast-error { border-color: #FF4500; }
+        .t-icon { margin-right: 10px; font-size: 16px; }
 
         .hidden { display: none; }
         .row-sb { display: flex; justify-content: space-between; font-size: 12px; color: #888; margin-bottom: 5px; }
@@ -66,7 +73,7 @@
 <body>
 
 <div class="rain-container" id="rain"></div>
-<div class="toast-container" id="toastContainer"></div>
+<div class="toast-box" id="toastBox"></div>
 
 <div class="app-container">
     <div class="navbar">
@@ -75,7 +82,7 @@
     </div>
 
     <div class="card reward-card">
-        <div class="reward-title">✨ 待领取分红 (Pending Rewards)</div>
+        <div style="font-size:12px; color:#FFD700; letter-spacing:1.5px; margin-bottom:10px;">✨ 待领取分红 (PENDING)</div>
         <div class="reward-val" id="pendingReward">0.0000</div>
         <div style="font-size:12px; color:#888; margin-bottom:15px;">GADKk Token</div>
         <button class="btn btn-gold" onclick="harvest()">💰 一键领取 (Harvest)</button>
@@ -101,22 +108,34 @@
         <div id="panel-stake">
             <div class="row-sb">
                 <span>存入 LP</span>
-                <span>余额: <span id="walletBal" style="color:#fff">--</span></span>
+                <span>余额: <span id="walletBal" style="color:#fff">0.00</span></span>
             </div>
-            <input type="number" id="stakeIn" class="input-box" placeholder="0.00">
-            <div id="approveBox">
-                <button class="btn btn-approve" id="approveBtn" onclick="approve()">🔓 第一步：授权 LP (Approve)</button>
+            
+            <div class="input-wrap">
+                <input type="number" id="stakeIn" class="input-box" placeholder="0.00" oninput="checkState()">
+                <div class="max-btn" onclick="fillMaxStake()">MAX</div>
             </div>
-            <button class="btn btn-green hidden" id="stakeBtn" onclick="deposit()">⚡ 第二步：确认质押 (Stake)</button>
+
+            <div id="action-area">
+                <button class="btn btn-approve" id="btnApprove" onclick="approve()">🔓 第一步：授权 LP (Approve)</button>
+                <button class="btn btn-green hidden" id="btnStake" onclick="deposit()">⚡ 第二步：确认质押 (Stake)</button>
+            </div>
+            
+            <div class="revoke-link hidden" id="btnRevoke" onclick="revoke()">🚫 取消授权 (Reset Allowance)</div>
         </div>
 
         <div id="panel-unstake" class="hidden">
             <div class="row-sb">
                 <span>取出 LP</span>
-                <span>已质押: <span id="stakedBal" style="color:#fff">--</span></span>
+                <span>已质押: <span id="stakedBal" style="color:#fff">0.00</span></span>
             </div>
-            <input type="number" id="unstakeIn" class="input-box" placeholder="0.00">
-            <button class="btn" style="background:#FF4500; color:#fff" onclick="withdraw()">📤 确认赎回 (Withdraw)</button>
+            
+            <div class="input-wrap">
+                <input type="number" id="unstakeIn" class="input-box" placeholder="0.00">
+                <div class="max-btn" onclick="fillMaxUnstake()">MAX</div>
+            </div>
+            
+            <button class="btn btn-red" onclick="withdraw()">📤 确认赎回 (Withdraw)</button>
         </div>
     </div>
 </div>
@@ -125,7 +144,6 @@
     const POOL_ADDR = "0x75bB76C3fc354CE2f078d613C8e6D3daFeE19797"; 
     const PAIR_ADDR = "0x5B06dc147F363aa0111549fb5EA992A40feda6fC"; 
     
-    // ABI
     const ABI_POOL = [
         "function pendingReward(address) view returns (uint256)",
         "function deposit(uint256) external",
@@ -139,39 +157,34 @@
     ];
 
     let provider, signer, userAddr, poolCt, tokenCt;
+    let balanceVal = 0, stakedVal = 0, allowanceVal = 0;
 
-    // --- 1. 高级弹窗系统 ---
     function showToast(msg, type='info') {
         const div = document.createElement('div');
-        div.className = `toast toast-${type}`;
-        const icons = {success:'✅', error:'❌', info:'ℹ️'};
-        div.innerHTML = `<span class="toast-icon">${icons[type]}</span><span>${msg}</span>`;
-        document.getElementById('toastContainer').appendChild(div);
-        setTimeout(() => div.classList.add('show'), 10);
-        setTimeout(() => { div.classList.remove('show'); setTimeout(() => div.remove(), 400); }, 3000);
+        div.className = `toast`;
+        div.style.borderLeftColor = type==='success'?'var(--primary)':(type==='error'?'var(--danger)':'var(--accent)');
+        const icon = type==='success'?'✅':(type==='error'?'❌':'ℹ️');
+        div.innerHTML = `<span class="t-icon">${icon}</span><span>${msg}</span>`;
+        document.getElementById('toastBox').appendChild(div);
+        setTimeout(()=>div.classList.add('show'),10);
+        setTimeout(()=>{div.classList.remove('show');setTimeout(()=>div.remove(),300)},3000);
     }
 
-    // --- 2. 性能优化的金钱雨 ---
     function initRain() {
         const container = document.getElementById('rain');
         const isMobile = window.innerWidth < 768;
-        const count = isMobile ? 8 : 25; // 手机端只生成 8 个，PC端 25 个
-        
+        const count = isMobile ? 8 : 20; 
         for(let i=0; i<count; i++) {
             const bill = document.createElement('div');
             bill.className = 'bill';
-            // 随机化初始位置和速度
             bill.style.left = Math.random() * 100 + 'vw';
-            bill.style.animationDuration = (Math.random() * 5 + 5) + 's'; // 5-10秒
+            bill.style.animationDuration = (Math.random() * 5 + 5) + 's'; 
             bill.style.animationDelay = (Math.random() * 5) + 's';
-            // 随机大小，增加层次感
-            const scale = Math.random() * 0.5 + 0.5;
-            bill.style.transform = `scale(${scale})`;
+            bill.style.transform = `scale(${Math.random() * 0.5 + 0.5})`;
             container.appendChild(bill);
         }
     }
 
-    // --- 3. 核心逻辑 ---
     async function connectWallet() {
         if(!window.ethereum) return showToast("请安装 MetaMask", "error");
         try {
@@ -185,7 +198,7 @@
 
             document.getElementById("connectBtn").innerText = `✅ ${userAddr.substring(0,6)}...`;
             document.getElementById("connectBtn").style.borderColor = "var(--primary)";
-            showToast("钱包连接成功", "success");
+            showToast("连接成功", "success");
             
             refreshData();
             setInterval(refreshData, 10000);
@@ -195,41 +208,58 @@
     async function refreshData() {
         if(!userAddr) return;
         try {
-            // 余额
             const balRaw = await tokenCt.balanceOf(userAddr);
-            document.getElementById("walletBal").innerText = parseFloat(ethers.utils.formatUnits(balRaw, 18)).toFixed(4);
+            balanceVal = parseFloat(ethers.utils.formatUnits(balRaw, 18));
+            document.getElementById("walletBal").innerText = balanceVal.toFixed(4);
 
-            // 质押 & 奖励
             const info = await poolCt.userInfo(userAddr);
-            const staked = parseFloat(ethers.utils.formatUnits(info[0], 18));
-            document.getElementById("stakedBal").innerText = staked.toFixed(4);
+            stakedVal = parseFloat(ethers.utils.formatUnits(info[0], 18));
+            document.getElementById("stakedBal").innerText = stakedVal.toFixed(4);
 
             const pending = await poolCt.pendingReward(userAddr);
             document.getElementById("pendingReward").innerText = parseFloat(ethers.utils.formatUnits(pending, 18)).toFixed(4);
 
-            // 🔥 新增：总质押 & 占比计算
             const totalStakedRaw = await tokenCt.balanceOf(POOL_ADDR);
             const totalStaked = parseFloat(ethers.utils.formatUnits(totalStakedRaw, 18));
             document.getElementById("totalStaked").innerText = totalStaked.toFixed(2);
 
-            let share = 0;
-            if(totalStaked > 0) share = (staked / totalStaked) * 100;
+            let share = totalStaked > 0 ? (stakedVal / totalStaked) * 100 : 0;
             document.getElementById("poolShare").innerText = share.toFixed(4) + "%";
 
-            // 授权检查
+            // 检查授权
             const allow = await tokenCt.allowance(userAddr, POOL_ADDR);
-            if(allow.gt(ethers.utils.parseUnits("1000", 18))) {
-                document.getElementById("approveBox").style.display = "none";
-                document.getElementById("stakeBtn").classList.remove("hidden");
-            } else {
-                document.getElementById("approveBox").style.display = "block";
-                document.getElementById("stakeBtn").classList.add("hidden");
-            }
+            allowanceVal = parseFloat(ethers.utils.formatUnits(allow, 18));
+            
+            checkState(); // 更新按钮状态
 
         } catch(e) { console.error(e); }
     }
 
-    // --- 交易 ---
+    // --- 核心状态逻辑 ---
+    function checkState() {
+        // 如果授权额度 > 0，就显示质押按钮，隐藏授权按钮
+        // 增加更智能的判断：如果额度 > 0 但 < 输入值，其实也应该授权，但这里简化为 >0 即视为已授权状态，
+        // 实际交易时如果额度不够，MetaMask 会再次提示授权，或者我们可以让用户自己点 Revoke 重置。
+        
+        if (allowanceVal > 0) {
+            document.getElementById("btnApprove").classList.add("hidden");
+            document.getElementById("btnStake").classList.remove("hidden");
+            document.getElementById("btnRevoke").classList.remove("hidden"); // 显示取消授权
+        } else {
+            document.getElementById("btnApprove").classList.remove("hidden");
+            document.getElementById("btnStake").classList.add("hidden");
+            document.getElementById("btnRevoke").classList.add("hidden");
+        }
+    }
+
+    function fillMaxStake() {
+        document.getElementById("stakeIn").value = balanceVal;
+        checkState();
+    }
+    function fillMaxUnstake() {
+        document.getElementById("unstakeIn").value = stakedVal;
+    }
+
     async function approve() {
         if(!signer) return showToast("请连接钱包", "error");
         try {
@@ -241,9 +271,21 @@
         } catch(e) { showToast(e.message, "error"); }
     }
 
+    async function revoke() {
+        if(!signer) return showToast("请连接钱包", "error");
+        try {
+            showToast("正在取消授权...", "info");
+            // 授权 0 就是取消
+            const tx = await tokenCt.approve(POOL_ADDR, 0);
+            await tx.wait();
+            showToast("🚫 已取消授权", "success");
+            refreshData();
+        } catch(e) { showToast(e.message, "error"); }
+    }
+
     async function deposit() {
         const val = document.getElementById("stakeIn").value;
-        if(!val) return showToast("输入数量", "error");
+        if(!val || parseFloat(val) <= 0) return showToast("请输入数量", "error");
         try {
             showToast("交易确认中...", "info");
             const tx = await poolCt.deposit(ethers.utils.parseUnits(val, 18));
@@ -251,12 +293,12 @@
             showToast("✅ 质押成功", "success");
             document.getElementById("stakeIn").value = "";
             refreshData();
-        } catch(e) { showToast(e.reason || "失败", "error"); }
+        } catch(e) { showToast("失败: " + (e.reason||e.message), "error"); }
     }
 
     async function withdraw() {
         const val = document.getElementById("unstakeIn").value;
-        if(!val) return showToast("输入数量", "error");
+        if(!val || parseFloat(val) <= 0) return showToast("请输入数量", "error");
         try {
             showToast("正在赎回...", "info");
             const tx = await poolCt.withdraw(ethers.utils.parseUnits(val, 18));
@@ -264,7 +306,7 @@
             showToast("✅ 赎回成功", "success");
             document.getElementById("unstakeIn").value = "";
             refreshData();
-        } catch(e) { showToast(e.reason || "失败", "error"); }
+        } catch(e) { showToast("失败: " + (e.reason||e.message), "error"); }
     }
 
     async function harvest() {
@@ -275,7 +317,7 @@
             await tx.wait();
             showToast("✅ 奖励已到账", "success");
             refreshData();
-        } catch(e) { showToast(e.reason || "失败", "error"); }
+        } catch(e) { showToast("失败: " + (e.reason||e.message), "error"); }
     }
 
     function switchTab(t) {
@@ -286,7 +328,6 @@
         document.getElementById('panel-'+t).classList.remove('hidden');
     }
 
-    // 启动金钱雨
     initRain();
 </script>
 </body>
