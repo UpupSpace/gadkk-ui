@@ -3,12 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GADKk 流动性矿池 - Login Edition</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js" integrity="sha512-FDcVY+g7vc55dy4kJftq9riI+YYTwzOE5x8WiFBYJwKm8cwSE3qM15rDk4PlnDlZjun9HRjKqJNO4n3Kg54Q6A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="https://unpkg.com/@walletconnect/web3-provider@1.8.0/dist/umd/index.min.js"></script>
+    <title>GADKk 流动性矿池</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
     <style>
-        /* --- 样式保持不变 --- */
+        /* CSS 样式保持不变 */
         * { box-sizing: border-box; }
         body { background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%); color: #e0e0e0; font-family: 'Inter', sans-serif; display: flex; flex-direction: column; align-items: center; min-height: 100vh; margin: 0; padding: 20px; overflow-x: hidden; }
         .app-container { width: 100%; max-width: 480px; position: relative; z-index: 10; }
@@ -89,95 +88,53 @@
             <button class="btn btn-red" onclick="withdrawLP()">📤 确认赎回 (Withdraw)</button>
         </div>
     </div>
-    
-    <div style="text-align:center; color:#666; font-size:12px; margin-top:25px; font-family: 'Rajdhani', sans-serif; letter-spacing: 1px;">
-        GADKk Ecosystem | Future Finance
-    </div>
 </div>
 
 <script>
-    // 美金雨动画
     function createMoneyRain() { const container = document.getElementById('moneyRain'); for (let i = 0; i < 20; i++) generateBill(container); }
     function generateBill(container) { const bill = document.createElement('div'); bill.classList.add('bill'); const innerText = document.createElement('div'); innerText.classList.add('bill-inner-text'); innerText.innerText = '100'; bill.appendChild(innerText); const startLeft = Math.random() * 100; const duration = Math.random() * 5 + 5; const delay = Math.random() * 5; const scale = Math.random() * 0.5 + 0.5; bill.style.left = startLeft + 'vw'; bill.style.animationDuration = duration + 's'; bill.style.animationDelay = delay + 's'; bill.style.transform = `scale(${scale})`; container.appendChild(bill); bill.addEventListener('animationiteration', () => { bill.style.left = Math.random() * 100 + 'vw'; }); }
     window.onload = createMoneyRain;
 
-    // 真实合约配置
     const POOL_ADDR = "0x75bB76C3fc354CE2f078d613C8e6D3daFeE19797"; 
     const PAIR_ADDR = "0x5B06dc147F363aa0111549fb5EA992A40feda6fC"; 
     const ABI_POOL = ["function pendingReward(address) view returns (uint256)","function deposit(uint256) external","function withdraw(uint256) external","function userInfo(address) view returns (uint256 amount, uint256 rewardDebt)"];
     const ABI_ERC20 = ["function balanceOf(address) view returns (uint256)","function approve(address, uint256) external returns (bool)","function allowance(address, address) view returns (uint256)"];
 
-    // 链配置（假设是 BSC Mainnet，chainId: 56）
-    const TARGET_CHAIN_ID = 56;
-    const TARGET_CHAIN_HEX = '0x38';
-    const RPC_URL = 'https://bsc-dataseed.binance.org/';
-    const CHAIN_NAME = 'Binance Smart Chain';
-    const NATIVE_CURRENCY = { name: 'BNB', symbol: 'BNB', decimals: 18 };
-    const BLOCK_EXPLORER = 'https://bscscan.com';
-
     let provider, signer, userAddr;
 
-    // ✅ 核心：连接 + 签名登录（优化版，支持 WalletConnect 和链切换）
     async function connectWallet() {
+        if (!window.ethereum) return alert("请在 TP钱包 / 小狐狸 中打开！(未检测到钱包)");
+        
         try {
-            if (window.ethereum) {
-                // Injected provider (e.g., MetaMask extension)
-                provider = new ethers.providers.Web3Provider(window.ethereum);
-                await provider.send("eth_requestAccounts", []);
-            } else {
-                // Fallback to WalletConnect for mobile
-                const walletProvider = new WalletConnectProvider({
-                    rpc: { [TARGET_CHAIN_ID]: RPC_URL },
-                    qrcode: true,
-                });
-                await walletProvider.enable();
-                provider = new ethers.providers.Web3Provider(walletProvider);
-            }
-
-            // 检查并切换链
-            const network = await provider.getNetwork();
-            if (network.chainId !== TARGET_CHAIN_ID) {
-                try {
-                    await provider.send('wallet_switchEthereumChain', [{ chainId: TARGET_CHAIN_HEX }]);
-                } catch (switchError) {
-                    if (switchError.code === 4902) { // 链未添加
-                        await provider.send('wallet_addEthereumChain', [{
-                            chainId: TARGET_CHAIN_HEX,
-                            chainName: CHAIN_NAME,
-                            nativeCurrency: NATIVE_CURRENCY,
-                            rpcUrls: [RPC_URL],
-                            blockExplorerUrls: [BLOCK_EXPLORER],
-                        }]);
-                    } else {
-                        throw switchError;
-                    }
-                }
-            }
-
+            // 1. 初始化
+            provider = new ethers.providers.Web3Provider(window.ethereum);
+            
+            // 2. 发起连接
+            await provider.send("eth_requestAccounts", []);
+            
+            // 3. 获取信息
             signer = provider.getSigner();
             userAddr = await signer.getAddress();
 
-            // 模拟签名登录
+            // 4. 发起签名 (这一步是真正的登录)
             const timestamp = Math.floor(Date.now() / 1000);
-            const msg = `Welcome to GADKk Farm!\n\nWallet: ${userAddr}\nTimestamp: ${timestamp}\n\nPlease sign to verify ownership.`;
-            const signature = await signer.signMessage(msg);
-            console.log("Login Success! Signature:", signature);
+            const msg = `Welcome to GADKk Farm!\n\nWallet: ${userAddr}\nTimestamp: ${timestamp}\n\nPlease sign to verify.`;
+            await signer.signMessage(msg); 
 
-            // 更新 UI
-            document.getElementById("connectBtn").innerText = "✅ " + userAddr.substring(0,4) + "..." + userAddr.substring(38);
+            // 5. 成功
+            document.getElementById("connectBtn").innerText = "✅ " + userAddr.substring(0,4) + "...";
             document.getElementById("connectBtn").style.borderColor = "#00FFA3";
             document.getElementById("connectBtn").style.color = "#00FFA3";
             document.getElementById("connectBtn").style.background = "rgba(0, 255, 163, 0.1)";
-
+            
             refreshData();
 
-        } catch (e) {
+        } catch(e) { 
             console.error(e);
-            if (e.code === 4001) {
-                alert("您取消了签名/连接，登录失败。");
-            } else {
-                alert("连接错误: " + (e.message || JSON.stringify(e)));
-            }
+            let errMsg = e.message || JSON.stringify(e);
+            if(e.code === 4001) errMsg = "您在钱包里点击了取消/拒绝";
+            if(e.code === -32002) errMsg = "连接请求已在后台排队，请查看小狐狸图标是否有红点";
+            alert("连接失败详情:\n" + errMsg); 
         }
     }
 
@@ -194,90 +151,15 @@
             document.getElementById("stakedLpBal").innerText = parseFloat(ethers.utils.formatUnits(info[0], 18)).toFixed(4);
             const allow = await pair.allowance(userAddr, POOL_ADDR);
             const allowNum = parseFloat(ethers.utils.formatUnits(allow, 18));
-            if (allowNum > 10000) { 
-                document.getElementById("approveBtn").style.display = "none"; 
-                document.getElementById("stakeBtn").style.display = "block"; 
-                document.getElementById("stakeBtn").classList.remove("hidden"); 
-            } else { 
-                document.getElementById("approveBtn").style.display = "block"; 
-                document.getElementById("stakeBtn").style.display = "none"; 
-            }
-        } catch(e) { 
-            console.error(e); 
-            alert("数据刷新失败: " + e.message);
-        }
+            if (allowNum > 10000) { document.getElementById("approveBtn").style.display = "none"; document.getElementById("stakeBtn").style.display = "block"; document.getElementById("stakeBtn").classList.remove("hidden"); } else { document.getElementById("approveBtn").style.display = "block"; document.getElementById("stakeBtn").style.display = "none"; }
+        } catch(e) { console.error(e); }
     }
 
-    async function approveLP() { 
-        const pair = new ethers.Contract(PAIR_ADDR, ABI_ERC20, signer); 
-        try { 
-            const max = ethers.constants.MaxUint256; 
-            const tx = await pair.approve(POOL_ADDR, max); 
-            alert("正在授权..."); 
-            await tx.wait(); 
-            alert("✅ 授权成功"); 
-            refreshData(); 
-        } catch(e) { 
-            alert("失败: "+e.message); 
-        } 
-    }
-
-    async function depositLP() { 
-        const amt = document.getElementById("stakeInput").value; 
-        if(!amt) return alert("输入数量"); 
-        const pool = new ethers.Contract(POOL_ADDR, ABI_POOL, signer); 
-        try { 
-            const tx = await pool.deposit(ethers.utils.parseUnits(amt,18)); 
-            alert("质押中..."); 
-            await tx.wait(); 
-            alert("✅ 成功"); 
-            refreshData(); 
-        } catch(e) { 
-            alert("失败: "+e.message); 
-        } 
-    }
-
-    async function withdrawLP() { 
-        const amt = document.getElementById("unstakeInput").value; 
-        if(!amt) return alert("输入数量"); 
-        const pool = new ethers.Contract(POOL_ADDR, ABI_POOL, signer); 
-        try { 
-            const tx = await pool.withdraw(ethers.utils.parseUnits(amt,18)); 
-            alert("赎回中..."); 
-            await tx.wait(); 
-            alert("✅ 成功"); 
-            refreshData(); 
-        } catch(e) { 
-            alert("失败: "+e.message); 
-        } 
-    }
-
-    async function claim() { 
-        const pool = new ethers.Contract(POOL_ADDR, ABI_POOL, signer); 
-        try { 
-            const tx = await pool.deposit(0); 
-            alert("领取中..."); 
-            await tx.wait(); 
-            alert("✅ 成功"); 
-            refreshData(); 
-        } catch(e) { 
-            alert("失败: "+e.message); 
-        } 
-    }
-
-    function switchTab(type) { 
-        if(type==='stake'){ 
-            document.getElementById('stake-panel').classList.remove('hidden'); 
-            document.getElementById('unstake-panel').classList.add('hidden'); 
-            document.getElementById('tab-stake').classList.add('active'); 
-            document.getElementById('tab-unstake').classList.remove('active'); 
-        } else { 
-            document.getElementById('stake-panel').classList.add('hidden'); 
-            document.getElementById('unstake-panel').classList.remove('hidden'); 
-            document.getElementById('tab-stake').classList.remove('active'); 
-            document.getElementById('tab-unstake').classList.add('active'); 
-        } 
-    }
+    async function approveLP() { const pair = new ethers.Contract(PAIR_ADDR, ABI_ERC20, signer); try { const max = ethers.constants.MaxUint256; const tx = await pair.approve(POOL_ADDR, max); alert("正在授权..."); await tx.wait(); alert("✅ 授权成功"); refreshData(); } catch(e) { alert("失败: "+e.message); } }
+    async function depositLP() { const amt = document.getElementById("stakeInput").value; if(!amt) return alert("输入数量"); const pool = new ethers.Contract(POOL_ADDR, ABI_POOL, signer); try { const tx = await pool.deposit(ethers.utils.parseUnits(amt,18)); alert("质押中..."); await tx.wait(); alert("✅ 成功"); refreshData(); } catch(e) { alert("失败: "+e.message); } }
+    async function withdrawLP() { const amt = document.getElementById("unstakeInput").value; if(!amt) return alert("输入数量"); const pool = new ethers.Contract(POOL_ADDR, ABI_POOL, signer); try { const tx = await pool.withdraw(ethers.utils.parseUnits(amt,18)); alert("赎回中..."); await tx.wait(); alert("✅ 成功"); refreshData(); } catch(e) { alert("失败: "+e.message); } }
+    async function claim() { const pool = new ethers.Contract(POOL_ADDR, ABI_POOL, signer); try { const tx = await pool.deposit(0); alert("领取中..."); await tx.wait(); alert("✅ 成功"); refreshData(); } catch(e) { alert("失败: "+e.message); } }
+    function switchTab(type) { if(type==='stake'){ document.getElementById('stake-panel').classList.remove('hidden'); document.getElementById('unstake-panel').classList.add('hidden'); document.getElementById('tab-stake').classList.add('active'); document.getElementById('tab-unstake').classList.remove('active'); } else { document.getElementById('stake-panel').classList.add('hidden'); document.getElementById('unstake-panel').classList.remove('hidden'); document.getElementById('tab-stake').classList.remove('active'); document.getElementById('tab-unstake').classList.add('active'); } }
 </script>
 </body>
 </html>
