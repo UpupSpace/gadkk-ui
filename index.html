@@ -3,12 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GADKk Farm (已更新 v2.0)</title>
+    <title>GADKk FARM v4.0</title>
     
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
     <style>
-        /* 样式保持不变 */
-        * { box-sizing: border-box; } body { background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%); color: #e0e0e0; font-family: 'Inter', sans-serif; display: flex; flex-direction: column; align-items: center; min-height: 100vh; margin: 0; padding: 20px; overflow-x: hidden; } .app-container { width: 100%; max-width: 480px; position: relative; z-index: 10; } .money-rain-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; z-index: 0; pointer-events: none; perspective: 800px; } .bill { position: absolute; top: -150px; width: 100px; height: 42px; background-color: #f0f5f0; background-image: radial-gradient(ellipse at center, transparent 60%, rgba(46, 125, 50, 0.1) 100%), repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(0,0,0,0.05) 3px); border: 4px solid #2e7d32; border-radius: 2px; box-shadow: 0 0 5px rgba(0,0,0,0.2); animation: fall linear infinite; opacity: 0.9; display: flex; justify-content: center; align-items: center; } .bill::before { content: ''; position: absolute; width: 30px; height: 36px; background: #dcdcdc; border: 1px solid #2e7d32; border-radius: 50%; opacity: 0.8; } .bill::after { content: '100'; position: absolute; width: 100%; height: 100%; display: flex; justify-content: space-between; align-items: flex-start; padding: 2px 4px; font-family: 'Times New Roman', serif; font-weight: bold; font-size: 10px; color: #1b5e20; line-height: 1; } .bill-inner-text { position: absolute; bottom: 2px; right: 4px; font-family: 'Times New Roman', serif; font-weight: bold; font-size: 10px; color: #1b5e20; } @keyframes fall { 0% { transform: translateY(-100px) rotateX(0deg) rotateY(0deg) rotateZ(0deg); opacity: 0; } 10% { opacity: 1; } 100% { transform: translateY(110vh) rotateX(360deg) rotateY(180deg) rotateZ(45deg); opacity: 0.9; } } .navbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; } .logo { font-size: 26px; font-weight: 800; font-family: 'Rajdhani', sans-serif; background: linear-gradient(to right, #00FFA3, #00C2FF); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 2px; text-shadow: 0 0 15px rgba(0, 255, 163, 0.5); } .wallet-badge { background: rgba(0, 255, 163, 0.1); padding: 8px 16px; border-radius: 30px; font-size: 13px; font-weight: 600; color: #00FFA3; border: 1px solid rgba(0, 255, 163, 0.3); cursor: pointer; transition: 0.3s; backdrop-filter: blur(5px); } .wallet-badge:hover { background: rgba(0, 255, 163, 0.2); box-shadow: 0 0 15px rgba(0, 255, 163, 0.3); } .card { background: rgba(20, 20, 30, 0.6); backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 24px; padding: 25px; margin-bottom: 25px; box-shadow: 0 15px 35px rgba(0,0,0,0.5); transition: transform 0.3s; } .card-title { color: #aaa; font-size: 12px; text-transform: uppercase; margin-bottom: 15px; font-weight: 700; letter-spacing: 1.5px; font-family: 'Rajdhani', sans-serif; } .reward-card { background: linear-gradient(160deg, rgba(255, 215, 0, 0.1) 0%, rgba(20, 20, 30, 0.6) 60%); border: 1px solid rgba(255, 215, 0, 0.3); box-shadow: 0 10px 30px rgba(255, 215, 0, 0.15); } .reward-val { font-size: 42px; font-weight: 800; font-family: 'Rajdhani', sans-serif; background: linear-gradient(to bottom, #FFD700, #FFA500); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: 0 0 25px rgba(255, 215, 0, 0.4); margin-bottom: 5px; } .reward-unit { font-size: 14px; color: #FFD700; opacity: 0.8; font-family: 'Rajdhani', sans-serif; } .action-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-family: 'Rajdhani', sans-serif; } .balance-text { font-size: 13px; color: #888; } .input-box { width: 100%; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 15px; border-radius: 12px; font-size: 18px; font-family: 'Rajdhani', sans-serif; font-weight: bold; margin: 10px 0 20px 0; outline: none; transition: 0.3s; } .input-box:focus { border-color: #00FFA3; box-shadow: 0 0 15px rgba(0, 255, 163, 0.2); background: rgba(0,0,0,0.5); } .btn { width: 100%; padding: 18px; border-radius: 12px; border: none; font-size: 16px; font-weight: 800; cursor: pointer; transition: all 0.3s; margin-top: 5px; font-family: 'Inter', sans-serif; position: relative; overflow: hidden; } .btn:active { transform: scale(0.97); } .btn-gold { background: linear-gradient(135deg, #FFD700, #FF8C00); color: #000; box-shadow: 0 5px 20px rgba(255, 215, 0, 0.4); } .btn-green { background: linear-gradient(135deg, #00FFA3, #00C2FF); color: #000; box-shadow: 0 5px 20px rgba(0, 255, 163, 0.4); } .btn-red { background: linear-gradient(135deg, #FF4500, #C21500); color: #fff; box-shadow: 0 5px 20px rgba(255, 69, 0, 0.4); } .btn-approve { background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.2); } .tabs { display: flex; gap: 15px; margin-bottom: 20px; background: rgba(0,0,0,0.3); padding: 5px; border-radius: 14px; } .tab-btn { flex: 1; padding: 12px; background: transparent; color: #888; border-radius: 10px; cursor: pointer; text-align: center; font-size: 14px; font-weight: 600; transition: 0.3s; } .tab-btn.active { background: rgba(40, 40, 50, 0.8); color: #fff; box-shadow: 0 2px 10px rgba(0,0,0,0.2); } #tab-stake.active { color: #00FFA3; text-shadow: 0 0 10px rgba(0, 255, 163, 0.3); } #tab-unstake.active { color: #FF4500; text-shadow: 0 0 10px rgba(255, 69, 0, 0.3); } .hidden { display: none; }
+        /* --- UI 样式 (保持高颜值) --- */
+        * { box-sizing: border-box; }
+        body { background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%); color: #e0e0e0; font-family: 'Inter', sans-serif; display: flex; flex-direction: column; align-items: center; min-height: 100vh; margin: 0; padding: 20px; overflow-x: hidden; }
+        .app-container { width: 100%; max-width: 480px; position: relative; z-index: 10; }
+        .money-rain-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; z-index: 0; pointer-events: none; perspective: 800px; }
+        .bill { position: absolute; top: -150px; width: 100px; height: 42px; background-color: #f0f5f0; background-image: radial-gradient(ellipse at center, transparent 60%, rgba(46, 125, 50, 0.1) 100%), repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(0,0,0,0.05) 3px); border: 4px solid #2e7d32; border-radius: 2px; box-shadow: 0 0 5px rgba(0,0,0,0.2); animation: fall linear infinite; opacity: 0.9; display: flex; justify-content: center; align-items: center; }
+        .bill::before { content: ''; position: absolute; width: 30px; height: 36px; background: #dcdcdc; border: 1px solid #2e7d32; border-radius: 50%; opacity: 0.8; }
+        .bill::after { content: '100'; position: absolute; width: 100%; height: 100%; display: flex; justify-content: space-between; align-items: flex-start; padding: 2px 4px; font-family: 'Times New Roman', serif; font-weight: bold; font-size: 10px; color: #1b5e20; line-height: 1; }
+        .bill-inner-text { position: absolute; bottom: 2px; right: 4px; font-family: 'Times New Roman', serif; font-weight: bold; font-size: 10px; color: #1b5e20; }
+        @keyframes fall { 0% { transform: translateY(-100px) rotateX(0deg) rotateY(0deg) rotateZ(0deg); opacity: 0; } 10% { opacity: 1; } 100% { transform: translateY(110vh) rotateX(360deg) rotateY(180deg) rotateZ(45deg); opacity: 0.9; } }
+        .navbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .logo { font-size: 26px; font-weight: 800; font-family: 'Rajdhani', sans-serif; background: linear-gradient(to right, #00FFA3, #00C2FF); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 2px; text-shadow: 0 0 15px rgba(0, 255, 163, 0.5); }
+        .wallet-badge { background: rgba(0, 255, 163, 0.1); padding: 8px 16px; border-radius: 30px; font-size: 13px; font-weight: 600; color: #00FFA3; border: 1px solid rgba(0, 255, 163, 0.3); cursor: pointer; transition: 0.3s; backdrop-filter: blur(5px); }
+        .wallet-badge:hover { background: rgba(0, 255, 163, 0.2); box-shadow: 0 0 15px rgba(0, 255, 163, 0.3); }
+        .card { background: rgba(20, 20, 30, 0.6); backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 24px; padding: 25px; margin-bottom: 25px; box-shadow: 0 15px 35px rgba(0,0,0,0.5); transition: transform 0.3s; }
+        .card-title { color: #aaa; font-size: 12px; text-transform: uppercase; margin-bottom: 15px; font-weight: 700; letter-spacing: 1.5px; font-family: 'Rajdhani', sans-serif; }
+        .reward-card { background: linear-gradient(160deg, rgba(255, 215, 0, 0.1) 0%, rgba(20, 20, 30, 0.6) 60%); border: 1px solid rgba(255, 215, 0, 0.3); box-shadow: 0 10px 30px rgba(255, 215, 0, 0.15); }
+        .reward-val { font-size: 42px; font-weight: 800; font-family: 'Rajdhani', sans-serif; background: linear-gradient(to bottom, #FFD700, #FFA500); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: 0 0 25px rgba(255, 215, 0, 0.4); margin-bottom: 5px; }
+        .reward-unit { font-size: 14px; color: #FFD700; opacity: 0.8; font-family: 'Rajdhani', sans-serif; }
+        .action-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-family: 'Rajdhani', sans-serif; }
+        .balance-text { font-size: 13px; color: #888; }
+        .input-box { width: 100%; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 15px; border-radius: 12px; font-size: 18px; font-family: 'Rajdhani', sans-serif; font-weight: bold; margin: 10px 0 20px 0; outline: none; transition: 0.3s; }
+        .input-box:focus { border-color: #00FFA3; box-shadow: 0 0 15px rgba(0, 255, 163, 0.2); background: rgba(0,0,0,0.5); }
+        .btn { width: 100%; padding: 18px; border-radius: 12px; border: none; font-size: 16px; font-weight: 800; cursor: pointer; transition: all 0.3s; margin-top: 5px; font-family: 'Inter', sans-serif; position: relative; overflow: hidden; }
+        .btn:active { transform: scale(0.97); }
+        .btn-gold { background: linear-gradient(135deg, #FFD700, #FF8C00); color: #000; box-shadow: 0 5px 20px rgba(255, 215, 0, 0.4); }
+        .btn-green { background: linear-gradient(135deg, #00FFA3, #00C2FF); color: #000; box-shadow: 0 5px 20px rgba(0, 255, 163, 0.4); }
+        .btn-red { background: linear-gradient(135deg, #FF4500, #C21500); color: #fff; box-shadow: 0 5px 20px rgba(255, 69, 0, 0.4); }
+        .btn-approve { background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.2); }
+        .tabs { display: flex; gap: 15px; margin-bottom: 20px; background: rgba(0,0,0,0.3); padding: 5px; border-radius: 14px; }
+        .tab-btn { flex: 1; padding: 12px; background: transparent; color: #888; border-radius: 10px; cursor: pointer; text-align: center; font-size: 14px; font-weight: 600; transition: 0.3s; }
+        .tab-btn.active { background: rgba(40, 40, 50, 0.8); color: #fff; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
+        #tab-stake.active { color: #00FFA3; text-shadow: 0 0 10px rgba(0, 255, 163, 0.3); }
+        #tab-unstake.active { color: #FF4500; text-shadow: 0 0 10px rgba(255, 69, 0, 0.3); }
+        .hidden { display: none; }
     </style>
 </head>
 <body>
@@ -17,15 +51,15 @@
 
 <div class="app-container">
     <div class="navbar">
-        <div class="logo">GADKk FARM <span style="font-size:12px; color:#00FFA3; vertical-align: top;">v2.0</span></div>
-        <div id="connectBtn" class="wallet-badge" onclick="connectWallet()">📡 极速连接钱包</div>
+        <div class="logo">GADKk FARM <span style="font-size:12px; color:#00FFA3; vertical-align: top;">v4.0</span></div>
+        <div id="connectBtn" class="wallet-badge" onclick="connectWallet()">📡 连接钱包</div>
     </div>
 
     <div class="card reward-card">
         <div class="card-title">✨ 待领取分红 (Pending Rewards)</div>
         <div class="reward-val" id="pendingReward">0.0000</div>
         <div class="reward-unit">GADKk Token</div>
-        <button class="btn btn-gold" onclick="alert('即将上线')">💰 一键领取 (Harvest)</button>
+        <button class="btn btn-gold" id="harvestBtn" onclick="harvest()">💰 一键领取 (Harvest)</button>
     </div>
 
     <div class="card">
@@ -37,86 +71,214 @@
         <div id="stake-panel">
             <div class="action-row">
                 <span style="color:#00FFA3; font-weight:bold;">存入 LP</span>
-                <span class="balance-text">钱包余额: <span id="walletLpBal" style="color:#fff; font-weight:bold;">0.00</span></span>
+                <span class="balance-text">钱包余额: <span id="walletLpBal" style="color:#fff; font-weight:bold;">--</span></span>
             </div>
             <input type="number" id="stakeInput" class="input-box" placeholder="请输入质押数量...">
             <div id="allowanceSection">
-                <button class="btn btn-approve" id="approveBtn" onclick="alert('请先连接钱包')">🔓 第一步：授权 LP (Approve)</button>
+                <button class="btn btn-approve" id="approveBtn" onclick="approve()">🔓 第一步：授权 LP (Approve)</button>
             </div>
-            <button class="btn btn-green hidden" id="stakeBtn">⚡ 第二步：确认质押 (Stake)</button>
+            <button class="btn btn-green hidden" id="stakeBtn" onclick="deposit()">⚡ 第二步：确认质押 (Stake)</button>
         </div>
 
         <div id="unstake-panel" class="hidden">
             <div class="action-row">
                 <span style="color:#FF4500; font-weight:bold;">取出 LP</span>
-                <span class="balance-text">已质押: <span id="stakedLpBal" style="color:#fff; font-weight:bold;">0.00</span></span>
+                <span class="balance-text">已质押: <span id="stakedBal" style="color:#fff; font-weight:bold;">--</span></span>
             </div>
             <input type="number" id="unstakeInput" class="input-box" placeholder="请输入赎回数量...">
-            <button class="btn btn-red" onclick="alert('请先连接钱包')">📤 确认赎回 (Withdraw)</button>
+            <button class="btn btn-red" id="withdrawBtn" onclick="withdraw()">📤 确认赎回 (Withdraw)</button>
         </div>
     </div>
 </div>
 
 <script>
-    const RPC_URL = "https://bsc-dataseed1.binance.org/"; // 官方 RPC
-    const PAIR_ADDR = "0x5B06dc147F363aa0111549fb5EA992A40feda6fC"; // LP 合约
+    // --- 1. 配置区域 ---
+    const POOL_ADDR = "0x75bB76C3fc354CE2f078d613C8e6D3daFeE19797"; 
+    const PAIR_ADDR = "0x5B06dc147F363aa0111549fb5EA992A40feda6fC"; 
     
-    // 1. 原生连接
+    // 必要的 ABI
+    const ABI_POOL = [
+        "function pendingReward(address) view returns (uint256)",
+        "function deposit(uint256) external",
+        "function withdraw(uint256) external",
+        "function userInfo(address) view returns (uint256 amount, uint256 rewardDebt)"
+    ];
+    const ABI_TOKEN = [
+        "function balanceOf(address) view returns (uint256)",
+        "function approve(address, uint256) external returns (bool)",
+        "function allowance(address, address) view returns (uint256)"
+    ];
+
+    let provider, signer, userAddr;
+    let poolContract, tokenContract;
+
+    // --- 2. 核心：连接钱包 ---
     async function connectWallet() {
-        if (typeof window.ethereum === 'undefined') return alert('请安装 MetaMask!');
+        if (!window.ethereum) return alert("请安装小狐狸钱包 (MetaMask)!");
+        
         try {
-            const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-            const account = accounts[0];
+            // 初始化 Ethers
+            provider = new ethers.providers.Web3Provider(window.ethereum);
+            // 请求连接
+            await provider.send("eth_requestAccounts", []);
             
-            console.log("已连接:", account);
-            document.getElementById("connectBtn").innerText = "✅ " + account.substring(0,6) + "...";
+            signer = provider.getSigner();
+            userAddr = await signer.getAddress();
+
+            // 初始化合约对象
+            poolContract = new ethers.Contract(POOL_ADDR, ABI_POOL, signer);
+            tokenContract = new ethers.Contract(PAIR_ADDR, ABI_TOKEN, signer);
+
+            // 更新UI
+            document.getElementById("connectBtn").innerText = "✅ " + userAddr.substring(0,6) + "...";
             document.getElementById("connectBtn").style.borderColor = "#00FFA3";
             document.getElementById("connectBtn").style.color = "#00FFA3";
             document.getElementById("connectBtn").style.background = "rgba(0, 255, 163, 0.1)";
-            
-            // 读取真实余额
-            await fetchRealBalance(account);
 
-        } catch (error) {
-            console.error(error);
-            alert("连接失败: " + error.message);
+            // 首次加载数据
+            refreshData();
+            // 开启自动刷新 (每10秒)
+            setInterval(refreshData, 10000);
+
+        } catch(e) {
+            console.error(e);
+            alert("连接失败: " + (e.message || "未知错误"));
         }
     }
 
-    // 2. 手写 RPC 读取逻辑
-    async function fetchRealBalance(userAddr) {
-        document.getElementById("walletLpBal").innerText = "加载中...";
-        const data = "0x70a08231000000000000000000000000" + userAddr.substring(2);
+    // --- 3. 数据刷新逻辑 ---
+    async function refreshData() {
+        if(!userAddr || !poolContract) return;
 
         try {
-            const response = await fetch(RPC_URL, {
-                method: "POST", headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "eth_call", params: [{ to: PAIR_ADDR, data: data }, "latest"] })
-            });
-            const result = await response.json();
-            if (result.result) {
-                const hexBalance = result.result;
-                const balanceBigInt = BigInt(hexBalance);
-                const balanceStr = balanceBigInt.toString();
-                let formatted = "0.00";
-                if (balanceStr.length > 18) {
-                    const intPart = balanceStr.slice(0, -18);
-                    const decPart = balanceStr.slice(-18).substring(0, 4);
-                    formatted = `${intPart}.${decPart}`;
-                } else if (balanceBigInt > 0n) {
-                    formatted = "0." + balanceStr.padStart(18, '0').substring(0, 4);
-                }
-                console.log("真实余额:", formatted);
-                document.getElementById("walletLpBal").innerText = formatted;
+            // 1. 读取钱包余额 (Wallet LP)
+            const balRaw = await tokenContract.balanceOf(userAddr);
+            const balFmt = ethers.utils.formatUnits(balRaw, 18);
+            document.getElementById("walletLpBal").innerText = parseFloat(balFmt).toFixed(4);
+
+            // 2. 读取已质押余额 (Staked LP)
+            const userInfo = await poolContract.userInfo(userAddr);
+            const stakedFmt = ethers.utils.formatUnits(userInfo[0], 18);
+            document.getElementById("stakedBal").innerText = parseFloat(stakedFmt).toFixed(4);
+
+            // 3. 读取待领取奖励 (Pending)
+            const pending = await poolContract.pendingReward(userAddr);
+            const pendingFmt = ethers.utils.formatUnits(pending, 18);
+            document.getElementById("pendingReward").innerText = parseFloat(pendingFmt).toFixed(4);
+
+            // 4. 检查授权状态
+            const allowance = await tokenContract.allowance(userAddr, POOL_ADDR);
+            if (allowance.gt(ethers.utils.parseUnits("100", 18))) {
+                // 已授权 -> 显示质押按钮
+                document.getElementById("approveBtn").style.display = "none";
+                document.getElementById("stakeBtn").style.display = "block";
+                document.getElementById("stakeBtn").classList.remove("hidden");
+            } else {
+                // 未授权 -> 显示授权按钮
+                document.getElementById("approveBtn").style.display = "block";
+                document.getElementById("stakeBtn").style.display = "none";
             }
-        } catch (e) {
-            console.error("读取余额失败:", e);
-            document.getElementById("walletLpBal").innerText = "读取失败";
+
+        } catch(e) {
+            console.error("数据刷新失败:", e);
         }
     }
 
-    window.addEventListener('load', async () => {
+    // --- 4. 交易功能区 ---
+
+    // A. 授权 (Approve)
+    async function approve() {
+        if(!signer) return alert("请先连接钱包");
+        try {
+            const btn = document.getElementById("approveBtn");
+            btn.innerText = "⏳ 正在授权中...";
+            
+            // 授权最大值
+            const maxAmt = ethers.constants.MaxUint256;
+            const tx = await tokenContract.approve(POOL_ADDR, maxAmt);
+            
+            await tx.wait(); // 等待链上确认
+            alert("✅ 授权成功！现在可以质押了。");
+            refreshData();
+        } catch(e) {
+            alert("授权失败: " + (e.message || "用户取消"));
+        } finally {
+            document.getElementById("approveBtn").innerText = "🔓 第一步：授权 LP (Approve)";
+        }
+    }
+
+    // B. 质押 (Deposit)
+    async function deposit() {
+        if(!signer) return alert("请先连接钱包");
+        const amount = document.getElementById("stakeInput").value;
+        if(!amount || amount <= 0) return alert("请输入数量");
+
+        try {
+            const btn = document.getElementById("stakeBtn");
+            btn.innerText = "⏳ 正在质押...";
+            
+            const weiAmt = ethers.utils.parseUnits(amount, 18);
+            const tx = await poolContract.deposit(weiAmt);
+            
+            await tx.wait();
+            alert("✅ 质押成功！");
+            document.getElementById("stakeInput").value = ""; // 清空输入框
+            refreshData();
+        } catch(e) {
+            alert("质押失败: " + e.message);
+        } finally {
+            document.getElementById("stakeBtn").innerText = "⚡ 第二步：确认质押 (Stake)";
+        }
+    }
+
+    // C. 赎回 (Withdraw)
+    async function withdraw() {
+        if(!signer) return alert("请先连接钱包");
+        const amount = document.getElementById("unstakeInput").value;
+        if(!amount || amount <= 0) return alert("请输入数量");
+
+        try {
+            const btn = document.getElementById("withdrawBtn");
+            btn.innerText = "⏳ 正在赎回...";
+            
+            const weiAmt = ethers.utils.parseUnits(amount, 18);
+            const tx = await poolContract.withdraw(weiAmt);
+            
+            await tx.wait();
+            alert("✅ 赎回成功！本金已回到钱包。");
+            document.getElementById("unstakeInput").value = "";
+            refreshData();
+        } catch(e) {
+            alert("赎回失败: " + e.message);
+        } finally {
+            document.getElementById("withdrawBtn").innerText = "📤 确认赎回 (Withdraw)";
+        }
+    }
+
+    // D. 收菜 (Harvest) - 通过 deposit(0) 实现
+    async function harvest() {
+        if(!signer) return alert("请先连接钱包");
+        try {
+            const btn = document.getElementById("harvestBtn");
+            btn.innerText = "⏳ 领取中...";
+            
+            // 很多矿池合约用 deposit(0) 来触发领取
+            const tx = await poolContract.deposit(0);
+            
+            await tx.wait();
+            alert("✅ 收益领取成功！");
+            refreshData();
+        } catch(e) {
+            alert("领取失败: " + e.message);
+        } finally {
+            document.getElementById("harvestBtn").innerText = "💰 一键领取 (Harvest)";
+        }
+    }
+
+    // --- 5. 辅助功能 ---
+    window.addEventListener('load', () => {
         createMoneyRain();
+        // 自动重连
         if (window.ethereum && window.ethereum.selectedAddress) {
             connectWallet();
         }
@@ -124,7 +286,20 @@
 
     function createMoneyRain() { const container = document.getElementById('moneyRain'); for (let i = 0; i < 20; i++) generateBill(container); }
     function generateBill(container) { const bill = document.createElement('div'); bill.classList.add('bill'); const innerText = document.createElement('div'); innerText.classList.add('bill-inner-text'); innerText.innerText = '100'; bill.appendChild(innerText); const startLeft = Math.random() * 100; const duration = Math.random() * 5 + 5; const delay = Math.random() * 5; const scale = Math.random() * 0.5 + 0.5; bill.style.left = startLeft + 'vw'; bill.style.animationDuration = duration + 's'; bill.style.animationDelay = delay + 's'; bill.style.transform = `scale(${scale})`; container.appendChild(bill); bill.addEventListener('animationiteration', () => { bill.style.left = Math.random() * 100 + 'vw'; }); }
-    function switchTab(type) { if(type==='stake'){ document.getElementById('stake-panel').classList.remove('hidden'); document.getElementById('unstake-panel').classList.add('hidden'); document.getElementById('tab-stake').classList.add('active'); document.getElementById('tab-unstake').classList.remove('active'); } else { document.getElementById('stake-panel').classList.add('hidden'); document.getElementById('unstake-panel').classList.remove('hidden'); document.getElementById('tab-stake').classList.remove('active'); document.getElementById('tab-unstake').classList.add('active'); } }
+    
+    function switchTab(type) { 
+        if(type==='stake'){ 
+            document.getElementById('stake-panel').classList.remove('hidden'); 
+            document.getElementById('unstake-panel').classList.add('hidden'); 
+            document.getElementById('tab-stake').classList.add('active'); 
+            document.getElementById('tab-unstake').classList.remove('active'); 
+        } else { 
+            document.getElementById('stake-panel').classList.add('hidden'); 
+            document.getElementById('unstake-panel').classList.remove('hidden'); 
+            document.getElementById('tab-stake').classList.remove('active'); 
+            document.getElementById('tab-unstake').classList.add('active'); 
+        } 
+    }
 </script>
 </body>
 </html>
