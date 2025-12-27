@@ -17,41 +17,21 @@
             display: flex; flex-direction: column; align-items: center; padding: 20px;
         }
         .container { width: 100%; max-width: 500px; }
-        h1 { 
-            color: #fff; text-align: center; font-family: 'Rajdhani', 'Microsoft YaHei', sans-serif; letter-spacing: 4px; 
-            font-weight: 700; margin-bottom: 30px; text-shadow: 0 0 10px rgba(255,255,255,0.3);
-        }
-        
-        .card { 
-            background: rgba(20, 20, 20, 0.8); border: 1px solid #333; 
-            backdrop-filter: blur(10px); border-radius: 16px; padding: 24px; margin-bottom: 25px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
+        h1 { color: #fff; text-align: center; font-family: 'Rajdhani', sans-serif; letter-spacing: 4px; font-weight: 700; margin-bottom: 30px; text-shadow: 0 0 10px rgba(255,255,255,0.3); }
+        .card { background: rgba(20, 20, 20, 0.8); border: 1px solid #333; backdrop-filter: blur(10px); border-radius: 16px; padding: 24px; margin-bottom: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         .card-header { display: flex; justify-content: space-between; align-items: center; color: #888; font-size: 13px; margin-bottom: 15px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
-        
         .big-num { font-size: 36px; font-weight: bold; margin-bottom: 5px; font-family: 'Rajdhani', sans-serif; }
         .unit { font-size: 14px; color: #666; font-weight: normal; margin-left: 5px; }
-        
-        .spy-box { 
-            background: rgba(0, 255, 163, 0.05); border: 1px solid rgba(0, 255, 163, 0.2); 
-            border-radius: 12px; padding: 20px; margin-bottom: 20px; text-align: center; 
-        }
+        .spy-box { background: rgba(0, 255, 163, 0.05); border: 1px solid rgba(0, 255, 163, 0.2); border-radius: 12px; padding: 20px; margin-bottom: 20px; text-align: center; }
         .spy-label { color: #00FFA3; font-size: 14px; font-weight: bold; margin-bottom: 5px; letter-spacing: 1px; }
         .spy-value { color: #fff; font-size: 32px; font-weight: bold; text-shadow: 0 0 15px rgba(0, 255, 163, 0.4); font-family: 'Rajdhani', sans-serif; }
-        
         .btn { width: 100%; padding: 16px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; transition: 0.2s; letter-spacing: 1px; font-family: 'Microsoft YaHei', sans-serif; }
-        .btn:hover { filter: brightness(1.1); transform: translateY(-1px); }
         .btn-connect { background: #1a1a1a; color: #fff; border: 1px solid #444; margin-bottom: 20px; }
-        
         .btn-process { background: linear-gradient(90deg, #00FFA3, #00C2FF); color: #000; box-shadow: 0 0 15px rgba(0, 255, 163, 0.2); }
         .btn-buyback { background: linear-gradient(90deg, #FF4500, #FF0055); color: #fff; box-shadow: 0 0 15px rgba(255, 69, 0, 0.2); }
         .btn-fill { width: auto; padding: 8px 15px; background: #333; color: #fff; font-size: 12px; border-radius: 6px; }
-        
         .input-group { display: flex; gap: 10px; margin-top: 15px; align-items: center; }
-        input { 
-            flex: 1; background: #000; border: 1px solid #333; color: #fff; padding: 14px; 
-            border-radius: 8px; font-size: 16px; outline: none; font-family: 'Rajdhani', sans-serif; 
-        }
+        input { flex: 1; background: #000; border: 1px solid #333; color: #fff; padding: 14px; border-radius: 8px; font-size: 16px; outline: none; font-family: 'Rajdhani', sans-serif; }
         input:focus { border-color: #00FFA3; }
     </style>
 </head>
@@ -62,40 +42,24 @@
     <button id="connectBtn" class="btn btn-connect" onclick="connectWallet()">🔑 连接管理员钱包</button>
 
     <div class="card">
-        <div class="card-header">
-            <span>🛡️ 自动回流基金 (LpFund)</span>
-            <span style="color: #00FFA3">● 运行中</span>
-        </div>
+        <div class="card-header"><span>🛡️ 自动回流基金 (LpFund)</span><span style="color: #00FFA3">● 运行中</span></div>
         <div style="font-size:12px; color:#888;">待加池代币 (Pending ADKK):</div>
-        <div class="big-num" style="color: #00FFA3">
-            <span id="lpFundBalance">0.00</span>
-            <span class="unit">ADKK</span>
-        </div>
+        <div class="big-num" style="color: #00FFA3"><span id="lpFundBalance">0.00</span><span class="unit">ADKK</span></div>
         <button class="btn btn-process" onclick="processLP()">⚡ 执行回流加池 (Process LP)</button>
     </div>
 
     <div class="card">
-        <div class="card-header">
-            <span>🚀 智能回购 V5</span>
-            <span style="color: #FF4500">● 间谍模式</span>
-        </div>
-
+        <div class="card-header"><span>🚀 智能回购 V5</span><span style="color: #FF4500">● 间谍模式</span></div>
         <div class="spy-box">
             <div class="spy-label">⚠️ 新增市场抛压 (智能监控)</div>
             <div class="spy-value" id="newPressure">0.00 ADKK</div>
             <div style="font-size:12px; color:#888; margin-top:5px;" id="usdtCostTip">≈ 需要 0.00 USDT 接盘</div>
         </div>
-
-        <div style="display:flex; justify-content:space-between; font-size:12px; color:#888;">
-            <span>回购金库余额:</span>
-            <span style="color:#fff;" id="buybackBalance">0.00 USDT</span>
-        </div>
-
+        <div style="display:flex; justify-content:space-between; font-size:12px; color:#888;"><span>回购金库余额:</span><span style="color:#fff;" id="buybackBalance">0.00 USDT</span></div>
         <div class="input-group">
             <input type="number" id="buyAmount" placeholder="输入 USDT 金额">
             <button class="btn btn-fill" onclick="fillRec()">自动填入</button>
         </div>
-        
         <button class="btn btn-buyback" onclick="triggerBuyback()">🔥 拉盘并发送 (Buy & Send)</button>
         <div style="text-align:center; font-size:12px; color:#444; margin-top:10px;">点击后代币将发送至合约指定的接收地址</div>
     </div>
@@ -106,7 +70,6 @@
     const LP_FUND_ADDR  = "0xD7bB38219D069dfDD4F09Fdf568493A4B7d7E4fd";
     const BUYBACK_ADDR  = "0x3f22B4f6d76dD740AE3E22eb25bC22a884971ADB"; // V5
     const MARKETING_ADDR= "0x2DBE6300514C4D0Cd7456348512370D3A68d4c1E"; 
-    
     const USDT_ADDR = "0x55d398326f99059fF775485246999027B3197955";
     const MARKETING_TAX_RATE = 0.05;
 
@@ -121,14 +84,16 @@
             provider = new ethers.providers.Web3Provider(window.ethereum);
             await provider.send("eth_requestAccounts", []);
             signer = provider.getSigner();
+            userAddr = await signer.getAddress();
             document.getElementById("connectBtn").innerText = "✅ 管理员已就绪";
             document.getElementById("connectBtn").style.borderColor = "#00FFA3";
             document.getElementById("connectBtn").style.color = "#00FFA3";
             refreshData();
-        } catch(e) { console.error(e); }
+        } catch(e) { console.error(e); alert("连接失败"); }
     }
 
     async function refreshData() {
+        if(!userAddr) return;
         const token = new ethers.Contract(GADKK_ADDR, ABI_TOKEN, provider);
         const buyback = new ethers.Contract(BUYBACK_ADDR, ABI_BUY, provider);
         const usdt = new ethers.Contract(USDT_ADDR, ABI_TOKEN, provider);
@@ -161,11 +126,10 @@
         const contract = new ethers.Contract(LP_FUND_ADDR, ABI_LP, signer);
         try { const tx = await contract.process({ gasLimit: 2000000 }); alert("正在执行加池..."); await tx.wait(); alert("✅ 加池成功！"); refreshData(); } catch(e) { alert("错误: " + e.message); }
     }
-
     async function triggerBuyback() {
         const amt = document.getElementById("buyAmount").value; if(!amt) return alert("请输入金额");
         const contract = new ethers.Contract(BUYBACK_ADDR, ABI_BUY, signer);
-        try { const weiAmt = ethers.utils.parseUnits(amt, 18); const tx = await contract.buyUSDT(weiAmt, { gasLimit: 500000 }); alert("正在拉盘并发送..."); await tx.wait(); alert("✅ 交易成功！代币已发送至指定地址。"); refreshData(); } catch(e) { alert("错误: " + e.message); }
+        try { const weiAmt = ethers.utils.parseUnits(amt, 18); const tx = await contract.buyUSDT(weiAmt, { gasLimit: 500000 }); alert("正在拉盘并发送..."); await tx.wait(); alert("✅ 交易成功！"); refreshData(); } catch(e) { alert("错误: " + e.message); }
     }
 </script>
 </body>
