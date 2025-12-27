@@ -3,154 +3,148 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GADKk ADMIN v11.0 (Flagship)</title>
+    <title>GADKk ADMIN v12.0 (Ultimate)</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <style>
-        /* --- 核心变量与重置 --- */
-        :root { --primary: #00FFA3; --secondary: #00C2FF; --danger: #FF4500; --dark: #050505; --card-bg: rgba(20, 20, 25, 0.7); --glass: blur(20px); }
+        :root { --primary: #00FFA3; --secondary: #00C2FF; --danger: #FF4500; --dark: #09090b; --card: rgba(24, 24, 27, 0.7); --border: rgba(255,255,255,0.1); }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { background-color: var(--dark); background-image: radial-gradient(circle at 50% -20%, #1a1a2e 0%, #000000 100%); color: #fff; font-family: 'Inter', sans-serif; display: flex; flex-direction: column; align-items: center; padding: 20px; min-height: 100vh; margin: 0; }
-        .container { width: 100%; max-width: 480px; position: relative; z-index: 10; animation: fadeIn 0.8s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        body { background-color: var(--dark); background-image: radial-gradient(circle at 50% -20%, #1e1e2e 0%, #000 100%); color: #fff; font-family: 'Inter', sans-serif; display: flex; flex-direction: column; align-items: center; padding: 20px; min-height: 100vh; margin: 0; }
+        .container { width: 100%; max-width: 480px; position: relative; z-index: 10; animation: fadeUp 0.6s ease; }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* --- 头部 --- */
+        /* --- 头部设计 --- */
         .header { text-align: center; margin-bottom: 30px; }
-        h1 { margin: 0; font-family: 'Rajdhani', sans-serif; letter-spacing: 2px; font-size: 28px; background: linear-gradient(to right, #fff, #aaa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .badge { background: linear-gradient(90deg, var(--secondary), var(--primary)); color: #000; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 800; vertical-align: middle; margin-left: 8px; }
+        h1 { margin: 0; font-family: 'Rajdhani', sans-serif; font-size: 28px; letter-spacing: 2px; color: #fff; text-shadow: 0 0 20px rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; gap: 10px; }
+        
+        /* 修复：标签改为高亮设计 */
+        .badge { background: rgba(0, 255, 163, 0.1); border: 1px solid var(--primary); color: var(--primary); padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 800; letter-spacing: 1px; box-shadow: 0 0 10px rgba(0, 255, 163, 0.2); }
 
-        /* --- 卡片通用 --- */
-        .card { background: var(--card-bg); border: 1px solid rgba(255, 255, 255, 0.08); backdrop-filter: var(--glass); border-radius: 20px; padding: 24px; margin-bottom: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); transition: transform 0.3s; }
-        .card-header { display: flex; justify-content: space-between; align-items: center; font-size: 12px; font-weight: 700; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; }
-        .status-dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; margin-right: 6px; box-shadow: 0 0 8px currentColor; }
+        /* --- 卡片 --- */
+        .card { background: var(--card); border: 1px solid var(--border); backdrop-filter: blur(20px); border-radius: 20px; padding: 20px; margin-bottom: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
+        .card-header { display: flex; justify-content: space-between; align-items: center; font-size: 12px; font-weight: 700; color: #888; text-transform: uppercase; margin-bottom: 15px; }
+        .dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; margin-right: 6px; box-shadow: 0 0 8px currentColor; }
 
-        /* --- 仪表盘数据 --- */
-        .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
-        .stat-box { background: rgba(0,0,0,0.3); padding: 12px; border-radius: 12px; text-align: center; border: 1px solid rgba(255,255,255,0.05); }
+        /* --- 仪表盘 --- */
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+        .stat-item { background: rgba(0,0,0,0.3); border: 1px solid var(--border); padding: 12px; border-radius: 12px; text-align: center; }
         .stat-label { font-size: 11px; color: #666; margin-bottom: 4px; }
         .stat-val { font-family: 'Rajdhani', sans-serif; font-size: 18px; font-weight: 700; color: #eee; }
-        .stat-val.highlight { color: var(--danger); text-shadow: 0 0 15px rgba(255, 69, 0, 0.3); }
+        .highlight { color: var(--danger); text-shadow: 0 0 10px rgba(255, 69, 0, 0.3); }
 
-        /* --- 输入与按钮 --- */
-        .mode-tabs { display: flex; background: rgba(0,0,0,0.4); padding: 4px; border-radius: 10px; margin-bottom: 20px; }
-        .tab-btn { flex: 1; padding: 10px; text-align: center; font-size: 13px; color: #666; cursor: pointer; border-radius: 8px; transition: 0.3s; font-weight: 600; }
-        .tab-btn.active { background: rgba(255,255,255,0.1); color: #fff; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
-        .tab-btn.active.mode-buy { color: var(--secondary); }
-        .tab-btn.active.mode-burn { color: var(--danger); }
-
-        .input-group { position: relative; margin-bottom: 15px; }
-        .input-box { width: 100%; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); padding: 16px; border-radius: 12px; color: #fff; font-size: 18px; font-family: 'Rajdhani', sans-serif; outline: none; transition: 0.3s; }
-        .input-box:focus { border-color: var(--primary); background: rgba(0,0,0,0.5); }
-        .suffix { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); color: #666; font-size: 12px; font-weight: bold; }
-        
-        .helper-text { display: flex; justify-content: space-between; font-size: 12px; margin-top: 8px; color: #555; }
-        .action-link { cursor: pointer; text-decoration: underline; transition: 0.2s; }
-        .action-link:hover { color: #fff; }
-
-        .btn { width: 100%; padding: 16px; border: none; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.2s; position: relative; overflow: hidden; margin-top: 10px; }
+        /* --- 按钮与输入 --- */
+        .btn { width: 100%; padding: 16px; border-radius: 12px; border: none; font-size: 15px; font-weight: 700; cursor: pointer; transition: 0.2s; position: relative; overflow: hidden; margin-top: 5px; }
         .btn:active { transform: scale(0.98); }
-        .btn-connect { background: rgba(255,255,255,0.05); color: #aaa; border: 1px solid rgba(255,255,255,0.1); }
-        .btn-green { background: linear-gradient(135deg, #00FFA3, #00C2FF); color: #000; box-shadow: 0 5px 20px rgba(0, 255, 163, 0.3); }
-        .btn-red { background: linear-gradient(135deg, #FF4500, #C21500); color: #fff; box-shadow: 0 5px 20px rgba(255, 69, 0, 0.3); }
+        .btn-connect { background: rgba(255,255,255,0.05); color: #ccc; border: 1px solid var(--border); margin-bottom: 20px; }
+        .btn-green { background: linear-gradient(135deg, #00FFA3, #00C2FF); color: #000; box-shadow: 0 4px 15px rgba(0, 255, 163, 0.2); }
+        .btn-red { background: linear-gradient(135deg, #FF4500, #C21500); color: #fff; box-shadow: 0 4px 15px rgba(255, 69, 0, 0.2); }
 
-        /* --- Toast 通知 --- */
-        .toast-container { position: fixed; top: 20px; right: 20px; z-index: 100; display: flex; flex-direction: column; gap: 10px; }
-        .toast { background: rgba(15, 15, 20, 0.95); backdrop-filter: blur(10px); border-left: 4px solid; padding: 16px 20px; border-radius: 4px; color: #fff; min-width: 280px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); display: flex; align-items: center; transform: translateX(120%); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); font-size: 13px; }
-        .toast.show { transform: translateX(0); }
-        .toast-icon { font-size: 18px; margin-right: 12px; }
-        .toast-success { border-color: var(--primary); } .toast-error { border-color: var(--danger); } .toast-info { border-color: var(--secondary); }
+        .input-wrap { position: relative; background: #111; border: 1px solid var(--border); border-radius: 12px; display: flex; align-items: center; padding: 0 15px; transition: 0.3s; margin-bottom: 10px; }
+        .input-wrap:focus-within { border-color: var(--secondary); box-shadow: 0 0 15px rgba(0, 194, 255, 0.1); }
+        .input-wrap input { width: 100%; background: none; border: none; color: #fff; font-size: 18px; padding: 16px 0; font-family: 'Rajdhani', sans-serif; outline: none; }
+        .suffix { font-size: 12px; color: #666; font-weight: bold; }
 
+        /* --- Tab 切换 --- */
+        .tabs { display: flex; background: rgba(0,0,0,0.3); padding: 4px; border-radius: 10px; margin-bottom: 20px; border: 1px solid var(--border); }
+        .tab { flex: 1; padding: 10px; text-align: center; font-size: 13px; color: #666; cursor: pointer; border-radius: 8px; transition: 0.3s; font-weight: 600; }
+        .tab.active { background: rgba(255,255,255,0.1); color: #fff; }
+        .tab.active.buy { color: var(--secondary); }
+        .tab.active.burn { color: var(--danger); }
+
+        /* --- 🔥 快捷操作胶囊按钮 (Capsules) --- */
+        .capsule-row { display: flex; gap: 8px; justify-content: flex-end; margin-bottom: 8px; flex-wrap: wrap; }
+        .capsule { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; cursor: pointer; border: 1px solid transparent; transition: 0.2s; display: flex; align-items: center; gap: 4px; }
+        .cap-gold { background: rgba(255, 215, 0, 0.1); color: #FFD700; border-color: rgba(255, 215, 0, 0.2); }
+        .cap-gold:active { background: rgba(255, 215, 0, 0.2); transform: scale(0.95); }
+        .cap-red { background: rgba(255, 69, 0, 0.1); color: #FF4500; border-color: rgba(255, 69, 0, 0.2); }
+        .cap-red:active { background: rgba(255, 69, 0, 0.2); transform: scale(0.95); }
+        .cap-blue { background: rgba(0, 194, 255, 0.1); color: #00C2FF; border-color: rgba(0, 194, 255, 0.2); }
+        
+        .helper-text { text-align: right; font-size: 12px; height: 20px; color: #555; font-family: 'Rajdhani', sans-serif; }
         .hidden { display: none; }
+
+        /* Toast */
+        .toast-box { position: fixed; top: 20px; right: 20px; z-index: 100; display: flex; flex-direction: column; gap: 10px; }
+        .toast { background: rgba(20, 20, 20, 0.95); border-left: 4px solid; padding: 15px 20px; border-radius: 4px; color: #fff; min-width: 280px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); transform: translateX(120%); transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); font-size: 13px; display: flex; align-items: center; backdrop-filter: blur(10px); }
+        .toast.show { transform: translateX(0); }
+        .t-icon { margin-right: 10px; font-size: 16px; }
     </style>
 </head>
 <body>
 
-<div class="toast-container" id="toastContainer"></div>
+<div class="toast-box" id="toastBox"></div>
 
 <div class="container">
     <div class="header">
-        <h1>GADKk ADMIN <span class="badge">PRO v11</span></h1>
-        <div style="font-size:12px; color:#555; margin-top:5px;">FINANCIAL COMMAND CENTER</div>
+        <h1>GADKk ADMIN <span class="badge">PRO v12</span></h1>
+        <div style="font-size:12px; color:#555; margin-top:5px;">FINANCIAL CONTROL CENTER</div>
     </div>
 
-    <button id="connectBtn" class="btn btn-connect" onclick="connectWallet()">🔑 点击验证管理员身份</button>
+    <button id="connectBtn" class="btn btn-connect" onclick="connectWallet()">🔑 验证管理员身份</button>
 
     <div class="card">
         <div class="card-header">
             <span>🛡️ 自动回流 (LP Fund)</span>
-            <span style="color:var(--primary)"><span class="status-dot" style="color:var(--primary)"></span>Active</span>
+            <span style="color:var(--primary)">● Active</span>
         </div>
-        <div class="dashboard-grid" style="grid-template-columns: 1fr; margin-bottom: 10px;">
-            <div class="stat-box">
+        <div class="grid" style="grid-template-columns: 1fr;">
+            <div class="stat-item">
                 <div class="stat-label">待加池代币 (Accumulated)</div>
                 <div class="stat-val" style="color:var(--primary)" id="lpFundBalance">--</div>
             </div>
         </div>
-        <button class="btn btn-green" onclick="processLP()">⚡ 执行加池 (PROCESS)</button>
+        <button class="btn btn-green" onclick="processLP()">⚡ 执行回流加池 (PROCESS)</button>
     </div>
 
     <div class="card" style="border-color: rgba(255, 69, 0, 0.2);">
         <div class="card-header">
             <span>🚀 智能回购 (Auto Buyback)</span>
-            <span style="color:var(--danger)"><span class="status-dot" style="color:var(--danger)"></span>Ready</span>
+            <span style="color:var(--danger)">● Ready</span>
         </div>
 
-        <div class="dashboard-grid">
-            <div class="stat-box">
-                <div class="stat-label">🏦 营销钱包余额</div>
-                <div class="stat-val" id="marketingBal">0.00</div>
-            </div>
-            <div class="stat-box">
-                <div class="stat-label">⚠️ 市场抛压估算</div>
-                <div class="stat-val highlight" id="marketVolume">0.00</div>
-            </div>
-            <div class="stat-box">
-                <div class="stat-label">📉 待处理积压</div>
-                <div class="stat-val" style="color:#FFD700" id="ledgerBacklog">0.00</div>
-            </div>
-            <div class="stat-box">
-                <div class="stat-label">💰 USDT 金库</div>
-                <div class="stat-val" id="usdtBalance">--</div>
-            </div>
+        <div class="grid">
+            <div class="stat-item"><div class="stat-label">🏦 营销钱包余额</div><div class="stat-val" id="marketingBal">0.00</div></div>
+            <div class="stat-item"><div class="stat-label">⚠️ 估算抛压</div><div class="stat-val highlight" id="marketVolume">0.00</div></div>
+            <div class="stat-item"><div class="stat-label">📉 待处理积压</div><div class="stat-val" style="color:#FFD700" id="ledgerBacklog">0.00</div></div>
+            <div class="stat-item"><div class="stat-label">💰 USDT 金库</div><div class="stat-val" id="usdtBalance">--</div></div>
         </div>
 
-        <div class="mode-tabs">
-            <div class="tab-btn active mode-buy" id="tab-usdt" onclick="switchMode('usdt')">按金额买 (USDT)</div>
-            <div class="tab-btn" id="tab-adkk" onclick="switchMode('adkk')">按数量买 (ADKK)</div>
+        <div class="tabs">
+            <div class="tab active buy" id="tab-usdt" onclick="switchMode('usdt')">按金额买 (USDT)</div>
+            <div class="tab" id="tab-adkk" onclick="switchMode('adkk')">按数量买 (ADKK)</div>
         </div>
 
-        <div id="mode-usdt" class="mode-section">
-            <div class="input-group">
-                <input type="number" class="input-box" id="inputUSDT" placeholder="0.00" oninput="calcFromUSDT()">
+        <div id="mode-usdt">
+            <div class="capsule-row">
+                <div class="capsule cap-blue" onclick="fillMaxUSDT()">💰 填入最大余额</div>
+            </div>
+            
+            <div class="input-wrap">
+                <input type="number" id="inputUSDT" placeholder="输入 USDT 金额" oninput="calcFromUSDT()">
                 <span class="suffix">USDT</span>
             </div>
-            <div class="helper-text">
-                <span class="action-link" style="color:var(--secondary)" onclick="fillMaxUSDT()">[最大余额]</span>
-                <span id="previewFromUSDT" style="color:var(--secondary)">≈ 0.00 ADKK</span>
-            </div>
+            <div class="helper-text" id="previewFromUSDT" style="color:var(--secondary)"></div>
             <button class="btn" style="background: var(--secondary); color:#000" onclick="buyByUSDT()">🔵 确认买入 (BUY)</button>
         </div>
 
-        <div id="mode-adkk" class="mode-section hidden">
-            <div class="input-group">
-                <input type="number" class="input-box" id="inputADKK" placeholder="0.00" oninput="calcFromADKK()">
+        <div id="mode-adkk" class="hidden">
+            <div class="capsule-row">
+                <div class="capsule cap-gold" onclick="fillBacklog()">📉 填入积压</div>
+                <div class="capsule cap-red" onclick="fillVolume()">⚠️ 填入抛压</div>
+            </div>
+
+            <div class="input-wrap">
+                <input type="number" id="inputADKK" placeholder="输入 ADKK 数量" oninput="calcFromADKK()">
                 <span class="suffix">ADKK</span>
             </div>
-            <div class="helper-text">
-                <div style="display:flex; gap:10px;">
-                    <span class="action-link" style="color:#FFD700" onclick="fillBacklog()">[积压]</span>
-                    <span class="action-link" style="color:var(--danger)" onclick="fillVolume()">[抛压]</span>
-                </div>
-                <span id="previewFromADKK" style="color:var(--danger)">≈ 0.00 USDT</span>
-            </div>
+            <div class="helper-text" id="previewFromADKK" style="color:var(--danger)"></div>
             <button class="btn btn-red" onclick="buyByADKK()">🔥 强力拉盘 (PULL)</button>
         </div>
-
     </div>
 </div>
 
 <script>
-    // --- 🚨 配置区 ---
+    // --- 核心配置 ---
     const BUYBACK_ADDR  = "0xa09e77ed31810b6Ec99b39f0E137c83450Fc8127"; 
     const GADKK_ADDR    = "0xA1aEE242C69E1c0820d165ef12438e0A5eEd0BbA"; 
     const LP_FUND_ADDR  = "0xD7bB38219D069dfDD4F09Fdf568493A4B7d7E4fd"; 
@@ -159,38 +153,36 @@
     const PAIR_ADDR     = "0x5B06dc147F363aa0111549fb5EA992A40feda6fC"; 
     const MARKETING_TAX_RATE = 0.05; 
 
-    // ABI
     const ABI_COMMON = ["function balanceOf(address) view returns (uint256)"];
     const ABI_LP = ["function process() external"];
     const ABI_BUY = ["function buyAndAutoSend(uint256 usdtAmount, uint256 backlogReduced) external", "function totalProcessedBacklog() view returns (uint256)"];
 
     let provider, signer, currentPrice = 0, backlog = 0, volume = 0, vaultBalance = 0;
 
-    // --- UI 交互 ---
     function showToast(msg, type='info') {
-        const icons = { success: '✅', error: '❌', info: 'ℹ️' };
         const div = document.createElement('div');
-        div.className = `toast toast-${type}`;
-        div.innerHTML = `<span class="toast-icon">${icons[type]}</span><span>${msg}</span>`;
-        document.getElementById('toastContainer').appendChild(div);
-        setTimeout(() => div.classList.add('show'), 10);
-        setTimeout(() => { div.classList.remove('show'); setTimeout(() => div.remove(), 400); }, 3000);
+        div.className = `toast`;
+        div.style.borderLeftColor = type==='success'?'var(--primary)':(type==='error'?'var(--danger)':'var(--secondary)');
+        const icon = type==='success'?'✅':(type==='error'?'❌':'ℹ️');
+        div.innerHTML = `<span class="t-icon">${icon}</span><span>${msg}</span>`;
+        document.getElementById('toastBox').appendChild(div);
+        setTimeout(()=>div.classList.add('show'),10);
+        setTimeout(()=>{div.classList.remove('show');setTimeout(()=>div.remove(),300)},3000);
     }
 
     function switchMode(mode) {
         document.getElementById('mode-usdt').classList.add('hidden');
         document.getElementById('mode-adkk').classList.add('hidden');
-        document.getElementById('tab-usdt').classList.remove('active', 'mode-buy');
-        document.getElementById('tab-adkk').classList.remove('active', 'mode-burn');
+        document.getElementById('tab-usdt').classList.remove('active','buy');
+        document.getElementById('tab-adkk').classList.remove('active','burn');
         
         document.getElementById(`mode-${mode}`).classList.remove('hidden');
         const btn = document.getElementById(`tab-${mode}`);
         btn.classList.add('active');
-        if(mode === 'usdt') btn.classList.add('mode-buy');
-        if(mode === 'adkk') btn.classList.add('mode-burn');
+        if(mode==='usdt') btn.classList.add('buy');
+        if(mode==='adkk') btn.classList.add('burn');
     }
 
-    // --- 核心逻辑 ---
     async function connectWallet() {
         if(!window.ethereum) return showToast("请安装 MetaMask", "error");
         try {
@@ -198,13 +190,12 @@
             await provider.send("eth_requestAccounts", []);
             signer = provider.getSigner();
             const addr = await signer.getAddress();
-            // 签名可以增加仪式感，也可以去掉
-            document.getElementById("connectBtn").innerText = `✅ 已连接: ${addr.substring(0,6)}...`;
-            document.getElementById("connectBtn").style.borderColor = "#00FFA3";
-            document.getElementById("connectBtn").style.color = "#00FFA3";
+            document.getElementById("connectBtn").innerText = `✅ ${addr.substring(0,6)}...`;
+            document.getElementById("connectBtn").style.borderColor = "var(--primary)";
+            document.getElementById("connectBtn").style.color = "var(--primary)";
             showToast("系统连接成功", "success");
             refreshData();
-            setInterval(refreshData, 10000);
+            setInterval(refreshData, 8000);
         } catch(e) { showToast("连接取消", "info"); }
     }
 
@@ -215,7 +206,6 @@
         const buyCt = new ethers.Contract(BUYBACK_ADDR, ABI_BUY, provider);
 
         try {
-            // 基础数据
             const lpVal = await tkCt.balanceOf(LP_FUND_ADDR);
             document.getElementById("lpFundBalance").innerText = parseFloat(ethers.utils.formatUnits(lpVal, 18)).toFixed(2);
             
@@ -223,12 +213,10 @@
             vaultBalance = parseFloat(ethers.utils.formatUnits(usdtVal, 18));
             document.getElementById("usdtBalance").innerText = vaultBalance.toFixed(2);
 
-            // 价格
             const pAdkk = parseFloat(ethers.utils.formatUnits(await tkCt.balanceOf(PAIR_ADDR), 18));
             const pUsdt = parseFloat(ethers.utils.formatUnits(await usdtCt.balanceOf(PAIR_ADDR), 18));
-            if(pAdkk > 0) currentPrice = pUsdt / pAdkk;
+            if(pAdkk>0) currentPrice = pUsdt / pAdkk;
 
-            // 账本计算
             const realMark = parseFloat(ethers.utils.formatUnits(await tkCt.balanceOf(MARKETING_ADDR), 18));
             document.getElementById("marketingBal").innerText = realMark.toFixed(2);
             
@@ -238,21 +226,19 @@
             
             volume = backlog / MARKETING_TAX_RATE;
             document.getElementById("marketVolume").innerText = volume.toFixed(2);
-
         } catch(e) { console.error(e); }
     }
 
-    // --- 计算与填充 ---
     function calcFromUSDT() {
-        const val = parseFloat(document.getElementById("inputUSDT").value || 0);
-        if(currentPrice > 0) document.getElementById("previewFromUSDT").innerText = `≈ ${(val/currentPrice).toFixed(2)} ADKK`;
+        const val = parseFloat(document.getElementById("inputUSDT").value||0);
+        if(currentPrice>0) document.getElementById("previewFromUSDT").innerText = `≈ ${(val/currentPrice).toFixed(2)} ADKK`;
     }
     function calcFromADKK() {
-        const val = parseFloat(document.getElementById("inputADKK").value || 0);
+        const val = parseFloat(document.getElementById("inputADKK").value||0);
         const cost = val * currentPrice;
         const el = document.getElementById("previewFromADKK");
         el.innerText = `≈ ${cost.toFixed(4)} USDT`;
-        el.style.color = cost > vaultBalance ? '#FF4500' : 'var(--secondary)';
+        el.style.color = cost > vaultBalance ? '#FF4500' : 'var(--danger)';
         if(cost > vaultBalance) el.innerText += " (余额不足)";
     }
     
@@ -260,15 +246,12 @@
     function fillBacklog() { document.getElementById("inputADKK").value = backlog.toFixed(2); calcFromADKK(); }
     function fillVolume() { document.getElementById("inputADKK").value = volume.toFixed(2); calcFromADKK(); }
 
-    // --- 交易执行 ---
     async function executeBuy(usdtAmt, adkkAmt) {
         if(!signer) return showToast("请先连接钱包", "error");
         const ct = new ethers.Contract(BUYBACK_ADDR, ABI_BUY, signer);
         try {
             showToast("正在发送交易...", "info");
-            // 记账逻辑：不能超过实际积压
             const recordAmt = adkkAmt > backlog ? backlog : adkkAmt;
-            
             const tx = await ct.buyAndAutoSend(
                 ethers.utils.parseUnits(usdtAmt.toFixed(18), 18),
                 ethers.utils.parseUnits(recordAmt.toFixed(18), 18),
@@ -285,14 +268,14 @@
 
     function buyByUSDT() {
         const val = parseFloat(document.getElementById("inputUSDT").value);
-        if(!val || val <= 0) return showToast("输入无效", "error");
+        if(!val || val<=0) return showToast("输入无效", "error");
         if(val > vaultBalance) return showToast("余额不足", "error");
-        executeBuy(val, val / currentPrice);
+        executeBuy(val, val/currentPrice);
     }
 
     function buyByADKK() {
         const val = parseFloat(document.getElementById("inputADKK").value);
-        if(!val || val <= 0) return showToast("输入无效", "error");
+        if(!val || val<=0) return showToast("输入无效", "error");
         const cost = val * currentPrice;
         if(cost > vaultBalance) return showToast("金库余额不足", "error");
         executeBuy(cost, val);
@@ -302,7 +285,7 @@
         if(!signer) return showToast("请先登录", "error");
         const ct = new ethers.Contract(LP_FUND_ADDR, ABI_LP, signer);
         try {
-            showToast("正在加池...", "info");
+            showToast("执行加池...", "info");
             const tx = await ct.process({ gasLimit: 3000000 });
             await tx.wait();
             showToast("✅ 加池成功", "success");
