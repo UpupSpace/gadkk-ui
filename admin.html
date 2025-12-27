@@ -2,8 +2,8 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GADKk ADMIN v17.0 (Stable)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>GADKk ADMIN v18.0</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
@@ -34,7 +34,7 @@
         .btn:active { transform: scale(0.98); }
         .btn:disabled { opacity: 0.8; cursor: not-allowed; filter: brightness(0.8); }
         
-        /* 优化后的 Loading */
+        /* 修复后的 Loader 样式 */
         .loader { display: inline-block; width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.3); border-radius: 50%; border-top-color: #fff; animation: spin 0.8s linear infinite; margin-right: 8px; vertical-align: middle; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
@@ -75,7 +75,7 @@
 <div class="container">
     <div class="header-row">
         <div class="logo-area">
-            <h1>GADKk <span class="badge">PRO v17</span></h1>
+            <h1>GADKk <span class="badge">PRO v18</span></h1>
             <div class="subtitle">FINANCIAL COMMAND CENTER</div>
         </div>
         <div class="lang-switch">
@@ -195,7 +195,7 @@
             btn_buy: "🔵 确认买入 (BUY)",
             btn_pull: "🔥 强力拉盘 (PULL)",
             toast_connect: "系统连接成功",
-            toast_sent: "交易已发送，等待确认...",
+            toast_sent: "交易已发送",
             toast_success: "🚀 操作成功！",
             toast_error: "失败: ",
             balance_low: " (余额不足)"
@@ -218,7 +218,7 @@
             btn_buy: "🔵 Confirm Buy (BUY)",
             btn_pull: "🔥 Power Pull (PULL)",
             toast_connect: "System Connected",
-            toast_sent: "Transaction Sent...",
+            toast_sent: "Transaction Sent",
             toast_success: "🚀 Success!",
             toast_error: "Error: ",
             balance_low: " (Insufficient Balance)"
@@ -268,33 +268,23 @@
         setTimeout(()=>{div.classList.remove('show');setTimeout(()=>div.remove(),300)},3000);
     }
 
-    // 📱 手机端性能优化：智能烟花
+    // 🎉 智能烟花
     function smartCelebrate() {
         const isMobile = window.innerWidth < 768;
-        const count = isMobile ? 60 : 150; // 手机减量，电脑加量
+        const count = isMobile ? 60 : 150; 
         const duration = 2000;
         const end = Date.now() + duration;
 
         (function frame() {
-            confetti({
-                particleCount: isMobile ? 3 : 7,
-                angle: 60,
-                spread: 55,
-                origin: { x: 0 },
-                colors: ['#FF4500', '#FFD700']
-            });
-            confetti({
-                particleCount: isMobile ? 3 : 7,
-                angle: 120,
-                spread: 55,
-                origin: { x: 1 },
-                colors: ['#FF4500', '#FFD700']
-            });
-
-            if (Date.now() < end) {
-                requestAnimationFrame(frame);
-            }
+            confetti({ particleCount: isMobile ? 3 : 7, angle: 60, spread: 55, origin: { x: 0 }, colors: ['#FF4500', '#FFD700'] });
+            confetti({ particleCount: isMobile ? 3 : 7, angle: 120, spread: 55, origin: { x: 1 }, colors: ['#FF4500', '#FFD700'] });
+            if (Date.now() < end) requestAnimationFrame(frame);
         }());
+    }
+
+    // 庆祝加池
+    function celebrateLP() {
+        confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, colors: ['#00FFA3', '#00C2FF'] });
     }
 
     function switchMode(mode) {
@@ -302,7 +292,6 @@
         document.getElementById('mode-adkk').classList.add('hidden');
         document.getElementById('tab-usdt').classList.remove('active','buy');
         document.getElementById('tab-adkk').classList.remove('active','burn');
-        
         document.getElementById(`mode-${mode}`).classList.remove('hidden');
         const btn = document.getElementById(`tab-${mode}`);
         btn.classList.add('active');
@@ -373,16 +362,23 @@
     function fillVolume() { document.getElementById("inputADKK").value = volume.toFixed(2); calcFromADKK(); }
     function fillBacklog() { document.getElementById("inputADKK").value = (backlog / MARKETING_TAX_RATE).toFixed(2); calcFromADKK(); } 
 
-    // 🔥 修复按钮卡死的关键函数
+    // 🔥 终极修复：备份原始 HTML，强制还原
     function setBtnLoading(id, isLoading) {
         const btn = document.getElementById(id);
         if(!btn) return;
+        
         if(isLoading) {
+            // 1. 备份原内容到 dataset (如果还没备份过)
+            if(!btn.dataset.orgHtml) btn.dataset.orgHtml = btn.innerHTML;
             btn.disabled = true;
             btn.innerHTML = `<span class="loader"></span> Processing...`;
         } else {
+            // 2. 还原内容
             btn.disabled = false;
-            // 强制重新渲染文字，防止卡在 Processing
+            if(btn.dataset.orgHtml) {
+                btn.innerHTML = btn.dataset.orgHtml;
+            }
+            // 3. 重新刷一遍语言，防止文字变成默认语言
             setLang(currentLang);
         }
     }
@@ -390,11 +386,10 @@
     async function executeBuy(usdtAmt, adkkVolumeAmt, btnId) {
         if(!signer) return showToast("Connect Wallet First", "error");
         
-        setBtnLoading(btnId, true); 
+        setBtnLoading(btnId, true); // 开始转圈
         const ct = new ethers.Contract(BUYBACK_ADDR, ABI_BUY, signer);
         try {
             showToast("Sending...", "info");
-            
             const intendedTaxReduction = adkkVolumeAmt * MARKETING_TAX_RATE;
             const actualBacklogToReduce = intendedTaxReduction > backlog ? backlog : intendedTaxReduction;
 
@@ -406,16 +401,18 @@
             showToast(i18n[currentLang].toast_sent, "info");
             await tx.wait();
             
-            smartCelebrate(); // 智能烟花
+            smartCelebrate(); 
             showToast(i18n[currentLang].toast_success, "success");
             
             document.getElementById("inputUSDT").value = "";
             document.getElementById("inputADKK").value = "";
+            
+            // 🛑 交易完成，立即停止转圈！
+            setBtnLoading(btnId, false);
             refreshData();
-        } catch(e) { showToast(i18n[currentLang].toast_error + (e.reason || e.message), "error"); }
-        finally { 
-            // 🛑 核心修复：无论成功失败，必须重置按钮
-            setBtnLoading(btnId, false); 
+        } catch(e) { 
+            showToast(i18n[currentLang].toast_error + (e.reason || e.message), "error");
+            setBtnLoading(btnId, false); // 失败也要停止转圈！
         }
     }
 
@@ -423,7 +420,6 @@
         const val = parseFloat(document.getElementById("inputUSDT").value);
         if(!val || val<=0) return showToast("Invalid Input", "error");
         if(val > vaultBalance) return showToast("Low Balance", "error");
-        
         const estimatedVolume = val / currentPrice;
         executeBuy(val, estimatedVolume, 'btn-buy-usdt');
     }
@@ -433,7 +429,6 @@
         if(!val || val<=0) return showToast("Invalid Input", "error");
         const cost = val * currentPrice;
         if(cost > vaultBalance) return showToast("Low Balance", "error");
-        
         executeBuy(cost, val, 'btn-buy-adkk');
     }
 
@@ -446,10 +441,15 @@
             showToast("Processing...", "info");
             const tx = await ct.process({ gasLimit: 3000000 });
             await tx.wait();
+            celebrateLP();
             showToast(i18n[currentLang].toast_success, "success");
+            
+            setBtnLoading('btn-process', false); // 立即还原
             refreshData();
-        } catch(e) { showToast(e.message, "error"); }
-        finally { setBtnLoading('btn-process', false); }
+        } catch(e) { 
+            showToast(e.message, "error"); 
+            setBtnLoading('btn-process', false); // 失败还原
+        }
     }
 </script>
 </body>
