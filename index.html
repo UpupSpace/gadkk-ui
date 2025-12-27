@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>GADKk FARM PRO v13</title>
+    <title>GADKk FARM PRO v13.1</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <style>
@@ -11,7 +11,6 @@
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { background: radial-gradient(circle at top, #1a2a3a 0%, var(--bg) 100%); color: #fff; font-family: 'Inter', sans-serif; display: flex; flex-direction: column; align-items: center; min-height: 100vh; margin: 0; padding: 20px; overflow-x: hidden; }
         
-        /* 金钱雨 (高性能版) */
         .rain-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; overflow: hidden; }
         .bill { position: absolute; top: -100px; width: 50px; height: 25px; background: #e0e0e0; border: 1px solid #2e7d32; border-radius: 2px; opacity: 0.5; animation: fall linear infinite; will-change: transform; display: flex; justify-content: center; align-items: center; font-family: serif; color: #1b5e20; font-weight: bold; font-size: 10px; }
         .bill::after { content: '$100'; }
@@ -26,32 +25,26 @@
         .wallet-btn:active { transform: scale(0.95); }
 
         .card { background: var(--card); backdrop-filter: blur(20px); border: 1px solid var(--border); border-radius: 24px; padding: 24px; margin-bottom: 20px; box-shadow: 0 15px 40px rgba(0,0,0,0.4); }
-        
-        /* 奖励卡片 */
         .reward-card { background: linear-gradient(160deg, rgba(255, 215, 0, 0.05) 0%, var(--card) 60%); border-color: rgba(255, 215, 0, 0.2); text-align: center; }
         .reward-val { font-family: 'Rajdhani', sans-serif; font-size: 42px; font-weight: 700; color: #fff; text-shadow: 0 0 20px rgba(255, 215, 0, 0.4); margin: 5px 0; }
         
-        /* 统计栏 */
         .pool-stats { display: flex; gap: 15px; margin-bottom: 20px; }
         .stat-item { flex: 1; background: rgba(0,0,0,0.3); padding: 12px; border-radius: 16px; text-align: center; border: 1px solid var(--border); }
         .stat-label { font-size: 11px; color: #888; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
         .stat-num { font-family: 'Rajdhani', sans-serif; font-size: 18px; font-weight: 700; color: var(--accent); }
 
-        /* 标签页 */
         .tabs { display: flex; background: rgba(0,0,0,0.3); padding: 4px; border-radius: 12px; margin-bottom: 20px; border: 1px solid var(--border); }
         .tab-btn { flex: 1; padding: 12px; text-align: center; color: #666; cursor: pointer; border-radius: 10px; font-size: 14px; font-weight: 600; transition: 0.3s; }
         .tab-btn.active { background: rgba(255,255,255,0.1); color: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
         .tab-btn.active#t-stake { color: var(--primary); }
         .tab-btn.active#t-unstake { color: #FF4500; }
 
-        /* 输入框 - 重点优化 */
         .input-wrap { position: relative; margin: 10px 0 20px; background: #0f0f12; border: 1px solid var(--border); border-radius: 14px; padding: 0 15px; display: flex; align-items: center; transition: 0.3s; }
         .input-wrap:focus-within { border-color: var(--primary); box-shadow: 0 0 15px rgba(0, 255, 163, 0.15); }
         .input-box { width: 100%; background: none; border: none; color: #fff; padding: 18px 0; font-size: 20px; font-family: 'Rajdhani', sans-serif; outline: none; font-weight: bold; }
         .max-btn { background: rgba(0, 255, 163, 0.15); color: var(--primary); font-size: 12px; padding: 6px 10px; border-radius: 8px; cursor: pointer; font-weight: 700; transition: 0.2s; letter-spacing: 0.5px; border: 1px solid rgba(0, 255, 163, 0.2); }
         .max-btn:active { transform: scale(0.9); }
 
-        /* 按钮 */
         .btn { width: 100%; padding: 18px; border-radius: 14px; border: none; font-size: 16px; font-weight: 700; cursor: pointer; font-family: 'Inter', sans-serif; transition: 0.2s; margin-top: 5px; position: relative; overflow: hidden; }
         .btn:active { transform: scale(0.98); }
         .btn-gold { background: linear-gradient(135deg, #FFD700, #FFA500); color: #000; box-shadow: 0 5px 20px rgba(255, 215, 0, 0.25); }
@@ -62,7 +55,6 @@
         .revoke-link { text-align: center; margin-top: 15px; font-size: 12px; color: #666; cursor: pointer; text-decoration: underline; transition: 0.2s; }
         .revoke-link:hover { color: #FF4500; }
 
-        /* Toast 弹窗 */
         .toast-box { position: fixed; top: 20px; right: 20px; z-index: 999; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
         .toast { pointer-events: auto; background: rgba(20, 20, 30, 0.95); border-left: 4px solid; padding: 16px 20px; border-radius: 6px; color: #fff; min-width: 280px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); backdrop-filter: blur(10px); transform: translateX(120%); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); font-size: 13px; display: flex; align-items: center; border: 1px solid rgba(255,255,255,0.05); }
         .toast.show { transform: translateX(0); }
@@ -79,7 +71,7 @@
 
 <div class="app-container">
     <div class="navbar">
-        <div class="logo">GADKk FARM <span style="font-size:10px; vertical-align:top; color:var(--primary); font-weight:bold;">PRO</span></div>
+        <div class="logo">GADKk FARM <span style="font-size:10px; vertical-align:top; color:var(--primary); font-weight:bold;">PRO v13.1</span></div>
         <div id="connectBtn" class="wallet-btn" onclick="connectWallet()">📡 连接钱包</div>
     </div>
 
@@ -159,13 +151,10 @@
     ];
 
     let provider, signer, userAddr, poolCt, tokenCt;
-    
-    // 🔥 核心变量：存储原始的大数，解决精度丢失问题
     let rawWalletBalance = ethers.BigNumber.from(0); 
     let rawStakedBalance = ethers.BigNumber.from(0);
     let allowanceVal = ethers.BigNumber.from(0);
 
-    // --- 弹窗逻辑 ---
     function showToast(msg, type='info') {
         const div = document.createElement('div');
         div.className = `toast`;
@@ -177,7 +166,6 @@
         setTimeout(()=>{div.classList.remove('show');setTimeout(()=>div.remove(),300)},3000);
     }
 
-    // --- 核心连接与刷新 ---
     async function connectWallet() {
         if(!window.ethereum) return showToast("请安装 MetaMask", "error");
         try {
@@ -201,40 +189,31 @@
     async function refreshData() {
         if(!userAddr) return;
         try {
-            // 1. 获取钱包余额 (存入原始 BigNumber)
             rawWalletBalance = await tokenCt.balanceOf(userAddr);
-            // 显示时保留 4 位小数，避免界面太长
             document.getElementById("walletBal").innerText = parseFloat(ethers.utils.formatUnits(rawWalletBalance, 18)).toFixed(4);
 
-            // 2. 获取已质押量
             const info = await poolCt.userInfo(userAddr);
             rawStakedBalance = info[0];
             document.getElementById("stakedBal").innerText = parseFloat(ethers.utils.formatUnits(rawStakedBalance, 18)).toFixed(4);
 
-            // 3. 待领取奖励
             const pending = await poolCt.pendingReward(userAddr);
             document.getElementById("pendingReward").innerText = parseFloat(ethers.utils.formatUnits(pending, 18)).toFixed(4);
 
-            // 4. 全网总质押
             const totalStakedRaw = await tokenCt.balanceOf(POOL_ADDR);
             const totalStaked = parseFloat(ethers.utils.formatUnits(totalStakedRaw, 18));
             document.getElementById("totalStaked").innerText = totalStaked.toFixed(2);
 
-            // 5. 占比计算
             const myStaked = parseFloat(ethers.utils.formatUnits(rawStakedBalance, 18));
             let share = totalStaked > 0 ? (myStaked / totalStaked) * 100 : 0;
             document.getElementById("poolShare").innerText = share.toFixed(4) + "%";
 
-            // 6. 检查授权
             allowanceVal = await tokenCt.allowance(userAddr, POOL_ADDR);
             checkState(); 
 
         } catch(e) { console.error(e); }
     }
 
-    // --- 状态检查逻辑 ---
     function checkState() {
-        // 如果授权额度 > 0 (通常是无限)，则显示质押，否则显示授权
         if (allowanceVal.gt(0)) {
             document.getElementById("btnApprove").classList.add("hidden");
             document.getElementById("btnStake").classList.remove("hidden");
@@ -247,14 +226,10 @@
     }
 
     function handleInput() {
-        // 当用户手动输入时，可以加一些逻辑，目前留空即可
     }
 
-    // 🔥 修复 BUG 核心：点击 MAX 时使用原始数据
     function fillMaxStake() {
-        // 输入框显示给人看的数字 (字符串)
         document.getElementById("stakeIn").value = ethers.utils.formatUnits(rawWalletBalance, 18);
-        // 标记我们想用 MAX，这在 deposit() 里会用到
         document.getElementById("stakeIn").dataset.isMax = "true";
     }
 
@@ -263,11 +238,9 @@
         document.getElementById("unstakeIn").dataset.isMax = "true";
     }
 
-    // --- 交易功能 ---
     async function approve() {
         if(!signer) return showToast("请连接钱包", "error");
         try {
-            // 你想要的：明确告诉用户授权多少
             showToast("正在授权最大额度 (无限)...", "info");
             const tx = await tokenCt.approve(POOL_ADDR, ethers.constants.MaxUint256);
             await tx.wait();
@@ -294,27 +267,21 @@
 
         try {
             showToast("正在确认质押...", "info");
-            
             let amountToStake;
-            // 🛑 核心修复：如果用户点了 MAX，或者输入的数字跟余额完全一样，直接用 rawWalletBalance
-            // 这样就绝对不会有 0.000000000000001 的误差导致的 underflow
             if (inputEl.dataset.isMax === "true" || valStr === ethers.utils.formatUnits(rawWalletBalance, 18)) {
                 amountToStake = rawWalletBalance;
                 console.log("Using Raw Balance (MAX mode)");
             } else {
                 amountToStake = ethers.utils.parseUnits(valStr, 18);
             }
-
             const tx = await poolCt.deposit(amountToStake);
             await tx.wait();
             showToast("✅ 质押成功！LP 已存入", "success");
-            
             inputEl.value = "";
             inputEl.dataset.isMax = "false";
             refreshData();
         } catch(e) { 
             console.error(e);
-            // 优化报错显示
             let errMsg = e.reason || e.message;
             if(errMsg.includes("ds-math-sub-underflow")) errMsg = "余额不足或精度误差 (请点击MAX重试)";
             showToast("失败: " + errMsg, "error"); 
@@ -328,14 +295,12 @@
 
         try {
             showToast("正在赎回本金...", "info");
-            
             let amountToWithdraw;
             if (inputEl.dataset.isMax === "true" || valStr === ethers.utils.formatUnits(rawStakedBalance, 18)) {
                 amountToWithdraw = rawStakedBalance;
             } else {
                 amountToWithdraw = ethers.utils.parseUnits(valStr, 18);
             }
-
             const tx = await poolCt.withdraw(amountToWithdraw);
             await tx.wait();
             showToast("✅ 赎回成功！本金已到账", "success");
@@ -363,11 +328,10 @@
         document.getElementById('panel-'+t).classList.remove('hidden');
     }
 
-    // 启动金钱雨
     function initRain() {
         const container = document.getElementById('rain');
         const isMobile = window.innerWidth < 768;
-        const count = isMobile ? 6 : 15; // 手机端进一步减少粒子以提升性能
+        const count = isMobile ? 6 : 15; 
         for(let i=0; i<count; i++) {
             const bill = document.createElement('div');
             bill.className = 'bill';
