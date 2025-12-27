@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>GADKk ADMIN v18.0</title>
+    <title>GADKk ADMIN v19.0</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
@@ -22,19 +22,27 @@
         .lang-btn { padding: 4px 10px; border-radius: 16px; font-size: 11px; cursor: pointer; color: #888; transition: 0.3s; font-weight: 600; }
         .lang-btn.active { background: var(--primary); color: #000; box-shadow: 0 0 10px rgba(0,255,163,0.3); }
 
-        .card { background: var(--card); border: 1px solid var(--border); backdrop-filter: blur(20px); border-radius: 20px; padding: 20px; margin-bottom: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.4); position: relative; overflow: hidden; transition: transform 0.2s; }
+        .card { background: var(--card); border: 1px solid var(--border); backdrop-filter: blur(20px); border-radius: 20px; padding: 24px; margin-bottom: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.4); position: relative; overflow: hidden; transition: transform 0.2s; }
         
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
-        .stat-item { background: rgba(0,0,0,0.3); border: 1px solid var(--border); padding: 12px; border-radius: 12px; text-align: center; }
-        .stat-label { font-size: 11px; color: #666; margin-bottom: 4px; }
-        .stat-val { font-family: 'Rajdhani', sans-serif; font-size: 18px; font-weight: 700; color: #eee; }
+        /* 🔥 优化：增加间距和分割线 */
+        .card-header { 
+            display: flex; justify-content: space-between; align-items: center; 
+            font-size: 12px; font-weight: 700; color: #888; text-transform: uppercase; 
+            margin-bottom: 25px; /* 增加间距 */
+            padding-bottom: 15px; /* 增加内边距 */
+            border-bottom: 1px dashed rgba(255,255,255,0.1); /* 增加分割线 */
+        }
+        
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 25px; }
+        .stat-item { background: rgba(0,0,0,0.3); border: 1px solid var(--border); padding: 15px; border-radius: 14px; text-align: center; }
+        .stat-label { font-size: 11px; color: #666; margin-bottom: 6px; }
+        .stat-val { font-family: 'Rajdhani', sans-serif; font-size: 20px; font-weight: 700; color: #eee; }
         .highlight { color: var(--danger); text-shadow: 0 0 10px rgba(255, 69, 0, 0.3); }
 
         .btn { width: 100%; padding: 16px; border-radius: 12px; border: none; font-size: 15px; font-weight: 700; cursor: pointer; transition: 0.2s; margin-top: 5px; font-family: 'Inter', sans-serif; position: relative; overflow: hidden; }
         .btn:active { transform: scale(0.98); }
         .btn:disabled { opacity: 0.8; cursor: not-allowed; filter: brightness(0.8); }
         
-        /* 修复后的 Loader 样式 */
         .loader { display: inline-block; width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.3); border-radius: 50%; border-top-color: #fff; animation: spin 0.8s linear infinite; margin-right: 8px; vertical-align: middle; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
@@ -42,28 +50,28 @@
         .btn-green { background: linear-gradient(135deg, #00FFA3, #00C2FF); color: #000; box-shadow: 0 4px 15px rgba(0, 255, 163, 0.2); }
         .btn-red { background: linear-gradient(135deg, #FF4500, #C21500); color: #fff; box-shadow: 0 4px 15px rgba(255, 69, 0, 0.2); }
 
-        .input-wrap { position: relative; background: #111; border: 1px solid var(--border); border-radius: 12px; display: flex; align-items: center; padding: 0 15px; transition: 0.3s; margin-bottom: 10px; }
+        .input-wrap { position: relative; background: #111; border: 1px solid var(--border); border-radius: 12px; display: flex; align-items: center; padding: 0 15px; transition: 0.3s; margin-bottom: 12px; }
         .input-wrap:focus-within { border-color: var(--secondary); box-shadow: 0 0 15px rgba(0, 194, 255, 0.1); }
         .input-wrap input { width: 100%; background: none; border: none; color: #fff; font-size: 18px; padding: 16px 0; font-family: 'Rajdhani', sans-serif; outline: none; }
         .suffix { font-size: 12px; color: #666; font-weight: bold; }
 
-        .tabs { display: flex; background: rgba(0,0,0,0.3); padding: 4px; border-radius: 10px; margin-bottom: 20px; border: 1px solid var(--border); }
+        .tabs { display: flex; background: rgba(0,0,0,0.3); padding: 4px; border-radius: 10px; margin-bottom: 25px; border: 1px solid var(--border); }
         .tab { flex: 1; padding: 10px; text-align: center; font-size: 12px; color: #666; cursor: pointer; border-radius: 8px; transition: 0.3s; font-weight: 600; }
         .tab.active { background: rgba(255,255,255,0.1); color: #fff; }
         .tab.active.buy { color: var(--secondary); }
         .tab.active.burn { color: var(--danger); }
 
-        .capsule-row { display: flex; gap: 8px; justify-content: flex-end; margin-bottom: 8px; flex-wrap: wrap; }
-        .capsule { padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: 600; cursor: pointer; border: 1px solid transparent; transition: 0.2s; display: flex; align-items: center; gap: 4px; }
+        .capsule-row { display: flex; gap: 8px; justify-content: flex-end; margin-bottom: 10px; flex-wrap: wrap; }
+        .capsule { padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; cursor: pointer; border: 1px solid transparent; transition: 0.2s; display: flex; align-items: center; gap: 4px; }
         .cap-gold { background: rgba(255, 215, 0, 0.1); color: #FFD700; border-color: rgba(255, 215, 0, 0.2); }
         .cap-red { background: rgba(255, 69, 0, 0.1); color: #FF4500; border-color: rgba(255, 69, 0, 0.2); }
         .cap-blue { background: rgba(0, 194, 255, 0.1); color: #00C2FF; border-color: rgba(0, 194, 255, 0.2); }
         
-        .helper-text { text-align: right; font-size: 12px; height: 20px; color: #555; font-family: 'Rajdhani', sans-serif; }
+        .helper-text { text-align: right; font-size: 12px; height: 20px; color: #555; font-family: 'Rajdhani', sans-serif; margin-bottom: 5px; }
         .hidden { display: none; }
 
         .toast-box { position: fixed; top: 20px; right: 20px; z-index: 100; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
-        .toast { pointer-events: auto; background: rgba(20, 20, 20, 0.95); border-left: 4px solid; padding: 15px 20px; border-radius: 4px; color: #fff; min-width: 280px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); transform: translateX(120%); transition: 0.3s; font-size: 13px; display: flex; align-items: center; backdrop-filter: blur(10px); }
+        .toast { pointer-events: auto; background: rgba(20, 20, 20, 0.95); border-left: 4px solid; padding: 15px 20px; border-radius: 4px; color: #fff; min-width: 280px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); transform: translateX(120%); transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); font-size: 13px; display: flex; align-items: center; backdrop-filter: blur(10px); }
         .toast.show { transform: translateX(0); }
         .t-icon { margin-right: 10px; font-size: 16px; }
     </style>
@@ -75,7 +83,7 @@
 <div class="container">
     <div class="header-row">
         <div class="logo-area">
-            <h1>GADKk <span class="badge">PRO v18</span></h1>
+            <h1>GADKk <span class="badge">PRO v19</span></h1>
             <div class="subtitle">FINANCIAL COMMAND CENTER</div>
         </div>
         <div class="lang-switch">
@@ -176,6 +184,33 @@
 </div>
 
 <script>
+    // --- 🎵 原生合成音效 (Audio Context) ---
+    function playDing() {
+        try {
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            if (!AudioContext) return;
+            const ctx = new AudioContext();
+            
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            
+            // 声音设计：清脆的“叮”声
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(800, ctx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(1400, ctx.currentTime + 0.1);
+            
+            gain.gain.setValueAtTime(0.3, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.6);
+            
+            osc.start();
+            osc.stop(ctx.currentTime + 0.6);
+        } catch(e) { console.log('Audio blocked'); }
+    }
+
+    // --- 🌍 字典 ---
     const i18n = {
         cn: {
             verify_admin: "🔑 验证管理员身份",
@@ -268,12 +303,12 @@
         setTimeout(()=>{div.classList.remove('show');setTimeout(()=>div.remove(),300)},3000);
     }
 
-    // 🎉 智能烟花
     function smartCelebrate() {
         const isMobile = window.innerWidth < 768;
         const count = isMobile ? 60 : 150; 
         const duration = 2000;
         const end = Date.now() + duration;
+        playDing(); // 🔥 触发音效
 
         (function frame() {
             confetti({ particleCount: isMobile ? 3 : 7, angle: 60, spread: 55, origin: { x: 0 }, colors: ['#FF4500', '#FFD700'] });
@@ -282,9 +317,9 @@
         }());
     }
 
-    // 庆祝加池
     function celebrateLP() {
         confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, colors: ['#00FFA3', '#00C2FF'] });
+        playDing(); // 🔥 触发音效
     }
 
     function switchMode(mode) {
@@ -310,6 +345,7 @@
             document.getElementById("connectBtn").style.borderColor = "var(--primary)";
             document.getElementById("connectBtn").style.color = "var(--primary)";
             showToast(i18n[currentLang].toast_connect, "success");
+            playDing();
             refreshData();
             setInterval(refreshData, 8000);
         } catch(e) { showToast("Canceled", "info"); }
@@ -362,31 +398,23 @@
     function fillVolume() { document.getElementById("inputADKK").value = volume.toFixed(2); calcFromADKK(); }
     function fillBacklog() { document.getElementById("inputADKK").value = (backlog / MARKETING_TAX_RATE).toFixed(2); calcFromADKK(); } 
 
-    // 🔥 终极修复：备份原始 HTML，强制还原
     function setBtnLoading(id, isLoading) {
         const btn = document.getElementById(id);
         if(!btn) return;
-        
         if(isLoading) {
-            // 1. 备份原内容到 dataset (如果还没备份过)
             if(!btn.dataset.orgHtml) btn.dataset.orgHtml = btn.innerHTML;
             btn.disabled = true;
             btn.innerHTML = `<span class="loader"></span> Processing...`;
         } else {
-            // 2. 还原内容
             btn.disabled = false;
-            if(btn.dataset.orgHtml) {
-                btn.innerHTML = btn.dataset.orgHtml;
-            }
-            // 3. 重新刷一遍语言，防止文字变成默认语言
+            if(btn.dataset.orgHtml) btn.innerHTML = btn.dataset.orgHtml;
             setLang(currentLang);
         }
     }
 
     async function executeBuy(usdtAmt, adkkVolumeAmt, btnId) {
         if(!signer) return showToast("Connect Wallet First", "error");
-        
-        setBtnLoading(btnId, true); // 开始转圈
+        setBtnLoading(btnId, true);
         const ct = new ethers.Contract(BUYBACK_ADDR, ABI_BUY, signer);
         try {
             showToast("Sending...", "info");
@@ -407,12 +435,11 @@
             document.getElementById("inputUSDT").value = "";
             document.getElementById("inputADKK").value = "";
             
-            // 🛑 交易完成，立即停止转圈！
             setBtnLoading(btnId, false);
             refreshData();
         } catch(e) { 
             showToast(i18n[currentLang].toast_error + (e.reason || e.message), "error");
-            setBtnLoading(btnId, false); // 失败也要停止转圈！
+            setBtnLoading(btnId, false);
         }
     }
 
@@ -435,7 +462,6 @@
     async function processLP() {
         if(!signer) return showToast("Connect Wallet", "error");
         setBtnLoading('btn-process', true);
-        
         const ct = new ethers.Contract(LP_FUND_ADDR, ABI_LP, signer);
         try {
             showToast("Processing...", "info");
@@ -443,12 +469,11 @@
             await tx.wait();
             celebrateLP();
             showToast(i18n[currentLang].toast_success, "success");
-            
-            setBtnLoading('btn-process', false); // 立即还原
+            setBtnLoading('btn-process', false);
             refreshData();
         } catch(e) { 
             showToast(e.message, "error"); 
-            setBtnLoading('btn-process', false); // 失败还原
+            setBtnLoading('btn-process', false);
         }
     }
 </script>
