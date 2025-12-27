@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GADKk ADMIN v12.1</title>
+    <title>GADKk ADMIN v14.0</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <style>
@@ -16,7 +16,6 @@
         .header { text-align: center; margin-bottom: 30px; }
         h1 { margin: 0; font-family: 'Rajdhani', sans-serif; font-size: 28px; letter-spacing: 2px; color: #fff; text-shadow: 0 0 20px rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; gap: 10px; }
         
-        /* 标签样式 */
         .badge { background: rgba(0, 255, 163, 0.1); border: 1px solid var(--primary); color: var(--primary); padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 800; letter-spacing: 1px; box-shadow: 0 0 10px rgba(0, 255, 163, 0.2); }
 
         .card { background: var(--card); border: 1px solid var(--border); backdrop-filter: blur(20px); border-radius: 20px; padding: 20px; margin-bottom: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
@@ -69,7 +68,7 @@
 
 <div class="container">
     <div class="header">
-        <h1>GADKk ADMIN <span class="badge">PRO v12.1</span></h1>
+        <h1>GADKk ADMIN <span class="badge">PRO v14.0</span></h1>
         <div style="font-size:12px; color:#555; margin-top:5px;">FINANCIAL CONTROL CENTER</div>
     </div>
 
@@ -97,8 +96,8 @@
 
         <div class="grid">
             <div class="stat-item"><div class="stat-label">🏦 营销钱包余额</div><div class="stat-val" id="marketingBal">0.00</div></div>
-            <div class="stat-item"><div class="stat-label">⚠️ 估算抛压</div><div class="stat-val highlight" id="marketVolume">0.00</div></div>
-            <div class="stat-item"><div class="stat-label">📉 待处理积压</div><div class="stat-val" style="color:#FFD700" id="ledgerBacklog">0.00</div></div>
+            <div class="stat-item"><div class="stat-label">⚠️ 剩余抛压 (Volume)</div><div class="stat-val highlight" id="marketVolume">0.00</div></div>
+            <div class="stat-item"><div class="stat-label">📉 待处理积压 (Backlog)</div><div class="stat-val" style="color:#FFD700" id="ledgerBacklog">0.00</div></div>
             <div class="stat-item"><div class="stat-label">💰 USDT 金库</div><div class="stat-val" id="usdtBalance">--</div></div>
         </div>
 
@@ -121,11 +120,10 @@
 
         <div id="mode-adkk" class="hidden">
             <div class="capsule-row">
-                <div class="capsule cap-gold" onclick="fillBacklog()">📉 填入积压</div>
-                <div class="capsule cap-red" onclick="fillVolume()">⚠️ 填入抛压</div>
+                <div class="capsule cap-red" onclick="fillVolume()">⚠️ 填入剩余抛压</div>
             </div>
             <div class="input-wrap">
-                <input type="number" id="inputADKK" placeholder="输入 ADKK 数量" oninput="calcFromADKK()">
+                <input type="number" id="inputADKK" placeholder="输入要消除的抛压数量 (ADKK)" oninput="calcFromADKK()">
                 <span class="suffix">ADKK</span>
             </div>
             <div class="helper-text" id="previewFromADKK" style="color:var(--danger)"></div>
@@ -135,14 +133,13 @@
 </div>
 
 <script>
-    // --- 核心配置 ---
     const BUYBACK_ADDR  = "0xa09e77ed31810b6Ec99b39f0E137c83450Fc8127"; 
     const GADKK_ADDR    = "0xA1aEE242C69E1c0820d165ef12438e0A5eEd0BbA"; 
     const LP_FUND_ADDR  = "0xD7bB38219D069dfDD4F09Fdf568493A4B7d7E4fd"; 
     const MARKETING_ADDR= "0x2DBE6300514C4D0Cd7456348512370D3A68d4c1E"; 
     const USDT_ADDR     = "0x55d398326f99059fF775485246999027B3197955"; 
     const PAIR_ADDR     = "0x5B06dc147F363aa0111549fb5EA992A40feda6fC"; 
-    const MARKETING_TAX_RATE = 0.05; 
+    const MARKETING_TAX_RATE = 0.05; // 5%
 
     const ABI_COMMON = ["function balanceOf(address) view returns (uint256)"];
     const ABI_LP = ["function process() external"];
@@ -234,18 +231,26 @@
     }
     
     function fillMaxUSDT() { document.getElementById("inputUSDT").value = vaultBalance; calcFromUSDT(); }
-    function fillBacklog() { document.getElementById("inputADKK").value = backlog.toFixed(2); calcFromADKK(); }
     function fillVolume() { document.getElementById("inputADKK").value = volume.toFixed(2); calcFromADKK(); }
+    function fillBacklog() { document.getElementById("inputADKK").value = (backlog / MARKETING_TAX_RATE).toFixed(2); calcFromADKK(); } // 点击积压也填入对应的Volume
 
-    async function executeBuy(usdtAmt, adkkAmt) {
+    async function executeBuy(usdtAmt, adkkVolumeAmt) {
         if(!signer) return showToast("请先连接钱包", "error");
         const ct = new ethers.Contract(BUYBACK_ADDR, ABI_BUY, signer);
         try {
             showToast("正在发送交易...", "info");
-            const recordAmt = adkkAmt > backlog ? backlog : adkkAmt;
+            
+            // 🛑 核心修复：输入的是 Volume，我们需要算出它对应的 Tax (Backlog)
+            const intendedTaxReduction = adkkVolumeAmt * MARKETING_TAX_RATE;
+            
+            // 确保不扣减超过实际存在的 Backlog
+            const actualBacklogToReduce = intendedTaxReduction > backlog ? backlog : intendedTaxReduction;
+
+            console.log(`Input Vol: ${adkkVolumeAmt}, Tax Equiv: ${intendedTaxReduction}, Actual Reduce: ${actualBacklogToReduce}`);
+
             const tx = await ct.buyAndAutoSend(
                 ethers.utils.parseUnits(usdtAmt.toFixed(18), 18),
-                ethers.utils.parseUnits(recordAmt.toFixed(18), 18),
+                ethers.utils.parseUnits(actualBacklogToReduce.toFixed(18), 18),
                 { gasLimit: 1000000 }
             );
             showToast("交易已发送", "info");
@@ -261,7 +266,10 @@
         const val = parseFloat(document.getElementById("inputUSDT").value);
         if(!val || val<=0) return showToast("输入无效", "error");
         if(val > vaultBalance) return showToast("余额不足", "error");
-        executeBuy(val, val/currentPrice);
+        
+        // 算出这个 USDT 能买多少 Volume，用于记账
+        const estimatedVolume = val / currentPrice;
+        executeBuy(val, estimatedVolume);
     }
 
     function buyByADKK() {
@@ -269,6 +277,8 @@
         if(!val || val<=0) return showToast("输入无效", "error");
         const cost = val * currentPrice;
         if(cost > vaultBalance) return showToast("金库余额不足", "error");
+        
+        // 直接传入输入的 Volume
         executeBuy(cost, val);
     }
 
