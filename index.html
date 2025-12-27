@@ -3,18 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>GADKk FARM PRO v17.0</title>
+    <title>GADKk FARM PRO v18.0</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <style>
-        /* 样式保持不变，只列出修改点 */
+        /* 样式复用 V17 */
         :root { --primary: #00FFA3; --accent: #00C2FF; --bg: #050505; --card: rgba(20, 20, 28, 0.85); --border: rgba(255,255,255,0.08); }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { background: radial-gradient(circle at top, #1a2a3a 0%, var(--bg) 100%); color: #fff; font-family: 'Inter', sans-serif; display: flex; flex-direction: column; align-items: center; min-height: 100vh; margin: 0; padding: 20px; overflow-x: hidden; }
         
         .rain-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; overflow: hidden; }
-        /* 优化：减少阴影和模糊 */
         .bill { position: absolute; top: -100px; width: 50px; height: 25px; background: #e0e0e0; border: 1px solid #2e7d32; border-radius: 2px; opacity: 0.5; animation: fall linear infinite; will-change: transform; display: flex; justify-content: center; align-items: center; font-family: serif; color: #1b5e20; font-weight: bold; font-size: 10px; }
         .bill::after { content: '$100'; }
         @keyframes fall { to { transform: translateY(110vh) rotate(360deg); } }
@@ -88,7 +87,7 @@
 
 <div class="app-container">
     <div class="navbar">
-        <div class="logo">GADKk <span style="font-size:10px; vertical-align:top; color:var(--primary); font-weight:bold;">v17</span></div>
+        <div class="logo">GADKk <span style="font-size:10px; vertical-align:top; color:var(--primary); font-weight:bold;">v18</span></div>
         <div class="nav-actions">
             <div class="lang-switch">
                 <div class="lang-btn active" id="lang-cn" onclick="setLang('cn')">CN</div>
@@ -268,11 +267,9 @@
         setTimeout(()=>{div.classList.remove('show');setTimeout(()=>div.remove(),300)},3000);
     }
 
-    // 🎉 智能烟花 (手机不卡)
     function celebrate(type) {
         const isMobile = window.innerWidth < 768;
         const pCount = isMobile ? 50 : 150; 
-        
         if(type === 'harvest') {
             confetti({ particleCount: pCount, spread: 80, origin: { y: 0.6 }, colors: ['#FFD700', '#FFA500', '#FFFFFF'] });
         } else if (type === 'stake') {
@@ -355,16 +352,19 @@
         document.getElementById("unstakeIn").dataset.isMax = "true";
     }
 
-    // 🔥 修复按钮卡死的关键函数
+    // 🔥 终极修复：备份 -> 恢复
     function setBtnLoading(id, isLoading) {
         const btn = document.getElementById(id);
         if(!btn) return;
+        
         if(isLoading) {
+            if(!btn.dataset.orgHtml) btn.dataset.orgHtml = btn.innerHTML;
             btn.disabled = true;
             btn.innerHTML = `<span class="loader"></span> Processing...`;
         } else {
             btn.disabled = false;
-            setLang(currentLang); // 强制重置文字
+            if(btn.dataset.orgHtml) btn.innerHTML = btn.dataset.orgHtml;
+            setLang(currentLang);
         }
     }
 
@@ -383,7 +383,6 @@
 
     async function revoke() {
         if(!signer) return showToast("Connect Wallet", "error");
-        setBtnLoading('btnRevoke', true); // 虽然是小按钮，但也加个状态
         try {
             showToast(i18n[currentLang].toast_sent, "info");
             const tx = await tokenCt.approve(POOL_ADDR, 0);
@@ -391,10 +390,6 @@
             showToast(i18n[currentLang].toast_success, "success");
             refreshData();
         } catch(e) { showToast(e.message, "error"); }
-        finally { 
-            // 这里因为 revoke 后会被隐藏，所以其实不需要 heavy reset，但为了保险
-            setLang(currentLang);
-        }
     }
 
     async function deposit() {
@@ -418,12 +413,15 @@
             showToast(i18n[currentLang].toast_success, "success");
             inputEl.value = "";
             inputEl.dataset.isMax = "false";
+            
+            setBtnLoading('btnStake', false);
             refreshData();
         } catch(e) { 
             let errMsg = e.reason || e.message;
             if(errMsg.includes("ds-math-sub-underflow")) errMsg = "Precision Error (Use MAX)";
             showToast(i18n[currentLang].toast_error + errMsg, "error"); 
-        } finally { setBtnLoading('btnStake', false); }
+            setBtnLoading('btnStake', false);
+        }
     }
 
     async function withdraw() {
@@ -444,9 +442,12 @@
             await tx.wait();
             showToast(i18n[currentLang].toast_success, "success");
             inputEl.value = "";
+            setBtnLoading('btnWithdraw', false);
             refreshData();
-        } catch(e) { showToast(i18n[currentLang].toast_error + (e.reason||e.message), "error"); }
-        finally { setBtnLoading('btnWithdraw', false); }
+        } catch(e) { 
+            showToast(i18n[currentLang].toast_error + (e.reason||e.message), "error"); 
+            setBtnLoading('btnWithdraw', false);
+        }
     }
 
     async function harvest() {
@@ -459,9 +460,12 @@
             
             celebrate('harvest'); 
             showToast(i18n[currentLang].toast_success, "success");
+            setBtnLoading('btnHarvest', false);
             refreshData();
-        } catch(e) { showToast(i18n[currentLang].toast_error + (e.reason||e.message), "error"); }
-        finally { setBtnLoading('btnHarvest', false); }
+        } catch(e) { 
+            showToast(i18n[currentLang].toast_error + (e.reason||e.message), "error"); 
+            setBtnLoading('btnHarvest', false);
+        }
     }
 
     function switchTab(t) {
@@ -472,11 +476,10 @@
         document.getElementById('panel-'+t).classList.remove('hidden');
     }
 
-    // 智能雨水：手机上少一点
     function initRain() {
         const container = document.getElementById('rain');
         const isMobile = window.innerWidth < 768;
-        const count = isMobile ? 6 : 12; 
+        const count = isMobile ? 6 : 15; 
         for(let i=0; i<count; i++) {
             const bill = document.createElement('div');
             bill.className = 'bill';
