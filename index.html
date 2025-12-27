@@ -3,63 +3,120 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GADKk FARM v6.0 (Dev Test)</title>
+    <title>GADKk FARM PRO</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <style>
-        /* 样式保持不变 */
-        * { box-sizing: border-box; } body { background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%); color: #e0e0e0; font-family: 'Inter', sans-serif; display: flex; flex-direction: column; align-items: center; min-height: 100vh; margin: 0; padding: 20px; overflow-x: hidden; } .app-container { width: 100%; max-width: 480px; position: relative; z-index: 10; } .money-rain-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; z-index: 0; pointer-events: none; perspective: 800px; } .bill { position: absolute; top: -150px; width: 100px; height: 42px; background-color: #f0f5f0; background-image: radial-gradient(ellipse at center, transparent 60%, rgba(46, 125, 50, 0.1) 100%), repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(0,0,0,0.05) 3px); border: 4px solid #2e7d32; border-radius: 2px; box-shadow: 0 0 5px rgba(0,0,0,0.2); animation: fall linear infinite; opacity: 0.9; display: flex; justify-content: center; align-items: center; } .bill::before { content: ''; position: absolute; width: 30px; height: 36px; background: #dcdcdc; border: 1px solid #2e7d32; border-radius: 50%; opacity: 0.8; } .bill::after { content: '100'; position: absolute; width: 100%; height: 100%; display: flex; justify-content: space-between; align-items: flex-start; padding: 2px 4px; font-family: 'Times New Roman', serif; font-weight: bold; font-size: 10px; color: #1b5e20; line-height: 1; } .bill-inner-text { position: absolute; bottom: 2px; right: 4px; font-family: 'Times New Roman', serif; font-weight: bold; font-size: 10px; color: #1b5e20; } @keyframes fall { 0% { transform: translateY(-100px) rotateX(0deg) rotateY(0deg) rotateZ(0deg); opacity: 0; } 10% { opacity: 1; } 100% { transform: translateY(110vh) rotateX(360deg) rotateY(180deg) rotateZ(45deg); opacity: 0.9; } } .navbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; } .logo { font-size: 26px; font-weight: 800; font-family: 'Rajdhani', sans-serif; background: linear-gradient(to right, #00FFA3, #00C2FF); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 2px; text-shadow: 0 0 15px rgba(0, 255, 163, 0.5); } .wallet-badge { background: rgba(0, 255, 163, 0.1); padding: 8px 16px; border-radius: 30px; font-size: 13px; font-weight: 600; color: #00FFA3; border: 1px solid rgba(0, 255, 163, 0.3); cursor: pointer; transition: 0.3s; backdrop-filter: blur(5px); } .wallet-badge:hover { background: rgba(0, 255, 163, 0.2); box-shadow: 0 0 15px rgba(0, 255, 163, 0.3); } .card { background: rgba(20, 20, 30, 0.6); backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 24px; padding: 25px; margin-bottom: 25px; box-shadow: 0 15px 35px rgba(0,0,0,0.5); transition: transform 0.3s; } .card-title { color: #aaa; font-size: 12px; text-transform: uppercase; margin-bottom: 15px; font-weight: 700; letter-spacing: 1.5px; font-family: 'Rajdhani', sans-serif; } .reward-card { background: linear-gradient(160deg, rgba(255, 215, 0, 0.1) 0%, rgba(20, 20, 30, 0.6) 60%); border: 1px solid rgba(255, 215, 0, 0.3); box-shadow: 0 10px 30px rgba(255, 215, 0, 0.15); } .reward-val { font-size: 42px; font-weight: 800; font-family: 'Rajdhani', sans-serif; background: linear-gradient(to bottom, #FFD700, #FFA500); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: 0 0 25px rgba(255, 215, 0, 0.4); margin-bottom: 5px; } .reward-unit { font-size: 14px; color: #FFD700; opacity: 0.8; font-family: 'Rajdhani', sans-serif; } .action-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-family: 'Rajdhani', sans-serif; } .balance-text { font-size: 13px; color: #888; } .input-box { width: 100%; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 15px; border-radius: 12px; font-size: 18px; font-family: 'Rajdhani', sans-serif; font-weight: bold; margin: 10px 0 20px 0; outline: none; transition: 0.3s; } .input-box:focus { border-color: #00FFA3; box-shadow: 0 0 15px rgba(0, 255, 163, 0.2); background: rgba(0,0,0,0.5); } .btn { width: 100%; padding: 18px; border-radius: 12px; border: none; font-size: 16px; font-weight: 800; cursor: pointer; transition: all 0.3s; margin-top: 5px; font-family: 'Inter', sans-serif; position: relative; overflow: hidden; } .btn:active { transform: scale(0.97); } .btn-gold { background: linear-gradient(135deg, #FFD700, #FF8C00); color: #000; box-shadow: 0 5px 20px rgba(255, 215, 0, 0.4); } .btn-green { background: linear-gradient(135deg, #00FFA3, #00C2FF); color: #000; box-shadow: 0 5px 20px rgba(0, 255, 163, 0.4); } .btn-red { background: linear-gradient(135deg, #FF4500, #C21500); color: #fff; box-shadow: 0 5px 20px rgba(255, 69, 0, 0.4); } .btn-approve { background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.2); } .tabs { display: flex; gap: 15px; margin-bottom: 20px; background: rgba(0,0,0,0.3); padding: 5px; border-radius: 14px; } .tab-btn { flex: 1; padding: 12px; background: transparent; color: #888; border-radius: 10px; cursor: pointer; text-align: center; font-size: 14px; font-weight: 600; transition: 0.3s; } .tab-btn.active { background: rgba(40, 40, 50, 0.8); color: #fff; box-shadow: 0 2px 10px rgba(0,0,0,0.2); } #tab-stake.active { color: #00FFA3; text-shadow: 0 0 10px rgba(0, 255, 163, 0.3); } #tab-unstake.active { color: #FF4500; text-shadow: 0 0 10px rgba(255, 69, 0, 0.3); } .hidden { display: none; }
+        :root { --primary: #00FFA3; --accent: #00C2FF; --bg: #050505; --card: rgba(20, 20, 28, 0.8); }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { background: radial-gradient(circle at top, #1a2a3a 0%, var(--bg) 100%); color: #fff; font-family: 'Inter', sans-serif; display: flex; flex-direction: column; align-items: center; min-height: 100vh; margin: 0; padding: 20px; overflow-x: hidden; }
         
-        /* 测试按钮样式 */
-        .btn-reset { margin-top: 10px; padding: 10px; background: #333; color: #ff4500; font-size: 12px; border: 1px dashed #ff4500; }
+        /* --- 优化后的金钱雨 --- */
+        .rain-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; overflow: hidden; }
+        .bill { position: absolute; top: -100px; width: 60px; height: 30px; background: #e0e0e0; border: 1px solid #2e7d32; border-radius: 2px; opacity: 0.7; animation: fall linear infinite; will-change: transform; display: flex; justify-content: center; align-items: center; font-family: serif; color: #1b5e20; font-weight: bold; font-size: 10px; }
+        .bill::after { content: '$100'; }
+        @keyframes fall { to { transform: translateY(110vh) rotate(360deg); } }
+
+        .app-container { width: 100%; max-width: 480px; position: relative; z-index: 10; animation: slideUp 0.6s ease; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        .navbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+        .logo { font-family: 'Rajdhani', sans-serif; font-size: 24px; font-weight: 800; letter-spacing: 2px; background: linear-gradient(to right, var(--primary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .wallet-btn { background: rgba(0, 255, 163, 0.1); border: 1px solid rgba(0, 255, 163, 0.3); color: var(--primary); padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; cursor: pointer; transition: 0.3s; }
+        
+        .card { background: var(--card); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.08); border-radius: 24px; padding: 24px; margin-bottom: 20px; box-shadow: 0 15px 40px rgba(0,0,0,0.4); }
+        
+        /* 奖励卡片 */
+        .reward-card { background: linear-gradient(160deg, rgba(255, 215, 0, 0.05) 0%, var(--card) 60%); border-color: rgba(255, 215, 0, 0.2); text-align: center; }
+        .reward-title { font-size: 12px; color: #FFD700; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 10px; opacity: 0.8; }
+        .reward-val { font-family: 'Rajdhani', sans-serif; font-size: 42px; font-weight: 700; color: #fff; text-shadow: 0 0 20px rgba(255, 215, 0, 0.4); }
+        
+        /* 资金池数据可视化 */
+        .pool-stats { display: flex; gap: 15px; margin-bottom: 20px; }
+        .stat-item { flex: 1; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 12px; text-align: center; border: 1px solid rgba(255,255,255,0.05); }
+        .stat-label { font-size: 11px; color: #888; margin-bottom: 4px; }
+        .stat-num { font-family: 'Rajdhani', sans-serif; font-size: 16px; font-weight: 600; color: var(--accent); }
+
+        /* 操作区 */
+        .tabs { display: flex; background: rgba(0,0,0,0.3); padding: 4px; border-radius: 12px; margin-bottom: 20px; }
+        .tab-btn { flex: 1; padding: 12px; text-align: center; color: #666; cursor: pointer; border-radius: 10px; font-size: 14px; font-weight: 600; transition: 0.3s; }
+        .tab-btn.active { background: rgba(255,255,255,0.1); color: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+        .tab-btn.active#t-stake { color: var(--primary); }
+        .tab-btn.active#t-unstake { color: #FF4500; }
+
+        .input-box { width: 100%; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 16px; border-radius: 12px; font-size: 18px; font-family: 'Rajdhani', sans-serif; outline: none; margin: 10px 0 20px; transition: 0.3s; }
+        .input-box:focus { border-color: var(--primary); box-shadow: 0 0 15px rgba(0, 255, 163, 0.2); }
+
+        .btn { width: 100%; padding: 18px; border-radius: 14px; border: none; font-size: 16px; font-weight: 700; cursor: pointer; font-family: 'Inter', sans-serif; transition: 0.2s; }
+        .btn:active { transform: scale(0.98); }
+        .btn-gold { background: linear-gradient(135deg, #FFD700, #FFA500); color: #000; box-shadow: 0 5px 20px rgba(255, 215, 0, 0.3); }
+        .btn-green { background: linear-gradient(135deg, var(--primary), var(--accent)); color: #000; box-shadow: 0 5px 20px rgba(0, 255, 163, 0.3); }
+        .btn-approve { background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.2); }
+        
+        .toast-container { position: fixed; top: 20px; right: 20px; z-index: 100; display: flex; flex-direction: column; gap: 10px; }
+        .toast { background: rgba(20, 20, 30, 0.95); border-left: 4px solid; padding: 15px 20px; border-radius: 4px; color: #fff; min-width: 280px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); backdrop-filter: blur(10px); transform: translateX(120%); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); font-size: 13px; display: flex; align-items: center; }
+        .toast.show { transform: translateX(0); }
+        .toast-icon { margin-right: 10px; font-size: 16px; }
+        .toast-success { border-color: var(--primary); } .toast-error { border-color: #FF4500; }
+
+        .hidden { display: none; }
+        .row-sb { display: flex; justify-content: space-between; font-size: 12px; color: #888; margin-bottom: 5px; }
     </style>
 </head>
 <body>
 
-<div class="money-rain-container" id="moneyRain"></div>
+<div class="rain-container" id="rain"></div>
+<div class="toast-container" id="toastContainer"></div>
 
 <div class="app-container">
     <div class="navbar">
-        <div class="logo">GADKk FARM <span style="font-size:12px; color:#00FFA3; vertical-align: top;">v6.0</span></div>
-        <div id="connectBtn" class="wallet-badge" onclick="connectWallet()">📡 连接钱包</div>
+        <div class="logo">GADKk FARM <span style="font-size:10px; vertical-align:top; color:var(--primary)">PRO</span></div>
+        <div id="connectBtn" class="wallet-btn" onclick="connectWallet()">📡 连接钱包</div>
     </div>
 
     <div class="card reward-card">
-        <div class="card-title">✨ 待领取分红 (Pending Rewards)</div>
+        <div class="reward-title">✨ 待领取分红 (Pending Rewards)</div>
         <div class="reward-val" id="pendingReward">0.0000</div>
-        <div class="reward-unit">GADKk Token</div>
-        <button class="btn btn-gold" id="harvestBtn" onclick="harvest()">💰 一键领取 (Harvest)</button>
+        <div style="font-size:12px; color:#888; margin-bottom:15px;">GADKk Token</div>
+        <button class="btn btn-gold" onclick="harvest()">💰 一键领取 (Harvest)</button>
+    </div>
+
+    <div class="pool-stats">
+        <div class="stat-item">
+            <div class="stat-label">全网总质押 (Total Staked)</div>
+            <div class="stat-num" id="totalStaked">--</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-label">我的占比 (My Share)</div>
+            <div class="stat-num" id="poolShare" style="color:var(--primary)">0.00%</div>
+        </div>
     </div>
 
     <div class="card">
         <div class="tabs">
-            <div class="tab-btn active" onclick="switchTab('stake')" id="tab-stake">🟢 质押挖矿</div>
-            <div class="tab-btn" onclick="switchTab('unstake')" id="tab-unstake">🔴 赎回本金</div>
+            <div class="tab-btn active" id="t-stake" onclick="switchTab('stake')">🟢 质押挖矿</div>
+            <div class="tab-btn" id="t-unstake" onclick="switchTab('unstake')">🔴 赎回本金</div>
         </div>
 
-        <div id="stake-panel">
-            <div class="action-row">
-                <span style="color:#00FFA3; font-weight:bold;">存入 LP</span>
-                <span class="balance-text">钱包余额: <span id="walletLpBal" style="color:#fff; font-weight:bold;">--</span></span>
+        <div id="panel-stake">
+            <div class="row-sb">
+                <span>存入 LP</span>
+                <span>余额: <span id="walletBal" style="color:#fff">--</span></span>
             </div>
-            <input type="number" id="stakeInput" class="input-box" placeholder="请输入质押数量...">
-            
-            <div id="allowanceSection">
+            <input type="number" id="stakeIn" class="input-box" placeholder="0.00">
+            <div id="approveBox">
                 <button class="btn btn-approve" id="approveBtn" onclick="approve()">🔓 第一步：授权 LP (Approve)</button>
             </div>
-            
             <button class="btn btn-green hidden" id="stakeBtn" onclick="deposit()">⚡ 第二步：确认质押 (Stake)</button>
-            
-            <button class="btn btn-reset" onclick="revoke()">⚠️ 开发者测试：重置授权 (Revoke)</button>
         </div>
 
-        <div id="unstake-panel" class="hidden">
-            <div class="action-row">
-                <span style="color:#FF4500; font-weight:bold;">取出 LP</span>
-                <span class="balance-text">已质押: <span id="stakedBal" style="color:#fff; font-weight:bold;">--</span></span>
+        <div id="panel-unstake" class="hidden">
+            <div class="row-sb">
+                <span>取出 LP</span>
+                <span>已质押: <span id="stakedBal" style="color:#fff">--</span></span>
             </div>
-            <input type="number" id="unstakeInput" class="input-box" placeholder="请输入赎回数量...">
-            <button class="btn btn-red" id="withdrawBtn" onclick="withdraw()">📤 确认赎回 (Withdraw)</button>
+            <input type="number" id="unstakeIn" class="input-box" placeholder="0.00">
+            <button class="btn" style="background:#FF4500; color:#fff" onclick="withdraw()">📤 确认赎回 (Withdraw)</button>
         </div>
     </div>
 </div>
@@ -67,149 +124,170 @@
 <script>
     const POOL_ADDR = "0x75bB76C3fc354CE2f078d613C8e6D3daFeE19797"; 
     const PAIR_ADDR = "0x5B06dc147F363aa0111549fb5EA992A40feda6fC"; 
-    const ABI_POOL = ["function pendingReward(address) view returns (uint256)","function deposit(uint256) external","function withdraw(uint256) external","function userInfo(address) view returns (uint256 amount, uint256 rewardDebt)"];
-    const ABI_TOKEN = ["function balanceOf(address) view returns (uint256)","function approve(address, uint256) external returns (bool)","function allowance(address, address) view returns (uint256)"];
+    
+    // ABI
+    const ABI_POOL = [
+        "function pendingReward(address) view returns (uint256)",
+        "function deposit(uint256) external",
+        "function withdraw(uint256) external",
+        "function userInfo(address) view returns (uint256 amount, uint256 rewardDebt)"
+    ];
+    const ABI_TOKEN = [
+        "function balanceOf(address) view returns (uint256)",
+        "function approve(address, uint256) external returns (bool)",
+        "function allowance(address, address) view returns (uint256)"
+    ];
 
-    let provider, signer, userAddr;
-    let poolContract, tokenContract;
-    let userLpBalance = 0;
+    let provider, signer, userAddr, poolCt, tokenCt;
 
+    // --- 1. 高级弹窗系统 ---
+    function showToast(msg, type='info') {
+        const div = document.createElement('div');
+        div.className = `toast toast-${type}`;
+        const icons = {success:'✅', error:'❌', info:'ℹ️'};
+        div.innerHTML = `<span class="toast-icon">${icons[type]}</span><span>${msg}</span>`;
+        document.getElementById('toastContainer').appendChild(div);
+        setTimeout(() => div.classList.add('show'), 10);
+        setTimeout(() => { div.classList.remove('show'); setTimeout(() => div.remove(), 400); }, 3000);
+    }
+
+    // --- 2. 性能优化的金钱雨 ---
+    function initRain() {
+        const container = document.getElementById('rain');
+        const isMobile = window.innerWidth < 768;
+        const count = isMobile ? 8 : 25; // 手机端只生成 8 个，PC端 25 个
+        
+        for(let i=0; i<count; i++) {
+            const bill = document.createElement('div');
+            bill.className = 'bill';
+            // 随机化初始位置和速度
+            bill.style.left = Math.random() * 100 + 'vw';
+            bill.style.animationDuration = (Math.random() * 5 + 5) + 's'; // 5-10秒
+            bill.style.animationDelay = (Math.random() * 5) + 's';
+            // 随机大小，增加层次感
+            const scale = Math.random() * 0.5 + 0.5;
+            bill.style.transform = `scale(${scale})`;
+            container.appendChild(bill);
+        }
+    }
+
+    // --- 3. 核心逻辑 ---
     async function connectWallet() {
-        if (!window.ethereum) return alert("请安装小狐狸钱包!");
+        if(!window.ethereum) return showToast("请安装 MetaMask", "error");
         try {
             provider = new ethers.providers.Web3Provider(window.ethereum);
             await provider.send("eth_requestAccounts", []);
             signer = provider.getSigner();
             userAddr = await signer.getAddress();
-            poolContract = new ethers.Contract(POOL_ADDR, ABI_POOL, signer);
-            tokenContract = new ethers.Contract(PAIR_ADDR, ABI_TOKEN, signer);
+            
+            poolCt = new ethers.Contract(POOL_ADDR, ABI_POOL, signer);
+            tokenCt = new ethers.Contract(PAIR_ADDR, ABI_TOKEN, signer);
 
-            document.getElementById("connectBtn").innerText = "✅ " + userAddr.substring(0,6) + "...";
-            document.getElementById("connectBtn").style.borderColor = "#00FFA3";
-            document.getElementById("connectBtn").style.color = "#00FFA3";
-            document.getElementById("connectBtn").style.background = "rgba(0, 255, 163, 0.1)";
-
+            document.getElementById("connectBtn").innerText = `✅ ${userAddr.substring(0,6)}...`;
+            document.getElementById("connectBtn").style.borderColor = "var(--primary)";
+            showToast("钱包连接成功", "success");
+            
             refreshData();
             setInterval(refreshData, 10000);
-        } catch(e) { console.error(e); alert("连接失败: " + e.message); }
+        } catch(e) { showToast("连接取消", "info"); }
     }
 
     async function refreshData() {
         if(!userAddr) return;
         try {
-            const balRaw = await tokenContract.balanceOf(userAddr);
-            userLpBalance = parseFloat(ethers.utils.formatUnits(balRaw, 18));
-            document.getElementById("walletLpBal").innerText = userLpBalance.toFixed(4);
+            // 余额
+            const balRaw = await tokenCt.balanceOf(userAddr);
+            document.getElementById("walletBal").innerText = parseFloat(ethers.utils.formatUnits(balRaw, 18)).toFixed(4);
 
-            const userInfo = await poolContract.userInfo(userAddr);
-            document.getElementById("stakedBal").innerText = parseFloat(ethers.utils.formatUnits(userInfo[0], 18)).toFixed(4);
+            // 质押 & 奖励
+            const info = await poolCt.userInfo(userAddr);
+            const staked = parseFloat(ethers.utils.formatUnits(info[0], 18));
+            document.getElementById("stakedBal").innerText = staked.toFixed(4);
 
-            const pending = await poolContract.pendingReward(userAddr);
+            const pending = await poolCt.pendingReward(userAddr);
             document.getElementById("pendingReward").innerText = parseFloat(ethers.utils.formatUnits(pending, 18)).toFixed(4);
 
-            checkAllowance(); 
-        } catch(e) { console.error("刷新失败", e); }
-    }
+            // 🔥 新增：总质押 & 占比计算
+            const totalStakedRaw = await tokenCt.balanceOf(POOL_ADDR);
+            const totalStaked = parseFloat(ethers.utils.formatUnits(totalStakedRaw, 18));
+            document.getElementById("totalStaked").innerText = totalStaked.toFixed(2);
 
-    async function checkAllowance() {
-        try {
-            const allowance = await tokenContract.allowance(userAddr, POOL_ADDR);
-            if (allowance.gt(ethers.utils.parseUnits("0.000001", 18))) {
-                // 已授权：显示质押，隐藏授权
-                document.getElementById("approveBtn").style.display = "none";
-                document.getElementById("stakeBtn").style.display = "block";
+            let share = 0;
+            if(totalStaked > 0) share = (staked / totalStaked) * 100;
+            document.getElementById("poolShare").innerText = share.toFixed(4) + "%";
+
+            // 授权检查
+            const allow = await tokenCt.allowance(userAddr, POOL_ADDR);
+            if(allow.gt(ethers.utils.parseUnits("1000", 18))) {
+                document.getElementById("approveBox").style.display = "none";
                 document.getElementById("stakeBtn").classList.remove("hidden");
             } else {
-                // 未授权：显示授权，隐藏质押
-                document.getElementById("approveBtn").style.display = "block";
-                document.getElementById("stakeBtn").style.display = "none";
+                document.getElementById("approveBox").style.display = "block";
+                document.getElementById("stakeBtn").classList.add("hidden");
             }
+
         } catch(e) { console.error(e); }
     }
 
+    // --- 交易 ---
     async function approve() {
-        if(!signer) return alert("请先连接钱包");
+        if(!signer) return showToast("请连接钱包", "error");
         try {
-            const btn = document.getElementById("approveBtn");
-            btn.innerText = "⏳ 正在授权...";
-            const maxAmt = ethers.constants.MaxUint256;
-            const tx = await tokenContract.approve(POOL_ADDR, maxAmt);
+            showToast("正在授权...", "info");
+            const tx = await tokenCt.approve(POOL_ADDR, ethers.constants.MaxUint256);
             await tx.wait();
-            alert("✅ 授权成功！");
+            showToast("✅ 授权成功", "success");
             refreshData();
-        } catch(e) { alert("授权失败: " + e.message); } 
-        finally { document.getElementById("approveBtn").innerText = "🔓 第一步：授权 LP (Approve)"; }
-    }
-
-    // 🔴 开发者测试：重置授权
-    async function revoke() {
-        if(!signer) return alert("请先连接钱包");
-        if(!confirm("确定要重置授权吗？这将用于测试第一步的授权按钮。\n(需要支付少许 Gas 费)")) return;
-        try {
-            const tx = await tokenContract.approve(POOL_ADDR, 0); // 设为 0
-            alert("正在重置... 请等待链上确认");
-            await tx.wait();
-            alert("✅ 已重置！现在可以看到【第一步：授权】按钮了。");
-            refreshData();
-        } catch(e) { alert("重置失败: " + e.message); }
+        } catch(e) { showToast(e.message, "error"); }
     }
 
     async function deposit() {
-        if(!signer) return alert("请先连接钱包");
-        const amount = document.getElementById("stakeInput").value;
-        if(!amount || amount <= 0) return alert("请输入数量");
-        
-        if(parseFloat(amount) > userLpBalance) {
-            return alert(`余额不足！\n您的余额: ${userLpBalance}\n您想质押: ${amount}`);
-        }
-
+        const val = document.getElementById("stakeIn").value;
+        if(!val) return showToast("输入数量", "error");
         try {
-            const btn = document.getElementById("stakeBtn");
-            btn.innerText = "⏳ 正在质押...";
-            const weiAmt = ethers.utils.parseUnits(amount, 18);
-            const tx = await poolContract.deposit(weiAmt);
+            showToast("交易确认中...", "info");
+            const tx = await poolCt.deposit(ethers.utils.parseUnits(val, 18));
             await tx.wait();
-            alert("✅ 质押成功！");
-            document.getElementById("stakeInput").value = "";
+            showToast("✅ 质押成功", "success");
+            document.getElementById("stakeIn").value = "";
             refreshData();
-        } catch(e) { alert("质押失败: " + e.message); } 
-        finally { document.getElementById("stakeBtn").innerText = "⚡ 第二步：确认质押 (Stake)"; }
+        } catch(e) { showToast(e.reason || "失败", "error"); }
     }
 
     async function withdraw() {
-        if(!signer) return alert("请先连接钱包");
-        const amount = document.getElementById("unstakeInput").value;
-        if(!amount || amount <= 0) return alert("请输入数量");
+        const val = document.getElementById("unstakeIn").value;
+        if(!val) return showToast("输入数量", "error");
         try {
-            const btn = document.getElementById("withdrawBtn");
-            btn.innerText = "⏳ 正在赎回...";
-            const weiAmt = ethers.utils.parseUnits(amount, 18);
-            const tx = await poolContract.withdraw(weiAmt);
+            showToast("正在赎回...", "info");
+            const tx = await poolCt.withdraw(ethers.utils.parseUnits(val, 18));
             await tx.wait();
-            alert("✅ 赎回成功！");
-            document.getElementById("unstakeInput").value = "";
+            showToast("✅ 赎回成功", "success");
+            document.getElementById("unstakeIn").value = "";
             refreshData();
-        } catch(e) { alert("赎回失败: " + e.message); } 
-        finally { document.getElementById("withdrawBtn").innerText = "📤 确认赎回 (Withdraw)"; }
+        } catch(e) { showToast(e.reason || "失败", "error"); }
     }
 
     async function harvest() {
-        if(!signer) return alert("请先连接钱包");
+        if(!signer) return showToast("请连接钱包", "error");
         try {
-            const btn = document.getElementById("harvestBtn");
-            btn.innerText = "⏳ 领取中...";
-            const tx = await poolContract.deposit(0);
+            showToast("正在领取...", "info");
+            const tx = await poolCt.deposit(0);
             await tx.wait();
-            alert("✅ 领取成功！");
+            showToast("✅ 奖励已到账", "success");
             refreshData();
-        } catch(e) { alert("领取失败: " + e.message); } 
-        finally { document.getElementById("harvestBtn").innerText = "💰 一键领取 (Harvest)"; }
+        } catch(e) { showToast(e.reason || "失败", "error"); }
     }
 
-    window.addEventListener('load', () => { createMoneyRain(); if (window.ethereum && window.ethereum.selectedAddress) connectWallet(); });
-    function createMoneyRain() { const container = document.getElementById('moneyRain'); for (let i = 0; i < 20; i++) generateBill(container); }
-    function generateBill(container) { const bill = document.createElement('div'); bill.classList.add('bill'); const innerText = document.createElement('div'); innerText.classList.add('bill-inner-text'); innerText.innerText = '100'; bill.appendChild(innerText); const startLeft = Math.random() * 100; const duration = Math.random() * 5 + 5; const delay = Math.random() * 5; const scale = Math.random() * 0.5 + 0.5; bill.style.left = startLeft + 'vw'; bill.style.animationDuration = duration + 's'; bill.style.animationDelay = delay + 's'; bill.style.transform = `scale(${scale})`; container.appendChild(bill); bill.addEventListener('animationiteration', () => { bill.style.left = Math.random() * 100 + 'vw'; }); }
-    function switchTab(type) { if(type==='stake'){ document.getElementById('stake-panel').classList.remove('hidden'); document.getElementById('unstake-panel').classList.add('hidden'); document.getElementById('tab-stake').classList.add('active'); document.getElementById('tab-unstake').classList.remove('active'); } else { document.getElementById('stake-panel').classList.add('hidden'); document.getElementById('unstake-panel').classList.remove('hidden'); document.getElementById('tab-stake').classList.remove('active'); document.getElementById('tab-unstake').classList.add('active'); } }
+    function switchTab(t) {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('t-'+t).classList.add('active');
+        document.getElementById('panel-stake').classList.add('hidden');
+        document.getElementById('panel-unstake').classList.add('hidden');
+        document.getElementById('panel-'+t).classList.remove('hidden');
+    }
+
+    // 启动金钱雨
+    initRain();
 </script>
 </body>
 </html>
