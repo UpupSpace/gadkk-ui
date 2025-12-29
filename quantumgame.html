@@ -11,8 +11,6 @@
         :root { --neon-green: #00FFA3; --neon-red: #FF2A6D; --neon-blue: #00C2FF; --neon-gold: #FFD700; --dark-bg: #050B14; --glass: rgba(12, 20, 30, 0.95); --border: rgba(255,255,255,0.15); }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
         body { background: var(--dark-bg); color: #fff; font-family: 'Rajdhani', sans-serif; display: flex; flex-direction: column; align-items: center; min-height: 100dvh; margin: 0; overflow-x: hidden; background-image: radial-gradient(circle at 50% 40%, #0d1a25 0%, #000 80%); padding-bottom: 20px; }
-        
-        /* Styles from V7.2 - Keeping consistent */
         .header { width: 100%; padding: 15px; display: flex; justify-content: space-between; align-items: center; max-width: 600px; height: 60px; z-index: 100; }
         .logo { font-family: 'Orbitron'; font-size: 16px; color: var(--neon-green); letter-spacing: 1px; display: flex; align-items: center; gap: 8px; text-shadow: 0 0 10px rgba(0,255,163,0.5); }
         .nav-right { display: flex; gap: 10px; align-items: center; }
@@ -21,10 +19,8 @@
         .lang-btn { padding: 4px 8px; font-size: 10px; cursor: pointer; color: #888; font-weight: bold; border-radius: 4px; }
         .lang-btn.active { background: var(--neon-green); color: #000; }
         .wallet-btn { border: 1px solid var(--neon-green); color: var(--neon-green); background: rgba(0,255,163,0.1); padding: 5px 10px; border-radius: 4px; font-weight: bold; font-family: 'Orbitron'; font-size: 11px; cursor: pointer; }
-
         .global-stats { width: 100%; background: rgba(0,0,0,0.5); padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: center; gap: 20px; font-size: 11px; color: #888; z-index: 90; }
         .g-stat b { color: #fff; font-family: 'Orbitron'; margin-left: 4px; }
-
         .dashboard-container { width: 94%; max-width: 500px; display: flex; flex-direction: column; gap: 8px; margin-top: 10px; z-index: 50; }
         .dashboard-row { display: flex; gap: 10px; }
         .dash-card { flex: 1; background: var(--glass); border: 1px solid var(--border); border-radius: 12px; padding: 10px; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.5); position: relative; overflow: hidden; }
@@ -34,17 +30,14 @@
         .val-red { color: var(--neon-red); text-shadow: 0 0 10px rgba(255,42,109,0.3); }
         .king-addr { font-size: 11px; color: var(--neon-green); font-family: 'Rajdhani'; font-weight: bold; margin-top: 2px; }
         .king-label { font-size: 9px; color: #666; display: block; margin-top: 4px; text-transform: uppercase; }
-
         .history-box { width: 100%; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 8px; font-size: 11px; color: #aaa; display: flex; justify-content: space-around; align-items: center; margin-top: 5px; }
         .hist-item b { color: #fff; margin-left: 3px; font-family: 'Orbitron'; }
         .hist-item span { color: var(--neon-blue); font-weight: bold; margin-right: 3px; }
-
         .level-tabs { width: 94%; max-width: 500px; display: flex; background: rgba(0,0,0,0.3); border-radius: 10px; margin-top: 15px; padding: 4px; border: 1px solid rgba(255,255,255,0.1); z-index: 50; }
         .tab { flex: 1; text-align: center; padding: 10px 0; cursor: pointer; border-radius: 8px; font-family: 'Orbitron'; font-size: 12px; color: #666; transition: 0.3s; font-weight: bold; }
         .tab.active-0 { background: rgba(0, 255, 163, 0.2); color: var(--neon-green); border: 1px solid var(--neon-green); }
         .tab.active-1 { background: rgba(255, 215, 0, 0.2); color: var(--neon-gold); border: 1px solid var(--neon-gold); }
         .tab.active-2 { background: rgba(255, 42, 109, 0.2); color: var(--neon-red); border: 1px solid var(--neon-red); }
-
         .stage-wrapper { flex: 1; display: flex; justify-content: center; align-items: center; width: 100%; overflow: hidden; margin: 10px 0; }
         .game-scale-box { transform-origin: center center; transition: transform 0.3s; }
         .game-container { position: relative; width: 340px; height: 340px; }
@@ -57,7 +50,6 @@
         .slot.active { border-color: var(--neon-green); background: rgba(0, 255, 163, 0.15); box-shadow: 0 0 20px rgba(0, 255, 163, 0.4); color: var(--neon-green); }
         .slot.is-me { border-color: var(--neon-gold); color: var(--neon-gold); background: rgba(255, 215, 0, 0.15); box-shadow: 0 0 30px rgba(255, 215, 0, 0.5); transform: scale(1.1); z-index: 20; }
         .slot:nth-child(1) { top: 50%; left: 90%; transform: translate(-50%, -50%); } .slot:nth-child(2) { top: 85%; left: 70%; transform: translate(-50%, -50%); } .slot:nth-child(3) { top: 85%; left: 30%; transform: translate(-50%, -50%); } .slot:nth-child(4) { top: 50%; left: 10%; transform: translate(-50%, -50%); } .slot:nth-child(5) { top: 15%; left: 30%; transform: translate(-50%, -50%); } .slot:nth-child(6) { top: 15%; left: 70%; transform: translate(-50%, -50%); } 
-
         .panel-group { width: 94%; max-width: 500px; display: flex; flex-direction: column; gap: 10px; z-index: 20; padding-bottom: 20px; }
         .main-panel { background: var(--glass); border: 1px solid var(--border); border-radius: 16px; padding: 20px; box-shadow: 0 -10px 40px rgba(0,0,0,0.8); }
         .info-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 13px; color: #888; align-items: center; }
@@ -65,12 +57,18 @@
         .btn-inject { width: 100%; padding: 18px; border: none; border-radius: 10px; font-family: 'Orbitron'; font-size: 16px; font-weight: bold; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; position: relative; overflow: hidden; transition: 0.3s; margin-top: 10px; }
         .btn-inject.join { background: var(--neon-green); color: #000; box-shadow: 0 0 30px rgba(0, 255, 163, 0.5); }
         .btn-inject.approve { background: #FFD700; color: #000; }
+        /* 🔥 关键样式：接力者按钮 */
+        .btn-inject.breaker { 
+            background: linear-gradient(135deg, #FF4500, #FFD700); 
+            color: #fff; 
+            box-shadow: 0 0 40px rgba(255, 69, 0, 0.6); 
+            animation: pulseBtn 0.8s infinite;
+        }
         .btn-inject:disabled { filter: grayscale(1); opacity: 0.6; cursor: not-allowed; }
         .ref-panel { background: rgba(255,255,255,0.03); border: 1px dashed rgba(255,255,255,0.1); border-radius: 12px; padding: 15px; display: flex; justify-content: space-between; align-items: center; }
         .ref-info div { font-size: 12px; color: #aaa; margin-bottom: 2px; }
         .ref-info b { color: var(--neon-green); }
         .btn-copy { background: rgba(255,255,255,0.1); border: 1px solid var(--border); padding: 8px 15px; border-radius: 6px; font-size: 11px; cursor: pointer; font-weight: bold; transition: 0.2s; }
-
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); backdrop-filter: blur(8px); z-index: 9990; display: flex; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: 0.3s; }
         .modal-overlay.show { opacity: 1; pointer-events: auto; }
         .modal-box { width: 85%; max-width: 360px; background: #080c11; border: 1px solid var(--neon-green); border-radius: 20px; padding: 30px 20px; text-align: center; transform: scale(0.8); transition: 0.3s; box-shadow: 0 0 60px rgba(0,255,163,0.15); max-height: 85vh; overflow-y: auto; }
@@ -88,6 +86,7 @@
 
         @keyframes breathe { 0%, 100% { transform: translate(-50%, -50%) scale(1); filter: brightness(1); } 50% { transform: translate(-50%, -50%) scale(1.15); filter: brightness(1.3); } }
         @keyframes shake { 0% { transform: translate(-51%, -51%) } 25% { transform: translate(-49%, -50%) } 50% { transform: translate(-50%, -49%) } 75% { transform: translate(-51%, -50%) } 100% { transform: translate(-50%, -50%) } }
+        @keyframes pulseBtn { 0% { transform: scale(1); } 50% { transform: scale(1.03); } 100% { transform: scale(1); } }
         @media (max-height: 800px) { .game-scale-box { transform: scale(0.85); } }
     </style>
 </head>
@@ -179,9 +178,9 @@
 </div>
 
 <script>
-    // ⚠️⚠️⚠️ 替换为 V7.4 合约地址
+    // ⚠️ CONTRACT CONFIG V7.5
     const TOKEN_ADDR = "0xA1aEE242C69E1c0820d165ef12438e0A5eEd0BbA"; 
-    const GAME_ADDR  = "0x6eD51AF48d34Df5a503087D281627784CEcA953b"; 
+    const GAME_ADDR  = "0xf58ECA0e4611162FA103169430156A579e47b60d"; 
     
     let currentLevel = 0;
     let provider, signer, userAddr, gameContract, tokenContract;
@@ -192,22 +191,22 @@
 
     const i18n = {
         en: {
-            btn_connect: "CONNECT", entry_fee: "TICKET", balance: "BALANCE", status: "STATUS", status_stable: "STABLE", status_critical: "FULL", status_wait: "WAIT",
-            btn_connect_first: "CONNECT WALLET", btn_approve: "APPROVE", btn_join: "INJECT ENERGY", btn_joined: "JOINED (WAITING)", btn_breaker: "SETTLE ROOM", btn_processing: "PROCESSING...",
+            btn_connect: "CONNECT", entry_fee: "TICKET", balance: "BALANCE", status: "STATUS", status_stable: "STABLE", status_critical: "PENDING BREAK", status_wait: "WAIT",
+            btn_connect_first: "CONNECT WALLET", btn_approve: "APPROVE", btn_join: "INJECT ENERGY", btn_joined: "JOINED (WAITING)", btn_breaker: "SETTLE & START", btn_processing: "PROCESSING...",
             lbl_pool: "HOPE POOL", lbl_time: "FOMO TIMER", btn_copy: "COPY LINK", lbl_online: "ONLINE:", lbl_rounds: "ROUNDS:", lbl_upline: "Upline:", lbl_invites: "Invites:", lbl_king: "CURRENT KING",
             toast_connect: "Connected", toast_tx_sent: "Tx Sent...", toast_success: "Success!", toast_error: "Error: ", toast_copied: "Link Copied!", toast_wrong_net: "Switch to BNB Chain",
             rules_title: "GAME RULES", rules_btn: "CLOSE",
-            rules_html: `<h3>💎 Referral</h3><p>Earn 5% (L1) + 2% (L2) from profits.</p><h3>⏳ FOMO</h3><p>Last player wins 50% pool.</p><h3>💰 Split</h3><p>85% Winners | 2% Burn | 12% Pool</p>`,
+            rules_html: `<h3>🛡️ Secure Relay</h3><p>6th player locks the room. 7th player (Breaker) settles previous room & joins new one.</p><h3>💎 Referral</h3><p>Earn 5% (L1) + 2% (L2).</p><h3>⏳ FOMO</h3><p>Last player wins 50% pool.</p><h3>💰 Split</h3><p>85% Winners | 2% Burn | 12% Pool</p>`,
             win_title: "VICTORY!", win_msg: "You survived! Rewards sent to wallet.",
             lose_title: "ELIMINATED", lose_msg: "Energy consumed. Better luck next time."
         },
         cn: {
-            btn_connect: "连接钱包", entry_fee: "门票价格", balance: "账户余额", status: "系统状态", status_stable: "系统稳定", status_critical: "即将爆破", status_wait: "等待中",
-            btn_connect_first: "连接钱包", btn_approve: "授权代币", btn_join: "注入能量", btn_joined: "已入座 (等待结算)", btn_breaker: "🚀 结算本局", btn_processing: "处理中...",
+            btn_connect: "连接钱包", entry_fee: "门票价格", balance: "账户余额", status: "系统状态", status_stable: "系统稳定", status_critical: "等待破局", status_wait: "等待中",
+            btn_connect_first: "连接钱包", btn_approve: "授权代币", btn_join: "注入能量", btn_joined: "已入座 (等待结算)", btn_breaker: "🚀 结算 & 开启新局", btn_processing: "处理中...",
             lbl_pool: "希望奖池", lbl_time: "末日倒计时", btn_copy: "复制邀请链接", lbl_online: "在线人数:", lbl_rounds: "总局数:", lbl_upline: "我的上级:", lbl_invites: "已邀请:", lbl_king: "当前霸主",
             toast_connect: "钱包已连接", toast_tx_sent: "交易已发送...", toast_success: "操作成功", toast_error: "错误: ", toast_copied: "链接已复制", toast_wrong_net: "请切换到 BSC 链",
             rules_title: "游戏规则", rules_btn: "关闭",
-            rules_html: `<h3>💎 双层裂变</h3><p>一级 5% | 二级 2%</p><h3>⏳ FOMO 大奖</h3><p>倒计时归零，最后一人独吞50%奖池。</p><h3>💰 资金分配</h3><p>85% 幸存者 | 2% 销毁 | 12% 奖池</p>`,
+            rules_html: `<h3>🛡️ 量子接力</h3><p>第6人封盘，第7人（破局者）负责结算上一局并开启新局，杜绝作弊。</p><h3>💎 双层裂变</h3><p>一级 5% | 二级 2%</p><h3>⏳ FOMO 大奖</h3><p>倒计时归零，最后一人独吞50%奖池。</p><h3>💰 资金分配</h3><p>85% 幸存者 | 2% 销毁 | 12% 奖池</p>`,
             win_title: "大吉大利", win_msg: "恭喜！您幸存并获得了奖励。",
             lose_title: "遗憾淘汰", lose_msg: "能量被吞噬。请期待幸运护盾补偿。"
         }
@@ -307,11 +306,10 @@
             document.getElementById("connectBtn").innerText = userAddr.substring(0, 6) + "...";
             
             const ABI_TOKEN = ["function approve(address,uint) external", "function allowance(address,address) view returns (uint)", "function balanceOf(address) view returns (uint)"];
-            // V7.4 Split ABI
             const ABI_GAME = [
                 "function injectEnergy(uint256, address) external",
                 "function getGlobalState() view returns (uint256, uint256, uint256, uint256, address, tuple(address,uint,uint), tuple(address,uint,uint))",
-                "function getLevelState(uint256) view returns (address[], uint256, uint256, uint256)",
+                "function getLevelState(uint256) view returns (address[], uint256, uint256, uint256, bool)",
                 "function referrers(address) view returns (address)",
                 "function referralCount(address) view returns (uint256)",
                 "event RoundSettled(uint256, uint256, address, uint256)"
@@ -328,7 +326,7 @@
     async function refreshData() {
         if(!userAddr || !gameContract) return;
         try {
-            // Split Calls
+            // 1. Get Global Data
             const gData = await gameContract.getGlobalState();
             const lData = await gameContract.getLevelState(currentLevel);
             
@@ -346,11 +344,12 @@
             if(lastFomo[1] > 0) document.getElementById("lastFomo").innerText = `${lastFomo[0].substring(0,6)}... (${parseFloat(ethers.utils.formatUnits(lastFomo[1],18)).toFixed(0)})`;
             else document.getElementById("lastFomo").innerText = "--";
 
-            // Level Data
+            // 2. Get Level Data
             const roomPlayers = lData[0];
             document.getElementById("roomDisplay").innerText = `ROOM #${lData[1].toString()}`;
             entryFeeVal = lData[2];
             document.getElementById("entryFeeDisplay").innerText = parseFloat(ethers.utils.formatUnits(entryFeeVal, 18)).toLocaleString() + " GADKk";
+            const isPending = lData[4]; // Check if pending state
 
             const bal = await tokenContract.balanceOf(userAddr);
             document.getElementById("myBalance").innerText = parseFloat(ethers.utils.formatUnits(bal, 18)).toFixed(2);
@@ -360,19 +359,26 @@
             document.getElementById("refUpline").innerHTML = `<span data-i18n="lbl_upline">${i18n[currentLang].lbl_upline}</span> ${myUpline === ethers.constants.AddressZero ? 'None' : myUpline.substring(0,6)+'...'}`;
             document.getElementById("refCount").innerHTML = `<span data-i18n="lbl_invites">${i18n[currentLang].lbl_invites}</span> ${myCount}`;
 
-            updateSlots(roomPlayers); checkButtonState(roomPlayers);
+            updateSlots(roomPlayers, isPending); 
+            checkButtonState(roomPlayers, isPending);
         } catch(e) { console.log(e); }
     }
 
-    function updateSlots(players) {
+    function updateSlots(players, isPending) {
         const count = players.length;
         document.getElementById("playerCount").innerText = `${count}/6`;
         const core = document.getElementById("core");
         let colorVar = currentLevel === 0 ? '--neon-green' : (currentLevel === 1 ? '--neon-gold' : '--neon-red');
         core.style.background = `radial-gradient(circle, #fff 0%, var(${colorVar}) 40%, transparent 80%)`;
         
-        if(count >= 6) { document.getElementById("statusText").innerText = "FULL"; core.classList.add('critical'); } 
-        else { document.getElementById("statusText").innerText = "WAIT"; core.classList.remove('critical'); }
+        // 如果是 Pending 状态，强制显示红色警报
+        if(isPending || count >= 6) { 
+            document.getElementById("statusText").innerText = "FULL"; 
+            core.classList.add('critical'); 
+        } else { 
+            document.getElementById("statusText").innerText = "WAIT"; 
+            core.classList.remove('critical'); 
+        }
 
         for(let i=0; i<6; i++) {
             const el = document.getElementById(`slot-${i}`);
@@ -384,14 +390,41 @@
         }
     }
 
-    async function checkButtonState(players) {
+    async function checkButtonState(players, isPending) {
         const btn = document.getElementById("actionBtn"); if(btn.disabled) return;
         const isJoined = players.some(p => p.toLowerCase() === userAddr.toLowerCase());
-        if (isJoined) { btn.className = "btn-inject"; btn.style.background = "#333"; btn.innerText = i18n[currentLang].btn_joined; btn.onclick = null; return; }
         
-        const allowed = await tokenContract.allowance(userAddr, GAME_ADDR);
-        if(allowed.lt(entryFeeVal)) { btn.className = "btn-inject approve"; btn.innerText = i18n[currentLang].btn_approve; btn.onclick = approveToken; } 
-        else { btn.className = "btn-inject join"; btn.innerText = i18n[currentLang].btn_join; btn.onclick = inject; }
+        // 1. 已加入，等待结算
+        if (isJoined) {
+            btn.className = "btn-inject"; btn.style.background = "#333"; 
+            btn.innerText = i18n[currentLang].btn_joined; btn.onclick = null;
+            return;
+        }
+        
+        // 2. 满员待破局 (第7人)
+        if (isPending) {
+            btn.className = "btn-inject breaker"; 
+            btn.innerText = i18n[currentLang].btn_breaker;
+            checkAllowanceInternal(btn);
+            return;
+        }
+        
+        // 3. 正常加入
+        btn.className = "btn-inject join"; 
+        btn.innerText = i18n[currentLang].btn_join;
+        checkAllowanceInternal(btn);
+    }
+
+    async function checkAllowanceInternal(btn) {
+        try {
+            const allowed = await tokenContract.allowance(userAddr, GAME_ADDR);
+            if(allowed.lt(entryFeeVal)) { 
+                btn.className = "btn-inject approve"; btn.innerText = i18n[currentLang].btn_approve; btn.onclick = approveToken; 
+            } else { 
+                // Keep the class set by checkButtonState (either breaker or join)
+                btn.onclick = inject; 
+            }
+        } catch(e){}
     }
 
     async function approveToken() {
