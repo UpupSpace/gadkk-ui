@@ -2,202 +2,93 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>QUANTUM RESONANCE | GADKk</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>QUANTUM CASINO | GADKk</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
     <style>
-        :root { 
-            --neon-green: #00FFA3; --neon-red: #FF2A6D; --neon-blue: #00C2FF; --neon-gold: #FFD700;
-            --dark-bg: #050B14; --glass: rgba(15, 25, 35, 0.9); --border: rgba(255,255,255,0.15);
-        }
+        :root { --neon-green: #00FFA3; --neon-red: #FF2A6D; --neon-blue: #00C2FF; --neon-gold: #FFD700; --dark-bg: #050B14; --glass: rgba(12, 20, 30, 0.95); --border: rgba(255,255,255,0.15); }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
+        body { background: var(--dark-bg); color: #fff; font-family: 'Rajdhani', sans-serif; display: flex; flex-direction: column; align-items: center; min-height: 100dvh; margin: 0; overflow-x: hidden; background-image: radial-gradient(circle at 50% 40%, #0d1a25 0%, #000 80%); padding-bottom: 20px; }
         
-        body { 
-            background: var(--dark-bg); color: #fff; font-family: 'Rajdhani', sans-serif; 
-            display: flex; flex-direction: column; align-items: center; min-height: 100vh; margin: 0; overflow-x: hidden; 
-            background-image: radial-gradient(circle at 50% 40%, #112220 0%, #000 80%); 
-        }
-
-        /* --- 顶部导航 --- */
-        .header { 
-            width: 100%; padding: 20px; display: flex; justify-content: space-between; align-items: center; max-width: 600px; z-index: 100;
-        }
-        .logo { font-family: 'Orbitron', sans-serif; font-size: 18px; color: var(--neon-green); letter-spacing: 2px; text-shadow: 0 0 15px rgba(0,255,163,0.6); display: flex; align-items: center; gap: 8px; }
-        .logo::before { content: ''; display: block; width: 10px; height: 10px; background: var(--neon-green); transform: rotate(45deg); box-shadow: 0 0 10px var(--neon-green); }
-
+        /* Styles from V7.2 - Keeping consistent */
+        .header { width: 100%; padding: 15px; display: flex; justify-content: space-between; align-items: center; max-width: 600px; height: 60px; z-index: 100; }
+        .logo { font-family: 'Orbitron'; font-size: 16px; color: var(--neon-green); letter-spacing: 1px; display: flex; align-items: center; gap: 8px; text-shadow: 0 0 10px rgba(0,255,163,0.5); }
         .nav-right { display: flex; gap: 10px; align-items: center; }
-        
-        .icon-btn { 
-            width: 36px; height: 36px; border: 1px solid var(--border); border-radius: 8px; 
-            display: flex; justify-content: center; align-items: center; cursor: pointer; 
-            background: rgba(255,255,255,0.05); font-weight: bold; font-family: 'Orbitron'; color: #fff;
-            transition: 0.3s;
-        }
-        .icon-btn:hover { border-color: var(--neon-green); color: var(--neon-green); box-shadow: 0 0 15px rgba(0,255,163,0.3); }
-
-        .wallet-btn { 
-            border: 1px solid var(--neon-green); color: var(--neon-green); background: rgba(0,255,163,0.1); 
-            padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.3s; 
-            font-family: 'Orbitron'; font-size: 12px; white-space: nowrap;
-        }
-        .wallet-btn:hover { background: var(--neon-green); color: #000; box-shadow: 0 0 20px var(--neon-green); }
-
-        .lang-switch { display: flex; background: rgba(255,255,255,0.1); border-radius: 6px; padding: 3px; }
-        .lang-btn { padding: 5px 10px; font-size: 12px; cursor: pointer; color: #888; font-weight: bold; transition: 0.3s; border-radius: 4px; }
+        .icon-btn { width: 32px; height: 32px; border: 1px solid var(--border); border-radius: 6px; display: flex; justify-content: center; align-items: center; cursor: pointer; background: rgba(255,255,255,0.05); font-family: 'Orbitron'; transition: 0.3s; }
+        .lang-switch { display: flex; background: rgba(255,255,255,0.1); border-radius: 6px; padding: 2px; }
+        .lang-btn { padding: 4px 8px; font-size: 10px; cursor: pointer; color: #888; font-weight: bold; border-radius: 4px; }
         .lang-btn.active { background: var(--neon-green); color: #000; }
+        .wallet-btn { border: 1px solid var(--neon-green); color: var(--neon-green); background: rgba(0,255,163,0.1); padding: 5px 10px; border-radius: 4px; font-weight: bold; font-family: 'Orbitron'; font-size: 11px; cursor: pointer; }
 
-        /* --- 游戏区域 (核心布局 - V3.1) --- */
-        .game-container { 
-            position: relative; width: 360px; height: 360px; margin: 40px auto; 
-            display: flex; justify-content: center; align-items: center; 
-        }
+        .global-stats { width: 100%; background: rgba(0,0,0,0.5); padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: center; gap: 20px; font-size: 11px; color: #888; z-index: 90; }
+        .g-stat b { color: #fff; font-family: 'Orbitron'; margin-left: 4px; }
 
-        /* 🔥 核心反应堆 */
-        .core { 
-            width: 140px; height: 140px; border-radius: 50%; 
-            background: radial-gradient(circle, #fff 0%, var(--neon-green) 40%, transparent 80%); 
-            box-shadow: 0 0 60px var(--neon-green), inset 0 0 20px rgba(255,255,255,0.5); 
-            display: flex; flex-direction: column; justify-content: center; align-items: center; 
-            z-index: 10; position: absolute; 
-            animation: breathe 3s ease-in-out infinite; 
-            border: 1px solid rgba(255,255,255,0.2);
-        }
-        .core.critical { 
-            background: radial-gradient(circle, #fff 0%, var(--neon-red) 40%, transparent 80%); 
-            box-shadow: 0 0 80px var(--neon-red); animation: shake 0.5s infinite; 
-        }
-        /* 白色发光字 */
-        .core-text { 
-            color: #fff; font-weight: 900; font-size: 28px; font-family: 'Orbitron'; 
-            z-index: 11; text-shadow: 0 2px 10px rgba(0,0,0,0.8); letter-spacing: 1px;
-        }
-        /* 放大版计数器 */
-        .core-count { 
-            font-size: 16px; color: #fff; font-weight: bold; margin-top: 2px; z-index: 11; 
-            background: rgba(0,0,0,0.4); padding: 2px 8px; border-radius: 10px; font-family: 'Orbitron';
-        }
-        @keyframes breathe { 
-            0%, 100% { transform: scale(1); opacity: 0.95; } 
-            50% { transform: scale(1.05); opacity: 1; box-shadow: 0 0 80px var(--neon-green); } 
-        }
-        @keyframes shake { 0% { transform: translate(1px, 1px) } 25% { transform: translate(-1px, -2px) } 50% { transform: translate(-3px, 0px) } 75% { transform: translate(3px, 2px) } 100% { transform: translate(1px, -1px) } }
+        .dashboard-container { width: 94%; max-width: 500px; display: flex; flex-direction: column; gap: 8px; margin-top: 10px; z-index: 50; }
+        .dashboard-row { display: flex; gap: 10px; }
+        .dash-card { flex: 1; background: var(--glass); border: 1px solid var(--border); border-radius: 12px; padding: 10px; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.5); position: relative; overflow: hidden; }
+        .dash-label { font-size: 10px; color: #888; display: block; margin-bottom: 4px; letter-spacing: 1px; }
+        .dash-val { font-family: 'Orbitron'; font-size: 16px; font-weight: bold; color: #fff; }
+        .val-gold { color: var(--neon-gold); text-shadow: 0 0 10px rgba(255,215,0,0.3); }
+        .val-red { color: var(--neon-red); text-shadow: 0 0 10px rgba(255,42,109,0.3); }
+        .king-addr { font-size: 11px; color: var(--neon-green); font-family: 'Rajdhani'; font-weight: bold; margin-top: 2px; }
+        .king-label { font-size: 9px; color: #666; display: block; margin-top: 4px; text-transform: uppercase; }
 
-        /* 槽位 (座位) */
-        .slot { 
-            position: absolute; width: 64px; height: 64px; 
-            border: 1px solid rgba(255,255,255,0.2); border-radius: 16px; 
-            display: flex; justify-content: center; align-items: center; 
-            font-size: 22px; color: #fff; font-weight: 700; transition: 0.3s; 
-            background: rgba(20, 25, 30, 0.8); backdrop-filter: blur(8px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.6); font-family: 'Orbitron';
-        }
-        .slot.active { 
-            border-color: var(--neon-green); background: rgba(0, 255, 163, 0.15); 
-            box-shadow: 0 0 25px rgba(0, 255, 163, 0.5), inset 0 0 10px rgba(0, 255, 163, 0.2); 
-            color: var(--neon-green); transform: scale(1.1); text-shadow: 0 0 10px var(--neon-green);
-        }
-        .slot.collapsed { 
-            border-color: var(--neon-red); box-shadow: 0 0 40px var(--neon-red); 
-            background: rgba(255, 42, 109, 0.4); animation: shake 0.5s; color: #fff;
-        }
+        .history-box { width: 100%; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 8px; font-size: 11px; color: #aaa; display: flex; justify-content: space-around; align-items: center; margin-top: 5px; }
+        .hist-item b { color: #fff; margin-left: 3px; font-family: 'Orbitron'; }
+        .hist-item span { color: var(--neon-blue); font-weight: bold; margin-right: 3px; }
 
-        /* 布局计算 (还原六边形) */
-        .slot:nth-child(1) { top: 0; left: 50%; transform: translateX(-50%); } 
-        .slot:nth-child(2) { top: 25%; right: 5%; } 
-        .slot:nth-child(3) { bottom: 25%; right: 5%; } 
-        .slot:nth-child(4) { bottom: 0; left: 50%; transform: translateX(-50%); } 
-        .slot:nth-child(5) { bottom: 25%; left: 5%; } 
-        .slot:nth-child(6) { top: 25%; left: 5%; } 
+        .level-tabs { width: 94%; max-width: 500px; display: flex; background: rgba(0,0,0,0.3); border-radius: 10px; margin-top: 15px; padding: 4px; border: 1px solid rgba(255,255,255,0.1); z-index: 50; }
+        .tab { flex: 1; text-align: center; padding: 10px 0; cursor: pointer; border-radius: 8px; font-family: 'Orbitron'; font-size: 12px; color: #666; transition: 0.3s; font-weight: bold; }
+        .tab.active-0 { background: rgba(0, 255, 163, 0.2); color: var(--neon-green); border: 1px solid var(--neon-green); }
+        .tab.active-1 { background: rgba(255, 215, 0, 0.2); color: var(--neon-gold); border: 1px solid var(--neon-gold); }
+        .tab.active-2 { background: rgba(255, 42, 109, 0.2); color: var(--neon-red); border: 1px solid var(--neon-red); }
 
-        /* --- 控制面板 --- */
-        .control-panel { 
-            max-width: 420px; width: 90%; background: var(--glass); 
-            border: 1px solid var(--border); border-radius: 20px; padding: 25px; 
-            text-align: center; margin-bottom: 20px; 
-            box-shadow: 0 20px 50px rgba(0,0,0,0.8); position: relative; z-index: 20;
-        }
-        .info-row { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 14px; color: #aaa; align-items: center; }
-        .info-val { color: #fff; font-weight: bold; font-family: 'Orbitron'; letter-spacing: 1px; font-size: 16px; }
+        .stage-wrapper { flex: 1; display: flex; justify-content: center; align-items: center; width: 100%; overflow: hidden; margin: 10px 0; }
+        .game-scale-box { transform-origin: center center; transition: transform 0.3s; }
+        .game-container { position: relative; width: 340px; height: 340px; }
+        .core { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 130px; height: 130px; border-radius: 50%; background: radial-gradient(circle, #fff 0%, var(--neon-green) 40%, transparent 80%); box-shadow: 0 0 50px var(--neon-green), inset 0 0 20px rgba(255,255,255,0.5); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 10; animation: breathe 2s ease-in-out infinite; border: 1px solid rgba(255,255,255,0.2); transition: 0.5s; }
+        .core.critical { background: radial-gradient(circle, #fff 0%, var(--neon-red) 40%, transparent 80%); box-shadow: 0 0 80px var(--neon-red); animation: shake 0.5s infinite; }
+        .core-text { color: #fff; font-weight: 900; font-size: 24px; font-family: 'Orbitron'; z-index: 11; text-shadow: 0 2px 5px rgba(0,0,0,0.8); letter-spacing: 1px; }
+        .core-room { font-size: 10px; color: #aaa; margin-top: -2px; z-index: 11; font-family: 'Orbitron'; letter-spacing: 1px; }
+        .core-count { font-size: 14px; color: #fff; font-weight: bold; margin-top: 4px; z-index: 11; background: rgba(0,0,0,0.5); padding: 2px 8px; border-radius: 10px; font-family: 'Orbitron'; }
+        .slot { position: absolute; width: 60px; height: 60px; border: 1px solid rgba(255,255,255,0.2); border-radius: 14px; display: flex; flex-direction: column; justify-content: center; align-items: center; font-size: 20px; color: #fff; font-weight: 700; transition: 0.3s; background: rgba(20, 25, 30, 0.8); backdrop-filter: blur(5px); box-shadow: 0 5px 15px rgba(0,0,0,0.6); font-family: 'Orbitron'; }
+        .slot.active { border-color: var(--neon-green); background: rgba(0, 255, 163, 0.15); box-shadow: 0 0 20px rgba(0, 255, 163, 0.4); color: var(--neon-green); }
+        .slot.is-me { border-color: var(--neon-gold); color: var(--neon-gold); background: rgba(255, 215, 0, 0.15); box-shadow: 0 0 30px rgba(255, 215, 0, 0.5); transform: scale(1.1); z-index: 20; }
+        .slot:nth-child(1) { top: 50%; left: 90%; transform: translate(-50%, -50%); } .slot:nth-child(2) { top: 85%; left: 70%; transform: translate(-50%, -50%); } .slot:nth-child(3) { top: 85%; left: 30%; transform: translate(-50%, -50%); } .slot:nth-child(4) { top: 50%; left: 10%; transform: translate(-50%, -50%); } .slot:nth-child(5) { top: 15%; left: 30%; transform: translate(-50%, -50%); } .slot:nth-child(6) { top: 15%; left: 70%; transform: translate(-50%, -50%); } 
 
-        .btn-inject { 
-            width: 100%; padding: 18px; border: none; border-radius: 10px; 
-            font-family: 'Orbitron'; font-size: 18px; font-weight: bold; cursor: pointer; 
-            text-transform: uppercase; letter-spacing: 1px; position: relative; overflow: hidden; transition: 0.3s; 
-            margin-top: 15px;
-        }
-        .btn-inject.approve { background: #FFD700; color: #000; box-shadow: 0 0 25px rgba(255, 215, 0, 0.4); }
+        .panel-group { width: 94%; max-width: 500px; display: flex; flex-direction: column; gap: 10px; z-index: 20; padding-bottom: 20px; }
+        .main-panel { background: var(--glass); border: 1px solid var(--border); border-radius: 16px; padding: 20px; box-shadow: 0 -10px 40px rgba(0,0,0,0.8); }
+        .info-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 13px; color: #888; align-items: center; }
+        .info-val { color: #fff; font-weight: bold; font-family: 'Orbitron'; letter-spacing: 1px; font-size: 15px; }
+        .btn-inject { width: 100%; padding: 18px; border: none; border-radius: 10px; font-family: 'Orbitron'; font-size: 16px; font-weight: bold; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; position: relative; overflow: hidden; transition: 0.3s; margin-top: 10px; }
         .btn-inject.join { background: var(--neon-green); color: #000; box-shadow: 0 0 30px rgba(0, 255, 163, 0.5); }
+        .btn-inject.approve { background: #FFD700; color: #000; }
         .btn-inject:disabled { filter: grayscale(1); opacity: 0.6; cursor: not-allowed; }
+        .ref-panel { background: rgba(255,255,255,0.03); border: 1px dashed rgba(255,255,255,0.1); border-radius: 12px; padding: 15px; display: flex; justify-content: space-between; align-items: center; }
+        .ref-info div { font-size: 12px; color: #aaa; margin-bottom: 2px; }
+        .ref-info b { color: var(--neon-green); }
+        .btn-copy { background: rgba(255,255,255,0.1); border: 1px solid var(--border); padding: 8px 15px; border-radius: 6px; font-size: 11px; cursor: pointer; font-weight: bold; transition: 0.2s; }
 
-        /* --- 弹窗与通知 --- */
-        .toast-container { position: fixed; top: 90px; right: 20px; z-index: 2000; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
-        .toast { 
-            pointer-events: auto; background: rgba(10, 15, 20, 0.95); border-left: 4px solid #fff; padding: 15px 20px; 
-            border-radius: 6px; color: #fff; min-width: 240px; font-size: 14px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.8); transform: translateX(120%); transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
-            display: flex; align-items: center; gap: 12px; border: 1px solid rgba(255,255,255,0.1); border-left-width: 4px;
-        }
-        .toast.show { transform: translateX(0); }
-        .toast.success { border-left-color: var(--neon-green); }
-        .toast.error { border-left-color: var(--neon-red); }
-
-        .modal-overlay { 
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: rgba(0,0,0,0.9); backdrop-filter: blur(8px); z-index: 9999; 
-            display: flex; justify-content: center; align-items: center; 
-            opacity: 0; pointer-events: none; transition: 0.3s; 
-        }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); backdrop-filter: blur(8px); z-index: 9990; display: flex; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: 0.3s; }
         .modal-overlay.show { opacity: 1; pointer-events: auto; }
-        
-        .modal-box { 
-            width: 85%; max-width: 380px; background: #080c11; 
-            border: 1px solid var(--neon-green); box-shadow: 0 0 50px rgba(0, 255, 163, 0.15);
-            border-radius: 20px; padding: 30px; text-align: center; transform: scale(0.8); transition: 0.3s;
-            max-height: 85vh; overflow-y: auto;
-        }
+        .modal-box { width: 85%; max-width: 360px; background: #080c11; border: 1px solid var(--neon-green); border-radius: 20px; padding: 30px 20px; text-align: center; transform: scale(0.8); transition: 0.3s; box-shadow: 0 0 60px rgba(0,255,163,0.15); max-height: 85vh; overflow-y: auto; }
         .modal-overlay.show .modal-box { transform: scale(1); }
-        
-        .modal-icon { font-size: 48px; margin-bottom: 15px; display: block; }
-        
-        .modal-title { font-size: 26px; font-weight: 900; margin-bottom: 20px; color: var(--neon-green); font-family: 'Orbitron'; letter-spacing: 1px; text-transform: uppercase; }
-        
-        .modal-content-styled { text-align: left; color: #ddd; font-size: 14px; line-height: 1.7; }
-        .modal-content-styled h3 { color: var(--neon-green); font-family: 'Orbitron'; margin: 20px 0 10px 0; font-size: 18px; border-bottom: 1px solid rgba(0,255,163,0.3); padding-bottom: 5px; }
-        .modal-content-styled ul { padding-left: 20px; margin-bottom: 15px; }
-        .modal-content-styled li { margin-bottom: 8px; }
-        .highlight { color: var(--neon-green); font-weight: bold; }
-        .danger { color: var(--neon-red); font-weight: bold; }
+        .modal-icon { font-size: 48px; margin-bottom: 10px; display: block; }
+        .modal-title { font-size: 24px; font-weight: 900; margin-bottom: 15px; color: var(--neon-green); font-family: 'Orbitron'; }
+        .modal-content { text-align: left; color: #ccc; font-size: 13px; line-height: 1.6; }
+        .modal-content h3 { color: var(--neon-green); font-size: 16px; margin: 15px 0 5px 0; border-bottom: 1px solid rgba(0,255,163,0.3); }
+        .modal-btn { width: 100%; padding: 12px; background: transparent; color: var(--neon-green); border: 1px solid var(--neon-green); border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 20px; font-family: 'Orbitron'; }
+        .modal-box.win { border-color: var(--neon-gold); box-shadow: 0 0 60px rgba(255,215,0,0.2); } .modal-box.win .modal-title, .modal-box.win .modal-btn { color: var(--neon-gold); border-color: var(--neon-gold); }
+        .modal-box.lose { border-color: var(--neon-red); box-shadow: 0 0 60px rgba(255,42,109,0.2); } .modal-box.lose .modal-title, .modal-box.lose .modal-btn { color: var(--neon-red); border-color: var(--neon-red); }
+        .toast-container { position: fixed; top: 80px; right: 20px; z-index: 10000; }
+        .toast { background: rgba(10, 15, 20, 0.95); border-left: 4px solid #fff; padding: 12px 16px; margin-bottom: 10px; border-radius: 6px; color: #fff; min-width: 240px; font-size: 13px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); transform: translateX(120%); transition: 0.3s; display: flex; align-items: center; gap: 12px; }
+        .toast.show { transform: translateX(0); } .toast.success { border-left-color: var(--neon-green); } .toast.error { border-left-color: var(--neon-red); }
 
-        .modal-msg-simple { color: #ccc; font-size: 15px; margin-bottom: 25px; line-height: 1.6; background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px; }
-
-        .modal-btn { 
-            width: 100%; padding: 14px; background: transparent; color: var(--neon-green); 
-            border: 1px solid var(--neon-green); border-radius: 8px; cursor: pointer; font-weight: bold;
-            transition: 0.2s; font-family: 'Orbitron'; font-size: 14px; margin-top: 10px;
-        }
-        .modal-btn:hover { background: var(--neon-green); color: #000; box-shadow: 0 0 20px var(--neon-green); }
-
-        .modal-box.win { border-color: var(--neon-gold); box-shadow: 0 0 60px rgba(255, 215, 0, 0.2); }
-        .modal-box.win .modal-title { color: var(--neon-gold); }
-        .modal-box.win .modal-btn { border-color: var(--neon-gold); color: var(--neon-gold); }
-        .modal-box.win .modal-btn:hover { background: var(--neon-gold); color: #000; }
-
-        .modal-box.lose { border-color: var(--neon-red); box-shadow: 0 0 60px rgba(255, 42, 109, 0.2); }
-        .modal-box.lose .modal-title { color: var(--neon-red); }
-        .modal-box.lose .modal-btn { border-color: var(--neon-red); color: var(--neon-red); }
-        .modal-box.lose .modal-btn:hover { background: var(--neon-red); color: #fff; }
-
-        .loader { display: inline-block; width: 14px; height: 14px; border: 2px solid rgba(0,0,0,0.2); border-radius: 50%; border-top-color: #000; animation: spin 0.8s linear infinite; vertical-align: middle; margin-right: 8px; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-
-        @media (max-width: 380px) {
-            .game-container { transform: scale(0.85); margin: 20px auto; }
-            .modal-box { width: 95%; padding: 20px 15px; }
-            .modal-title { font-size: 22px; }
-        }
-
+        @keyframes breathe { 0%, 100% { transform: translate(-50%, -50%) scale(1); filter: brightness(1); } 50% { transform: translate(-50%, -50%) scale(1.15); filter: brightness(1.3); } }
+        @keyframes shake { 0% { transform: translate(-51%, -51%) } 25% { transform: translate(-49%, -50%) } 50% { transform: translate(-50%, -49%) } 75% { transform: translate(-51%, -50%) } 100% { transform: translate(-50%, -50%) } }
+        @media (max-height: 800px) { .game-scale-box { transform: scale(0.85); } }
     </style>
 </head>
 <body>
@@ -206,19 +97,17 @@
     <div class="modal-box" id="modalBox">
         <span class="modal-icon" id="mIcon"></span>
         <div class="modal-title" id="mTitle">TITLE</div>
-        <div class="modal-msg-simple" id="mMsg" style="display:none;">Message goes here...</div>
-        <div class="modal-content-styled" id="mContent" style="display:none;"></div>
-        <button class="modal-btn" onclick="closeModal()">CLOSE</button>
+        <div class="modal-content" id="mContent"></div>
+        <button class="modal-btn" onclick="closeModal()" id="mBtn">CLOSE</button>
     </div>
 </div>
-
 <div class="toast-container" id="toastContainer"></div>
 
 <div class="header">
-    <div class="logo">QUANTUM RESONANCE</div>
+    <div class="logo">QUANTUM CASINO</div>
     <div class="nav-right">
         <div class="icon-btn" onclick="showRules()">?</div>
-        <div class="lang-switch" style="margin: 0 10px;">
+        <div class="lang-switch">
             <div class="lang-btn active" id="lang-en" onclick="setLang('en')">EN</div>
             <div class="lang-btn" id="lang-cn" onclick="setLang('cn')">CN</div>
         </div>
@@ -226,176 +115,150 @@
     </div>
 </div>
 
-<div class="game-container">
-    <div class="slot" id="slot-0">1</div>
-    <div class="slot" id="slot-1">2</div>
-    <div class="slot" id="slot-2">3</div>
-    <div class="slot" id="slot-3">4</div>
-    <div class="slot" id="slot-4">5</div>
-    <div class="slot" id="slot-5">6</div>
-    
-    <div class="core" id="core">
-        <div class="core-text" id="statusText">WAIT</div>
-        <div class="core-count" id="playerCount">0/6</div>
+<div class="global-stats">
+    <div class="g-stat g-live"><span data-i18n="lbl_online">ONLINE:</span> <b id="gOnline">--</b></div>
+    <div class="g-stat"><span data-i18n="lbl_rounds">ROUNDS:</span> <b id="gRounds">--</b></div>
+</div>
+
+<div class="dashboard-container">
+    <div class="dashboard-row">
+        <div class="dash-card">
+            <span class="dash-label" data-i18n="lbl_pool">HOPE POOL</span>
+            <div class="dash-val val-gold" id="poolVal">--</div>
+        </div>
+        <div class="dash-card">
+            <span class="dash-label" data-i18n="lbl_time">FOMO TIMER</span>
+            <div class="dash-val val-red" id="timeVal">--:--:--</div>
+            <span class="king-label" data-i18n="lbl_king">CURRENT KING</span>
+            <div class="king-addr" id="kingAddr">--</div>
+        </div>
+    </div>
+    <div class="history-box">
+        <div class="hist-item"><span>☠️ LUCKY:</span><b id="lastLucky">--</b></div>
+        <div class="hist-item"><span>👑 FOMO:</span><b id="lastFomo">--</b></div>
     </div>
 </div>
 
-<div class="control-panel">
-    <div class="info-row">
-        <span data-i18n="entry_fee">ENTRY FEE</span>
-        <span class="info-val" id="entryFeeDisplay">--</span>
-    </div>
-    <div class="info-row">
-        <span data-i18n="balance">MY BALANCE</span>
-        <span class="info-val" id="myBalance">--</span>
-    </div>
-    <div class="info-row">
-        <span data-i18n="status">STATUS</span>
-        <span class="info-val" id="gameState" style="color:var(--neon-green)">STABLE</span>
-    </div>
+<div class="level-tabs">
+    <div class="tab active-0" onclick="setLevel(0)" id="tab-0">NOVICE<br>100</div>
+    <div class="tab" onclick="setLevel(1)" id="tab-1">ELITE<br>1K</div>
+    <div class="tab" onclick="setLevel(2)" id="tab-2">WHALE<br>10K</div>
+</div>
 
-    <button class="btn-inject join" id="actionBtn" onclick="handleAction()">
-        <span data-i18n="btn_connect_first">CONNECT FIRST</span>
-    </button>
+<div class="stage-wrapper">
+    <div class="game-scale-box">
+        <div class="game-container">
+            <div class="slot" id="slot-0">1</div><div class="slot" id="slot-1">2</div><div class="slot" id="slot-2">3</div>
+            <div class="slot" id="slot-3">4</div><div class="slot" id="slot-4">5</div><div class="slot" id="slot-5">6</div>
+            <div class="core" id="core">
+                <div class="core-text" id="statusText">WAIT</div>
+                <div class="core-room" id="roomDisplay">ROOM #--</div>
+                <div class="core-count" id="playerCount">0/6</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="panel-group">
+    <div class="main-panel">
+        <div class="info-row"><span data-i18n="entry_fee">ENTRY FEE</span><span class="info-val" id="entryFeeDisplay">--</span></div>
+        <div class="info-row"><span data-i18n="balance">MY BALANCE</span><span class="info-val" id="myBalance">--</span></div>
+        <div class="info-row"><span data-i18n="status">STATUS</span><span class="info-val" id="gameState" style="color:var(--neon-green)">STABLE</span></div>
+        <button class="btn-inject join" id="actionBtn" onclick="handleAction()">
+            <span data-i18n="btn_connect_first">CONNECT FIRST</span>
+        </button>
+    </div>
+    
+    <div class="ref-panel">
+        <div class="ref-info">
+            <div id="refUpline"><span data-i18n="lbl_upline">Upline:</span> --</div>
+            <div id="refCount"><span data-i18n="lbl_invites">Invites:</span> 0</div>
+        </div>
+        <div class="btn-copy" onclick="copyRef()" data-i18n="btn_copy">COPY INVITE</div>
+    </div>
 </div>
 
 <script>
-    // --- 🚨 配置区域 ---
-    const TOKEN_ADDR = "0xA1aEE242C69E1c0820d165ef12438e0A5eEd0BbA"; // GADKk Token
-    const GAME_ADDR  = "0x5759A32B6fFe0A998D43FF037487529aFd7c0946"; // 你的游戏合约
+    // ⚠️⚠️⚠️ 替换为 V7.4 合约地址
+    const TOKEN_ADDR = "0xA1aEE242C69E1c0820d165ef12438e0A5eEd0BbA"; 
+    const GAME_ADDR  = "0x6eD51AF48d34Df5a503087D281627784CEcA953b"; 
     
+    let currentLevel = 0;
+    let provider, signer, userAddr, gameContract, tokenContract;
+    let entryFeeVal = ethers.BigNumber.from(0);
+    let fomoDeadline = 0;
+    let timerInterval;
+    let currentLang = localStorage.getItem('gadkk_lang') || 'cn';
+
     const i18n = {
         en: {
-            btn_connect: "CONNECT",
-            entry_fee: "TICKET PRICE",
-            balance: "YOUR BALANCE",
-            status: "SYSTEM STATUS",
-            status_stable: "STABLE",
-            status_critical: "CRITICAL",
-            status_wait: "WAIT",
-            btn_connect_first: "CONNECT WALLET",
-            btn_approve: "UNLOCK PROTOCOL",
-            btn_join: "INJECT ENERGY",
-            btn_processing: "PROCESSING...",
-            toast_connect: "System Online",
-            toast_tx_sent: "Transmission Sent...",
-            toast_success: "Success!",
-            toast_error: "Error: ",
-            
-            rules_title: "PROTOCOL RULES",
-            rules_html: `
-                <h3>⚡ Core Mechanism</h3>
-                <p>6 players inject energy into the core. Once the 6th player joins, a quantum collapse occurs immediately.</p>
-                
-                <h3>🎲 Elimination</h3>
-                <p>The system randomly selects 1 player to be consumed. Their entire entry fee is lost (<span class="danger">100% Loss</span>).</p>
-                
-                <h3>💎 Tokenomics</h3>
-                <ul>
-                    <li>🔥 <span class="highlight">40% Burned:</span> Permanently removed.</li>
-                    <li>🏦 <span class="highlight">10% Platform:</span> Marketing/Dev.</li>
-                    <li>💰 <span class="highlight">50% Dividend:</span> Split among 5 survivors (+10% profit each).</li>
-                </ul>
-            `,
-            
-            win_title: "SURVIVOR",
-            win_msg: "You survived the collapse! Rewards have been transferred to your wallet.",
-            lose_title: "ELIMINATED",
-            lose_msg: "Core consumed your energy. Better luck next time."
+            btn_connect: "CONNECT", entry_fee: "TICKET", balance: "BALANCE", status: "STATUS", status_stable: "STABLE", status_critical: "FULL", status_wait: "WAIT",
+            btn_connect_first: "CONNECT WALLET", btn_approve: "APPROVE", btn_join: "INJECT ENERGY", btn_joined: "JOINED (WAITING)", btn_breaker: "SETTLE ROOM", btn_processing: "PROCESSING...",
+            lbl_pool: "HOPE POOL", lbl_time: "FOMO TIMER", btn_copy: "COPY LINK", lbl_online: "ONLINE:", lbl_rounds: "ROUNDS:", lbl_upline: "Upline:", lbl_invites: "Invites:", lbl_king: "CURRENT KING",
+            toast_connect: "Connected", toast_tx_sent: "Tx Sent...", toast_success: "Success!", toast_error: "Error: ", toast_copied: "Link Copied!", toast_wrong_net: "Switch to BNB Chain",
+            rules_title: "GAME RULES", rules_btn: "CLOSE",
+            rules_html: `<h3>💎 Referral</h3><p>Earn 5% (L1) + 2% (L2) from profits.</p><h3>⏳ FOMO</h3><p>Last player wins 50% pool.</p><h3>💰 Split</h3><p>85% Winners | 2% Burn | 12% Pool</p>`,
+            win_title: "VICTORY!", win_msg: "You survived! Rewards sent to wallet.",
+            lose_title: "ELIMINATED", lose_msg: "Energy consumed. Better luck next time."
         },
         cn: {
-            btn_connect: "连接钱包",
-            entry_fee: "入场门票",
-            balance: "你的余额",
-            status: "系统状态",
-            status_stable: "系统稳定",
-            status_critical: "临界状态",
-            status_wait: "等待中",
-            btn_connect_first: "请连接钱包",
-            btn_approve: "解锁协议 (授权)",
-            btn_join: "注入能量 (加入)",
-            btn_processing: "处理中...",
-            toast_connect: "系统已连接",
-            toast_tx_sent: "交易已发送...",
-            toast_success: "操作成功！",
-            toast_error: "错误: ",
-            
-            rules_title: "游戏规则与资金",
-            rules_html: `
-                <h3>⚡ 核心机制</h3>
-                <p>6名玩家注入能量。当第6人加入时，核心即刻发生坍塌。</p>
-                
-                <h3>🎲 淘汰机制</h3>
-                <p>系统随机选中1名玩家，其注入的能量将被完全吞噬 (<span class="danger">本金100%归零</span>)。</p>
-                
-                <h3>💎 资金分配 (Tokenomics)</h3>
-                <ul>
-                    <li>🔥 <span class="highlight">40% 销毁:</span> 直接打入黑洞地址。</li>
-                    <li>🏦 <span class="highlight">10% 运营:</span> 用于平台营销。</li>
-                    <li>💰 <span class="highlight">50% 分红:</span> 5名幸存者平分 (每人立赚 10% 利润)。</li>
-                </ul>
-            `,
-
-            win_title: "幸存者",
-            win_msg: "恭喜！你在坍塌中幸存，奖励已自动发送至你的钱包。",
-            lose_title: "已淘汰",
-            lose_msg: "核心坍塌！你的能量被吞噬了，本金已按照规则进行分配销毁。"
+            btn_connect: "连接钱包", entry_fee: "门票价格", balance: "账户余额", status: "系统状态", status_stable: "系统稳定", status_critical: "即将爆破", status_wait: "等待中",
+            btn_connect_first: "连接钱包", btn_approve: "授权代币", btn_join: "注入能量", btn_joined: "已入座 (等待结算)", btn_breaker: "🚀 结算本局", btn_processing: "处理中...",
+            lbl_pool: "希望奖池", lbl_time: "末日倒计时", btn_copy: "复制邀请链接", lbl_online: "在线人数:", lbl_rounds: "总局数:", lbl_upline: "我的上级:", lbl_invites: "已邀请:", lbl_king: "当前霸主",
+            toast_connect: "钱包已连接", toast_tx_sent: "交易已发送...", toast_success: "操作成功", toast_error: "错误: ", toast_copied: "链接已复制", toast_wrong_net: "请切换到 BSC 链",
+            rules_title: "游戏规则", rules_btn: "关闭",
+            rules_html: `<h3>💎 双层裂变</h3><p>一级 5% | 二级 2%</p><h3>⏳ FOMO 大奖</h3><p>倒计时归零，最后一人独吞50%奖池。</p><h3>💰 资金分配</h3><p>85% 幸存者 | 2% 销毁 | 12% 奖池</p>`,
+            win_title: "大吉大利", win_msg: "恭喜！您幸存并获得了奖励。",
+            lose_title: "遗憾淘汰", lose_msg: "能量被吞噬。请期待幸运护盾补偿。"
         }
     };
-
-    let currentLang = localStorage.getItem('gadkk_lang') || 'cn'; 
-    let provider, signer, userAddr;
-    let gameContract, tokenContract;
-    let entryFeeVal = ethers.BigNumber.from(0);
 
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     function playSound(type) {
         if (audioCtx.state === 'suspended') audioCtx.resume();
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.connect(gain); gain.connect(audioCtx.destination);
         const now = audioCtx.currentTime;
+        const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+        osc.connect(gain); gain.connect(audioCtx.destination);
 
         if (type === 'click') {
-            osc.frequency.setValueAtTime(600, now);
-            osc.frequency.exponentialRampToValueAtTime(1000, now + 0.1);
-            gain.gain.setValueAtTime(0.1, now);
-            gain.gain.linearRampToValueAtTime(0, now + 0.1);
-            osc.start(now); osc.stop(now + 0.1);
+            osc.frequency.setValueAtTime(800, now); osc.frequency.exponentialRampToValueAtTime(1200, now+0.1);
+            gain.gain.setValueAtTime(0.1, now); gain.gain.linearRampToValueAtTime(0, now+0.1);
+            osc.start(now); osc.stop(now+0.1);
+        } else if (type === 'coin') {
+            osc.type = 'sine'; osc.frequency.setValueAtTime(1500 + Math.random()*500, now);
+            gain.gain.setValueAtTime(0.1, now); gain.gain.exponentialRampToValueAtTime(0.01, now+0.1);
+            osc.start(now); osc.stop(now+0.1);
         } else if (type === 'win') {
-            osc.type = 'triangle';
-            osc.frequency.setValueAtTime(440, now);
-            osc.frequency.setValueAtTime(554, now + 0.1);
-            osc.frequency.setValueAtTime(659, now + 0.2);
-            gain.gain.setValueAtTime(0.1, now);
-            gain.gain.linearRampToValueAtTime(0, now + 0.5);
-            osc.start(now); osc.stop(now + 0.5);
+            osc.type = 'triangle'; osc.frequency.setValueAtTime(440, now); gain.gain.setValueAtTime(0.1, now); gain.gain.linearRampToValueAtTime(0, now+0.6);
+            osc.start(now); osc.stop(now+0.6);
+            for(let i=0; i<10; i++) setTimeout(() => playSound('coin'), i*100);
         } else if (type === 'lose') {
-            osc.type = 'sawtooth';
-            osc.frequency.setValueAtTime(100, now);
-            osc.frequency.linearRampToValueAtTime(30, now + 0.5);
-            gain.gain.setValueAtTime(0.2, now);
-            gain.gain.linearRampToValueAtTime(0, now + 0.5);
-            osc.start(now); osc.stop(now + 0.5);
-        } else if (type === 'alert') {
-            osc.frequency.setValueAtTime(800, now);
-            gain.gain.setValueAtTime(0.05, now);
-            gain.gain.linearRampToValueAtTime(0, now + 0.1);
-            osc.start(now); osc.stop(now + 0.1);
+            osc.type = 'sawtooth'; osc.frequency.setValueAtTime(150, now); gain.gain.linearRampToValueAtTime(0, now+0.4);
+            osc.start(now); osc.stop(now+0.4);
         }
     }
 
+    function fireConfetti() {
+        var end = Date.now() + 3000;
+        (function frame() {
+            confetti({ particleCount: 5, angle: 60, spread: 55, origin: { x: 0 }, zIndex: 99999, colors: ['#FFD700', '#F0E68C'] });
+            confetti({ particleCount: 5, angle: 120, spread: 55, origin: { x: 1 }, zIndex: 99999, colors: ['#FFD700', '#F0E68C'] });
+            if (Date.now() < end) requestAnimationFrame(frame);
+        }());
+    }
+
     window.onload = () => {
+        const params = new URLSearchParams(window.location.search);
+        const ref = params.get('ref');
+        if(ref && ethers.utils.isAddress(ref)) localStorage.setItem('gadkk_ref', ref);
         setLang(currentLang);
     };
 
     function setLang(lang) {
-        currentLang = lang;
-        localStorage.setItem('gadkk_lang', lang);
-        document.getElementById('lang-cn').classList.toggle('active', lang === 'cn');
-        document.getElementById('lang-en').classList.toggle('active', lang === 'en');
-        updateTexts();
-        playSound('click');
+        currentLang = lang; localStorage.setItem('gadkk_lang', lang);
+        document.getElementById('lang-cn').classList.toggle('active', lang==='cn');
+        document.getElementById('lang-en').classList.toggle('active', lang==='en');
+        updateTexts(); playSound('click');
     }
 
     function updateTexts() {
@@ -403,232 +266,195 @@
             const key = el.getAttribute('data-i18n');
             if (i18n[currentLang][key]) el.innerText = i18n[currentLang][key];
         });
-        
-        const countStr = document.getElementById("playerCount").innerText;
-        const count = parseInt(countStr.split('/')[0]) || 0;
-        const statusText = document.getElementById("statusText");
-        const gameState = document.getElementById("gameState");
-        
-        if (count >= 5) {
-            statusText.innerText = i18n[currentLang].status_critical;
-            gameState.innerText = i18n[currentLang].status_critical;
-            gameState.style.color = "var(--neon-red)";
-        } else {
-            statusText.innerText = i18n[currentLang].status_wait;
-            gameState.innerText = i18n[currentLang].status_stable;
-            gameState.style.color = "var(--neon-green)";
-        }
-
-        if(userAddr) checkAllowance();
+        document.getElementById('mBtn').innerText = i18n[currentLang].rules_btn;
     }
 
-    function showToast(msg, type='info') {
-        const div = document.createElement('div');
-        div.className = `toast ${type}`;
-        const icon = type==='success'?'✅':(type==='error'?'❌':'ℹ️');
-        div.innerHTML = `<span>${icon}</span><span>${msg}</span>`;
-        document.getElementById('toastContainer').appendChild(div);
-        setTimeout(()=>div.classList.add('show'),10);
-        setTimeout(()=>{div.classList.remove('show');setTimeout(()=>div.remove(),300)},3000);
+    function setLevel(lvl) {
+        currentLevel = lvl;
+        document.querySelectorAll('.tab').forEach((el, i) => { el.className = `tab ${i === lvl ? 'active-'+i : ''}`; });
+        playSound('click'); refreshData();
     }
 
     function showModal(type, title, content) {
-        const overlay = document.getElementById('modalOverlay');
-        const box = document.getElementById('modalBox');
-        const iconEl = document.getElementById('mIcon');
-        
+        const box = document.getElementById('modalBox'); const icon = document.getElementById('mIcon');
         box.className = 'modal-box ' + type;
-        
-        if(type === 'win') iconEl.innerText = '🏆';
-        else if(type === 'lose') iconEl.innerText = '💀';
-        else iconEl.innerText = '';
-
-        document.getElementById('mTitle').innerText = title;
-        
-        if(type === 'normal') {
-            document.getElementById('mContent').innerHTML = content;
-            document.getElementById('mMsg').style.display = 'none';
-            document.getElementById('mContent').style.display = 'block';
-        } else {
-            document.getElementById('mMsg').innerText = content;
-            document.getElementById('mMsg').style.display = 'block';
-            document.getElementById('mContent').style.display = 'none';
-        }
-
-        overlay.classList.add('show');
-        if(type !== 'normal') playSound(type);
-        else playSound('alert');
+        if (type === 'win') { icon.innerText = '🏆'; playSound('win'); fireConfetti(); }
+        else if (type === 'lose') { icon.innerText = '💀'; playSound('lose'); }
+        else { icon.innerText = '📜'; playSound('click'); }
+        document.getElementById('mTitle').innerText = title; document.getElementById('mContent').innerHTML = content;
+        document.getElementById('modalOverlay').classList.add('show');
     }
-    
-    function closeModal() {
-        document.getElementById('modalOverlay').classList.remove('show');
-        playSound('click');
-    }
-    
-    function showRules() {
-        showModal('normal', i18n[currentLang].rules_title, i18n[currentLang].rules_html);
+    function closeModal() { document.getElementById('modalOverlay').classList.remove('show'); playSound('click'); }
+    function showRules() { showModal('normal', i18n[currentLang].rules_title, i18n[currentLang].rules_html); }
+    function showToast(msg, type='info') {
+        const div = document.createElement('div'); div.className = `toast ${type}`;
+        div.innerHTML = `<span>${type==='success'?'✅':(type==='error'?'❌':'ℹ️')}</span><span>${msg}</span>`;
+        document.getElementById('toastContainer').appendChild(div);
+        setTimeout(()=>div.classList.add('show'),10); setTimeout(()=>div.remove(),3000);
     }
 
     async function connectWallet() {
-        if (!window.ethereum) return showToast("Please install MetaMask", "error");
+        if (!window.ethereum) return alert("Install MetaMask");
         try {
             provider = new ethers.providers.Web3Provider(window.ethereum);
             await provider.send("eth_requestAccounts", []);
-            signer = provider.getSigner();
-            userAddr = await signer.getAddress();
-            
+            const network = await provider.getNetwork();
+            if (network.chainId !== 56) {
+                showToast(i18n[currentLang].toast_wrong_net, "error");
+                try { await window.ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: '0x38' }] }); } catch (e) {}
+            }
+            signer = provider.getSigner(); userAddr = await signer.getAddress();
             document.getElementById("connectBtn").innerText = userAddr.substring(0, 6) + "...";
             
             const ABI_TOKEN = ["function approve(address,uint) external", "function allowance(address,address) view returns (uint)", "function balanceOf(address) view returns (uint)"];
-            const ABI_GAME = ["function injectEnergy() external", "function getPlayers() view returns (address[])", "function entryFee() view returns (uint)", "event ResonanceCollapse(address indexed, uint, uint)"];
-
+            // V7.4 Split ABI
+            const ABI_GAME = [
+                "function injectEnergy(uint256, address) external",
+                "function getGlobalState() view returns (uint256, uint256, uint256, uint256, address, tuple(address,uint,uint), tuple(address,uint,uint))",
+                "function getLevelState(uint256) view returns (address[], uint256, uint256, uint256)",
+                "function referrers(address) view returns (address)",
+                "function referralCount(address) view returns (uint256)",
+                "event RoundSettled(uint256, uint256, address, uint256)"
+            ];
+            
             tokenContract = new ethers.Contract(TOKEN_ADDR, ABI_TOKEN, signer);
             gameContract = new ethers.Contract(GAME_ADDR, ABI_GAME, signer);
-
+            
             showToast(i18n[currentLang].toast_connect, "success");
-            playSound('click');
-
-            refreshData();
-            listenEvents();
-            setInterval(refreshData, 5000); 
-
+            playSound('click'); startTimer(); setInterval(refreshData, 3000); refreshData(); listenEvents();
         } catch(e) { console.error(e); }
     }
 
     async function refreshData() {
-        if(!userAddr) return;
+        if(!userAddr || !gameContract) return;
         try {
-            entryFeeVal = await gameContract.entryFee();
+            // Split Calls
+            const gData = await gameContract.getGlobalState();
+            const lData = await gameContract.getLevelState(currentLevel);
+            
+            document.getElementById("gOnline").innerText = gData[0].toString();
+            document.getElementById("gRounds").innerText = gData[1].toString();
+            document.getElementById("poolVal").innerText = parseFloat(ethers.utils.formatUnits(gData[2], 18)).toLocaleString();
+            fomoDeadline = gData[3].toNumber();
+            const lastPlayer = gData[4];
+            const lastLucky = gData[5];
+            const lastFomo = gData[6];
+
+            document.getElementById("kingAddr").innerText = (lastPlayer === ethers.constants.AddressZero) ? "--" : lastPlayer.substring(0,8)+"...";
+            if(lastLucky[1] > 0) document.getElementById("lastLucky").innerText = `${lastLucky[0].substring(0,6)}... (${parseFloat(ethers.utils.formatUnits(lastLucky[1],18)).toFixed(0)})`;
+            else document.getElementById("lastLucky").innerText = "--";
+            if(lastFomo[1] > 0) document.getElementById("lastFomo").innerText = `${lastFomo[0].substring(0,6)}... (${parseFloat(ethers.utils.formatUnits(lastFomo[1],18)).toFixed(0)})`;
+            else document.getElementById("lastFomo").innerText = "--";
+
+            // Level Data
+            const roomPlayers = lData[0];
+            document.getElementById("roomDisplay").innerText = `ROOM #${lData[1].toString()}`;
+            entryFeeVal = lData[2];
             document.getElementById("entryFeeDisplay").innerText = parseFloat(ethers.utils.formatUnits(entryFeeVal, 18)).toLocaleString() + " GADKk";
 
             const bal = await tokenContract.balanceOf(userAddr);
             document.getElementById("myBalance").innerText = parseFloat(ethers.utils.formatUnits(bal, 18)).toFixed(2);
+            
+            const myUpline = await gameContract.referrers(userAddr);
+            const myCount = await gameContract.referralCount(userAddr);
+            document.getElementById("refUpline").innerHTML = `<span data-i18n="lbl_upline">${i18n[currentLang].lbl_upline}</span> ${myUpline === ethers.constants.AddressZero ? 'None' : myUpline.substring(0,6)+'...'}`;
+            document.getElementById("refCount").innerHTML = `<span data-i18n="lbl_invites">${i18n[currentLang].lbl_invites}</span> ${myCount}`;
 
-            const players = await gameContract.getPlayers();
-            updateSlots(players);
-            checkAllowance();
-
-        } catch (e) {}
+            updateSlots(roomPlayers); checkButtonState(roomPlayers);
+        } catch(e) { console.log(e); }
     }
 
     function updateSlots(players) {
         const count = players.length;
         document.getElementById("playerCount").innerText = `${count}/6`;
-        
         const core = document.getElementById("core");
-        const statusText = document.getElementById("statusText");
-        const gameState = document.getElementById("gameState");
-
-        if (count >= 5) {
-            core.className = "core critical";
-            statusText.innerText = i18n[currentLang].status_critical;
-            gameState.innerText = i18n[currentLang].status_critical;
-            gameState.style.color = "var(--neon-red)";
-        } else {
-            core.className = "core";
-            statusText.innerText = i18n[currentLang].status_wait;
-            gameState.innerText = i18n[currentLang].status_stable;
-            gameState.style.color = "var(--neon-green)";
-        }
+        let colorVar = currentLevel === 0 ? '--neon-green' : (currentLevel === 1 ? '--neon-gold' : '--neon-red');
+        core.style.background = `radial-gradient(circle, #fff 0%, var(${colorVar}) 40%, transparent 80%)`;
+        
+        if(count >= 6) { document.getElementById("statusText").innerText = "FULL"; core.classList.add('critical'); } 
+        else { document.getElementById("statusText").innerText = "WAIT"; core.classList.remove('critical'); }
 
         for(let i=0; i<6; i++) {
             const el = document.getElementById(`slot-${i}`);
-            el.className = 'slot'; 
-            el.innerText = i + 1; // 重置数字
-
-            if (i < count) {
-                el.classList.add('active');
-                el.innerText = '⚡';
-            } else {
-                el.classList.remove('active');
+            el.className = 'slot'; el.innerText = i+1; el.innerHTML = `<span>${i+1}</span>`;
+            if(i < count) {
+                el.classList.add('active'); el.innerHTML = '⚡';
+                if(players[i].toLowerCase() === userAddr.toLowerCase()) el.classList.add('is-me');
             }
         }
     }
 
-    async function checkAllowance() {
-        const btn = document.getElementById("actionBtn");
-        if(btn.disabled) return;
-
-        try {
-            const allowed = await tokenContract.allowance(userAddr, GAME_ADDR);
-            
-            if (allowed.lt(entryFeeVal)) {
-                btn.className = "btn-inject approve";
-                btn.innerText = i18n[currentLang].btn_approve;
-                btn.onclick = approveToken;
-            } else {
-                btn.className = "btn-inject join";
-                btn.innerText = i18n[currentLang].btn_join;
-                btn.onclick = inject;
-            }
-        } catch(e) {}
-    }
-
-    function setBtnLoading(loading) {
-        const btn = document.getElementById("actionBtn");
-        if(loading) {
-            btn.disabled = true;
-            btn.innerHTML = `<span class="loader"></span> ${i18n[currentLang].btn_processing}`;
-        } else {
-            btn.disabled = false;
-            checkAllowance(); 
-        }
-    }
-
-    async function handleAction() { 
-        if(!userAddr) connectWallet(); 
+    async function checkButtonState(players) {
+        const btn = document.getElementById("actionBtn"); if(btn.disabled) return;
+        const isJoined = players.some(p => p.toLowerCase() === userAddr.toLowerCase());
+        if (isJoined) { btn.className = "btn-inject"; btn.style.background = "#333"; btn.innerText = i18n[currentLang].btn_joined; btn.onclick = null; return; }
+        
+        const allowed = await tokenContract.allowance(userAddr, GAME_ADDR);
+        if(allowed.lt(entryFeeVal)) { btn.className = "btn-inject approve"; btn.innerText = i18n[currentLang].btn_approve; btn.onclick = approveToken; } 
+        else { btn.className = "btn-inject join"; btn.innerText = i18n[currentLang].btn_join; btn.onclick = inject; }
     }
 
     async function approveToken() {
-        setBtnLoading(true);
+        setLoading(true);
         try {
             const tx = await tokenContract.approve(GAME_ADDR, ethers.constants.MaxUint256);
-            showToast(i18n[currentLang].toast_tx_sent);
-            await tx.wait();
-            showToast(i18n[currentLang].toast_success, "success");
-            playSound('click');
-        } catch(e) {
-            showToast(i18n[currentLang].toast_error + (e.reason || e.message), "error");
-        }
-        setBtnLoading(false);
+            showToast(i18n[currentLang].toast_tx_sent); await tx.wait();
+            showToast(i18n[currentLang].toast_success, "success"); playSound('click');
+        } catch(e) { showToast(i18n[currentLang].toast_error, "error"); }
+        setLoading(false);
     }
 
     async function inject() {
-        setBtnLoading(true);
+        setLoading(true);
         try {
-            const tx = await gameContract.injectEnergy({ gasLimit: 500000 });
-            showToast(i18n[currentLang].toast_tx_sent);
-            await tx.wait();
-        } catch(e) {
-            showToast(i18n[currentLang].toast_error + (e.reason || e.message), "error");
-        }
-        setBtnLoading(false);
+            const ref = localStorage.getItem('gadkk_ref') || "0x0000000000000000000000000000000000000000";
+            const tx = await gameContract.injectEnergy(currentLevel, ref, {gasLimit: 600000});
+            showToast(i18n[currentLang].toast_tx_sent); await tx.wait(); playSound('coin');
+        } catch(e) { showToast(i18n[currentLang].toast_error + (e.reason || "Reverted"), "error"); }
+        setLoading(false);
     }
 
+    function setLoading(b) {
+        const btn = document.getElementById("actionBtn");
+        if(b) { btn.disabled=true; btn.innerHTML = `<span class="loader">...</span>`; } else { btn.disabled=false; refreshData(); }
+    }
+
+    function startTimer() {
+        if(timerInterval) clearInterval(timerInterval);
+        timerInterval = setInterval(() => {
+            const now = Math.floor(Date.now()/1000);
+            const diff = fomoDeadline - now;
+            const el = document.getElementById("timeVal");
+            if(diff <= 0) el.innerText = "00:00:00";
+            else {
+                const h = Math.floor(diff/3600).toString().padStart(2,'0');
+                const m = Math.floor((diff%3600)/60).toString().padStart(2,'0');
+                const s = (diff%60).toString().padStart(2,'0');
+                el.innerText = `${h}:${m}:${s}`;
+            }
+        }, 1000);
+    }
+
+    function copyRef() {
+        if(!userAddr) return showToast("Connect Wallet First", "error");
+        const url = `${window.location.origin}${window.location.pathname}?ref=${userAddr}`;
+        navigator.clipboard.writeText(url); showToast(i18n[currentLang].toast_copied, "success");
+    }
+    
     function listenEvents() {
-        const filterJoin = { address: GAME_ADDR, topics: [ethers.utils.id("Joined(address,uint256)")] };
-        provider.on(filterJoin, () => {
-            refreshData();
-            playSound('click');
-        });
-
-        gameContract.on("ResonanceCollapse", (loser, burned, reward) => {
-            setTimeout(() => handleGameOver(loser), 2000); 
+        gameContract.on("RoundSettled", (lvl, rid, loser, reward) => {
+            if(lvl.toNumber() === currentLevel) {
+                setTimeout(() => {
+                    const isLoser = (loser.toLowerCase() === userAddr.toLowerCase());
+                    const r = i18n[currentLang];
+                    if (isLoser) showModal('lose', r.lose_title, r.lose_msg);
+                    else showModal('win', r.win_title, r.win_msg);
+                    refreshData();
+                }, 2000);
+            }
         });
     }
-
-    function handleGameOver(loser) {
-        const isLoser = (loser.toLowerCase() === userAddr.toLowerCase());
-        const r = i18n[currentLang];
-
-        if (isLoser) {
-            showModal('lose', r.lose_title, r.lose_msg);
-        } else {
-            showModal('win', r.win_title, r.win_msg);
-            confetti({ particleCount: 200, spread: 100, origin: { y: 0.6 }, colors: ['#FFD700', '#00FFA3'] });
-        }
-        refreshData();
-    }
+    function handleAction() { if(!userAddr) connectWallet(); }
 </script>
 </body>
 </html>
